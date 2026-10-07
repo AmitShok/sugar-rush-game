@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CandyData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/data/candy_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/exported/candy_5.png" id="2"]
+[resource]
+script = ExtResource("1")
+display_name = "Caramel Square"
+base_chips = 70
+spawn_weight = 6
+rarity = "Legendary"
+tint = Color(0.788235294117647,0.5254901960784314,0.32941176470588235,1)
+texture = ExtResource("2")

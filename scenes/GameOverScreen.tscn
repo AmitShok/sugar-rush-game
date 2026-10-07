@@ -1,0 +1,28 @@
+[gd_scene load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/ui/game_over.gd" id="1"]
+[node name="GameOverScreen" type="PanelContainer"]
+script = ExtResource("1")
+offset_right = 590
+offset_bottom = 340
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 2
+[node name="Eyebrow" type="Label" parent="Layout"]
+layout_mode = 2
+text = "THE BATCH IS BURNT"
+theme_override_font_sizes/font_size = 24
+[node name="Title" type="Label" parent="Layout"]
+layout_mode = 2
+text = "One more taste?"
+theme_override_font_sizes/font_size = 48
+[node name="Details" type="Label" parent="Layout"]
+layout_mode = 2
+text = ""
+theme_override_font_sizes/font_size = 24
+[node name="Restart" type="Button" parent="Layout"]
+layout_mode = 2
+text = "Bake again"
+custom_minimum_size = Vector2(0,42)
+[node name="Menu" type="Button" parent="Layout"]
+layout_mode = 2
+text = "Back to title"
+custom_minimum_size = Vector2(0,42)

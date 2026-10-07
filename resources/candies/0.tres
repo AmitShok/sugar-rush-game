@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CandyData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/data/candy_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/exported/candy_0.png" id="2"]
+[resource]
+script = ExtResource("1")
+display_name = "Berry Bonbon"
+base_chips = 10
+spawn_weight = 30
+rarity = "Common"
+tint = Color(0.9058823529411765,0.34509803921568627,0.2901960784313726,1)
+texture = ExtResource("2")

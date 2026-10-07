@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="JokerData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/data/joker_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/exported/joker_2.png" id="2"]
+[resource]
+script = ExtResource("1")
+id = "labyrinth"
+display_name = "Labyrinth Wire"
+description = "Require 4+ in a line to match. All matches gain x3 Mult."
+category = "Geometry"
+price = 8
+strength = 3
+icon = ExtResource("2")

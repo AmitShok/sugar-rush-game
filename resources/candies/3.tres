@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CandyData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/data/candy_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/exported/candy_3.png" id="2"]
+[resource]
+script = ExtResource("1")
+display_name = "Blue Peppermint"
+base_chips = 30
+spawn_weight = 13
+rarity = "Rare"
+tint = Color(0.40784313725490196,0.7098039215686275,0.807843137254902,1)
+texture = ExtResource("2")

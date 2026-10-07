@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="JokerData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/data/joker_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/exported/supply_lemon.png" id="2"]
+[resource]
+script = ExtResource("1")
+id = "supply_lemon"
+display_name = "Lemon Press"
+description = "More Lemon spawns. Stacks with other Supply Jokers. See Candy Guide for odds."
+category = "Supply"
+price = 6
+spawn_color = 1
+spawn_multiplier = 2.0
+icon = ExtResource("2")
