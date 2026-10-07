@@ -1,0 +1,24 @@
+[gd_scene load_steps=6 format=3]
+[ext_resource type="Script" path="res://scripts/ui/menu_backdrop.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/exported/joker_0.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/exported/joker_11.png" id="3"]
+[ext_resource type="Texture2D" path="res://assets/exported/joker_4.png" id="4"]
+[ext_resource type="Texture2D" path="res://assets/exported/joker_9.png" id="5"]
+[node name="MenuBackdrop" type="Node2D"]
+script = ExtResource("1")
+[node name="Prism" type="Sprite2D" parent="."]
+position = Vector2(166,204)
+scale = Vector2(3,3)
+texture = ExtResource("2")
+[node name="Skull" type="Sprite2D" parent="."]
+position = Vector2(176,478)
+scale = Vector2(2,2)
+texture = ExtResource("3")
+[node name="Gravity" type="Sprite2D" parent="."]
+position = Vector2(982,224)
+scale = Vector2(2,2)
+texture = ExtResource("4")
+[node name="Midas" type="Sprite2D" parent="."]
+position = Vector2(986,474)
+scale = Vector2(3,3)
+texture = ExtResource("5")

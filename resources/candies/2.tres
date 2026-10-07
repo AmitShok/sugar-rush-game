@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CandyData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/data/candy_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/exported/candy_2.png" id="2"]
+[resource]
+script = ExtResource("1")
+display_name = "Mint Gummy"
+base_chips = 20
+spawn_weight = 18
+rarity = "Uncommon"
+tint = Color(0.4588235294117647,0.6784313725490196,0.4392156862745098,1)
+texture = ExtResource("2")

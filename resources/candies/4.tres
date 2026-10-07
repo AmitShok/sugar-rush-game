@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CandyData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/data/candy_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/exported/candy_4.png" id="2"]
+[resource]
+script = ExtResource("1")
+display_name = "Plum Jellybean"
+base_chips = 45
+spawn_weight = 9
+rarity = "Epic"
+tint = Color(0.6666666666666666,0.5137254901960784,0.7333333333333333,1)
+texture = ExtResource("2")

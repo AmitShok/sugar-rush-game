@@ -1,0 +1,263 @@
+[gd_scene load_steps=10 format=3]
+[ext_resource type="Script" path="res://scripts/main_game.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/exported/table_felt.png" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/GameBoard.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/UI_Hud.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/JokerInventory.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/Shop.tscn" id="6"]
+[ext_resource type="PackedScene" path="res://scenes/GameOverScreen.tscn" id="7"]
+[ext_resource type="PackedScene" path="res://scenes/MenuBackdrop.tscn" id="8"]
+[ext_resource type="Texture2D" path="res://assets/exported/ui_shade.png" id="9"]
+[node name="MainGame" type="Control"]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1")
+[node name="Background" type="TextureRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource("2")
+expand_mode = 1
+stretch_mode = 0
+mouse_filter = 2
+[node name="MenuBackdrop" parent="." instance=ExtResource("8")]
+[node name="Play" type="Control" parent="."]
+process_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+[node name="GameBoard" parent="Play" instance=ExtResource("3")]
+offset_left = 452.0
+offset_top = 216.0
+offset_right = 900.0
+offset_bottom = 664.0
+[node name="UI_Hud" parent="Play" instance=ExtResource("4")]
+offset_left = 28.0
+offset_top = 28.0
+offset_right = 328.0
+offset_bottom = 692.0
+[node name="JokerInventory" parent="Play" instance=ExtResource("5")]
+offset_left = 364.0
+offset_top = 24.0
+offset_right = 1124.0
+offset_bottom = 190.0
+[node name="Brand" type="Label" parent="Play"]
+offset_left = 40
+offset_top = 32
+offset_right = 640
+offset_bottom = 74
+text = "SUGAR / RUSH"
+theme_override_font_sizes/font_size = 32
+visible = false
+[node name="Tagline" type="Label" parent="Play"]
+offset_left = 41
+offset_top = 75
+offset_right = 641
+offset_bottom = 117
+text = "A dangerous little sweet tooth."
+theme_override_font_sizes/font_size = 24
+visible = false
+[node name="RoundLabel" type="Label" parent="Play"]
+visible = false
+text = "BATCH 01 / SMALL BATCH"
+offset_left = 454
+offset_top = 179
+offset_right = 980
+offset_bottom = 210
+theme_override_font_sizes/font_size = 24
+[node name="Seed" type="Label" parent="Play"]
+text = "SEED"
+offset_left = 944
+offset_top = 658
+offset_right = 1134
+offset_bottom = 694
+theme_override_font_sizes/font_size = 24
+[node name="Instruction" type="Label" parent="Play"]
+offset_left = 940
+offset_top = 450
+offset_right = 1114
+offset_bottom = 625
+text = "Click a candy, then a neighbor.\n\nH: free hint\nESC: pause"
+autowrap_mode = 2
+theme_override_font_sizes/font_size = 24
+[node name="Hint" type="Button" parent="Play"]
+offset_left = 440
+offset_top = 670
+offset_right = 584
+offset_bottom = 712
+text = "Hint"
+[node name="Rules" type="Button" parent="Play"]
+offset_left = 600
+offset_top = 670
+offset_right = 744
+offset_bottom = 712
+text = "Run info"
+[node name="MenuButton" type="Button" parent="Play"]
+offset_left = 760
+offset_top = 670
+offset_right = 904
+offset_bottom = 712
+text = "Pause"
+[node name="Shop" parent="." instance=ExtResource("6")]
+process_mode = 1
+z_index = 100
+visible = false
+offset_left = 352.0
+offset_top = 194.0
+offset_right = 1140.0
+offset_bottom = 704.0
+[node name="GameOverScreen" parent="." instance=ExtResource("7")]
+z_index = 200
+visible = false
+offset_left = 281.0
+offset_top = 190.0
+offset_right = 871.0
+offset_bottom = 530.0
+[node name="Menu" type="PanelContainer" parent="."]
+offset_left = 330
+offset_top = 60
+offset_right = 822
+offset_bottom = 666
+[node name="Layout" type="VBoxContainer" parent="Menu"]
+layout_mode = 2
+theme_override_constants/separation = 12
+[node name="Eyebrow" type="Label" parent="Menu/Layout"]
+layout_mode = 2
+text = "FLOOR 38 PRESENTS"
+theme_override_font_sizes/font_size = 24
+[node name="Title" type="Label" parent="Menu/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.97,0.71,0.79,1)
+theme_override_font_sizes/font_size = 64
+text = "SUGAR\nRUSH"
+[node name="Subtitle" type="Label" parent="Menu/Layout"]
+layout_mode = 2
+text = "A dangerous little sweet tooth."
+theme_override_font_sizes/font_size = 24
+[node name="Description" type="Label" parent="Menu/Layout"]
+layout_mode = 2
+text = "Match candy. Bend the rules.\nBuild a recipe that breaks the bowl."
+theme_override_font_sizes/font_size = 24
+[node name="Seed" type="LineEdit" parent="Menu/Layout"]
+layout_mode = 2
+placeholder_text = "Optional numeric seed"
+max_length = 12
+[node name="Play" type="Button" parent="Menu/Layout"]
+layout_mode = 2
+text = "Start Run"
+custom_minimum_size = Vector2(0,42)
+[node name="Collection" type="Button" parent="Menu/Layout"]
+layout_mode = 2
+text = "Collection"
+custom_minimum_size = Vector2(0,42)
+[node name="Codex" type="Button" parent="Menu/Layout"]
+layout_mode = 2
+text = "How to Play"
+custom_minimum_size = Vector2(0,42)
+[node name="Footer" type="Label" parent="Menu/Layout"]
+layout_mode = 2
+text = "v0.7 | Sugar Rush"
+theme_override_font_sizes/font_size = 24
+[node name="PauseShade" type="TextureRect" parent="."]
+z_index = 199
+visible = false
+offset_right = 1152.0
+offset_bottom = 720.0
+texture = ExtResource("9")
+expand_mode = 1
+mouse_filter = 0
+[node name="Pause" type="PanelContainer" parent="."]
+z_index = 200
+visible = false
+offset_left = 356.0
+offset_top = 150.0
+offset_right = 796.0
+offset_bottom = 570.0
+[node name="Layout" type="VBoxContainer" parent="Pause"]
+layout_mode = 2
+theme_override_constants/separation = 10
+[node name="Title" type="Label" parent="Pause/Layout"]
+layout_mode = 2
+text = "PAUSED"
+theme_override_font_sizes/font_size = 48
+horizontal_alignment = 1
+[node name="Resume" type="Button" parent="Pause/Layout"]
+layout_mode = 2
+text = "Resume"
+custom_minimum_size = Vector2(0,48)
+[node name="Options" type="Button" parent="Pause/Layout"]
+layout_mode = 2
+text = "Options"
+custom_minimum_size = Vector2(0,48)
+[node name="Motion" type="CheckButton" parent="Pause/Layout"]
+visible = false
+layout_mode = 2
+text = "Motion & particles"
+button_pressed = true
+[node name="Sound" type="CheckButton" parent="Pause/Layout"]
+visible = false
+layout_mode = 2
+text = "Sound effects"
+button_pressed = true
+[node name="Back" type="Button" parent="Pause/Layout"]
+visible = false
+layout_mode = 2
+text = "Back"
+custom_minimum_size = Vector2(0,48)
+[node name="Abandon" type="Button" parent="Pause/Layout"]
+layout_mode = 2
+text = "Quit to Title"
+tooltip_text = "End this run and return to the title."
+custom_minimum_size = Vector2(0,48)
+[node name="Quit" type="Button" parent="Pause/Layout"]
+layout_mode = 2
+text = "Quit to Desktop"
+custom_minimum_size = Vector2(0,48)
+[node name="Codex" type="PanelContainer" parent="."]
+z_index = 200
+visible = false
+offset_left = 176
+offset_top = 45
+offset_right = 976
+offset_bottom = 670
+[node name="Layout" type="VBoxContainer" parent="Codex"]
+layout_mode = 2
+[node name="Text" type="RichTextLabel" parent="Codex/Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+scroll_active = true
+theme_override_font_sizes/normal_font_size = 32
+[node name="Close" type="Button" parent="Codex/Layout"]
+layout_mode = 2
+text = "Back to the bowl"
+custom_minimum_size = Vector2(0,42)
+[node name="Toast" type="Label" parent="."]
+horizontal_alignment = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.47,0.86,0.74,1)
+offset_left = 356
+offset_top = 0
+offset_right = 1132
+offset_bottom = 23
+theme_override_font_sizes/font_size = 24
+
+
+[node name="MatchGuide" type="Label" parent="Play"]
+offset_left = 940.0
+offset_top = 294.0
+offset_right = 1116.0
+offset_bottom = 438.0
+text = "3   Match\n4   Special\n5   Mega\n\nCandys X Mult"
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.96,0.77,0.42,1)
+mouse_filter = 2
+
+[node name="CandyGuideButton" type="Button" parent="Play"]
+offset_left = 934.0
+offset_top = 230.0
+offset_right = 1138.0
+offset_bottom = 274.0
+theme_override_font_sizes/font_size = 24
+text = "Candy Guide"

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="JokerData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/data/joker_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/exported/joker_11.png" id="2"]
+[resource]
+script = ExtResource("1")
+id = "necro"
+display_name = "Necromancer's Skull"
+description = "Match 5+: replace blockers and destroyed blocker spots with Gold."
+category = "Five"
+price = 9
+strength = 1
+icon = ExtResource("2")

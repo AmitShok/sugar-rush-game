@@ -1,0 +1,113 @@
+[gd_scene load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/ui/shop.gd" id="1"]
+[node name="Shop" type="Control"]
+offset_right = 788.0
+offset_bottom = 508.0
+script = ExtResource("1")
+mouse_filter = 2
+[node name="Heading" type="Label" parent="."]
+offset_left = 12.0
+offset_top = 0.0
+offset_right = 168.0
+offset_bottom = 50.0
+text = "SHOP"
+theme_override_font_sizes/font_size = 48
+[node name="Wallet" type="Label" parent="."]
+offset_left = 180.0
+offset_top = 2.0
+offset_right = 776.0
+offset_bottom = 46.0
+horizontal_alignment = 2
+text = "Available cash: $100"
+theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(1,0.84,0.48,1)
+[node name="Actions" type="VBoxContainer" parent="."]
+offset_left = 8.0
+offset_top = 106.0
+offset_right = 168.0
+offset_bottom = 286.0
+theme_override_constants/separation = 16
+[node name="Continue" type="Button" parent="Actions"]
+layout_mode = 2
+custom_minimum_size = Vector2(160,80)
+text = "Next\nRound"
+theme_override_font_sizes/font_size = 32
+[node name="Reroll" type="Button" parent="Actions"]
+layout_mode = 2
+custom_minimum_size = Vector2(160,80)
+text = "Reroll\n$20"
+theme_override_font_sizes/font_size = 32
+[node name="Tip" type="Label" parent="."]
+offset_left = 12.0
+offset_top = 304.0
+offset_right = 168.0
+offset_bottom = 376.0
+text = "Click an owned\nJoker to sell it."
+theme_override_font_sizes/font_size = 24
+autowrap_mode = 2
+[node name="Offers" type="HBoxContainer" parent="."]
+offset_left = 188.0
+offset_top = 92.0
+offset_right = 784.0
+offset_bottom = 348.0
+theme_override_constants/separation = 10
+[node name="Receipt" type="Label" parent="."]
+offset_left = 188.0
+offset_top = 356.0
+offset_right = 776.0
+offset_bottom = 398.0
+text = "Round paid +$40."
+theme_override_font_sizes/font_size = 24
+autowrap_mode = 2
+[node name="Details" type="Panel" parent="."]
+offset_left = 8.0
+offset_top = 406.0
+offset_right = 780.0
+offset_bottom = 510.0
+mouse_filter = 2
+[node name="Name" type="Label" parent="Details"]
+offset_left = 14.0
+offset_top = 2.0
+offset_right = 585.0
+offset_bottom = 34.0
+text = "Choose a Joker"
+theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(1,0.84,0.48,1)
+[node name="Description" type="Label" parent="Details"]
+offset_left = 14.0
+offset_top = 32.0
+offset_right = 585.0
+offset_bottom = 78.0
+text = "Select a card to read its effect."
+theme_override_font_sizes/font_size = 24
+autowrap_mode = 2
+[node name="Status" type="Label" parent="Details"]
+offset_left = 14.0
+offset_top = 78.0
+offset_right = 750.0
+offset_bottom = 102.0
+text = "Cash stays with you between rounds."
+theme_override_font_sizes/font_size = 24
+[node name="Action" type="Button" parent="Details"]
+offset_left = 598.0
+offset_top = 18.0
+offset_right = 754.0
+offset_bottom = 65.0
+text = "Buy $100"
+theme_override_font_sizes/font_size = 24
+
+[node name="PauseButton" type="Button" parent="."]
+offset_left = 8.0
+offset_top = 362.0
+offset_right = 168.0
+offset_bottom = 402.0
+text = "Pause"
+theme_override_font_sizes/font_size = 24
+
+[node name="CandyGuideButton" type="Button" parent="."]
+offset_left = 8.0
+offset_top = 308.0
+offset_right = 168.0
+offset_bottom = 350.0
+theme_override_font_sizes/font_size = 24
+text = "Candy Guide"

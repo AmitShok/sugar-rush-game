@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="JokerData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/data/joker_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/exported/joker_12.png" id="2"]
+[resource]
+script = ExtResource("1")
+id = "addict"
+display_name = "Sugar Addict"
+description = "Gain +3 Mult per successful swap in a row. Failed swaps reset it."
+category = "Chaos"
+price = 10
+strength = 3
+icon = ExtResource("2")
