@@ -37,6 +37,7 @@ func _ready() -> void:
  $Shop/CandyGuideButton.pressed.connect(show_candy_guide)
  $Menu/Layout/Play.pressed.connect(begin_run)
  $Menu/Layout/Codex.pressed.connect(show_codex)
+ $Menu/Layout/Quit.pressed.connect(func() -> void: get_tree().quit())
  $Play/Hint.pressed.connect(board.hint)
  $Play/Rules.pressed.connect(show_codex)
  $Play/MenuButton.pressed.connect(toggle_pause)
