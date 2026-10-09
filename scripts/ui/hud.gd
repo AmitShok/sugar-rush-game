@@ -32,7 +32,7 @@ func refresh() -> void:
  $Layout/Math/Mult.text = str(int(gm.last_mult)) if is_equal_approx(gm.last_mult,roundf(gm.last_mult)) else str(snappedf(gm.last_mult,0.1))
  $Layout/Moves.text = "%02d   MOVES LEFT" % gm.moves
  $Layout/Wallet.text = UIStyle.money(gm.gummies)
- $Layout/Route.text = "Small > Big > Boss"
+ $Layout/Route.hide()
  $Layout/Curse.text = gm.current_round().description
  if gm.current_round().curse=="inspector":
   var board: GameBoard=get_parent().get_node("GameBoard") as GameBoard
