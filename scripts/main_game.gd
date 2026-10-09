@@ -6,6 +6,7 @@ var collection: Control
 var candy_guide: Control
 var route: Control
 var route_new_run: bool = true
+var options_from_menu: bool = false
 var crt_layer: CanvasLayer
 var toast_tween: Tween
 func _ready() -> void:
@@ -50,7 +51,7 @@ func _ready() -> void:
  $Play/CandyGuideButton.pressed.connect(show_candy_guide)
  $Shop/CandyGuideButton.pressed.connect(show_candy_guide)
  $Menu/Layout/Play.pressed.connect(begin_run)
- $Menu/Layout/Codex.pressed.connect(show_codex)
+ $Menu/Layout/Options.pressed.connect(open_menu_options)
  $Menu/Layout/Quit.pressed.connect(func() -> void: get_tree().quit())
  $Play/Hint.pressed.connect(board.hint)
  $Play/Rules.pressed.connect(show_codex)
@@ -58,7 +59,7 @@ func _ready() -> void:
  $Shop/PauseButton.pressed.connect(toggle_pause)
  $Pause/Layout/Resume.pressed.connect(toggle_pause)
  $Pause/Layout/Options.pressed.connect(show_options.bind(true))
- $Pause/Layout/Back.pressed.connect(show_options.bind(false))
+ $Pause/Layout/Back.pressed.connect(close_options)
  $Pause/Layout/Quit.pressed.connect(func() -> void: get_tree().quit())
  $Pause/Layout/Abandon.pressed.connect(to_menu)
  $Pause/Layout/Motion.button_pressed = GameManager.motion
@@ -146,11 +147,22 @@ func toggle_pause() -> void:
  if GameManager.state not in ["playing","shop"]: return
  set_paused(not $Pause.visible)
 func set_paused(value: bool) -> void:
+ if not value: options_from_menu=false
  $Pause.visible = value
  $PauseShade.visible = value
  board.paused = value
  get_tree().paused = value
  show_options(false)
+func open_menu_options() -> void:
+ set_paused(true)
+ options_from_menu=true
+ show_options(true)
+ $Pause/Layout/CRT.grab_focus()
+func close_options() -> void:
+ if options_from_menu:
+  set_paused(false)
+  $Menu/Layout/Options.grab_focus()
+ else: show_options(false)
 func show_options(value: bool) -> void:
  $Pause/Layout/Title.text = "OPTIONS" if value else "PAUSED"
  for key: String in ["Motion","Sound","CRT","Volume","Back"]: $Pause/Layout.get_node(key).visible = value
@@ -190,7 +202,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
   elif candy_guide.visible: close_candy_guide()
   elif route.visible: close_route()
   elif $Codex.visible: close_codex()
-  elif $Pause.visible and $Pause/Layout/Back.visible: show_options(false)
+  elif $Pause.visible and $Pause/Layout/Back.visible: close_options()
   else: toggle_pause()
   get_viewport().set_input_as_handled()
 

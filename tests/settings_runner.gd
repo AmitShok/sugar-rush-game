@@ -20,6 +20,17 @@ func run_tests() -> void:
  var main: Control=preload("res://scenes/MainGame.tscn").instantiate()
  add_child(main)
  await frames()
+ main.get_node("Menu/Layout/Options").pressed.emit()
+ await frames()
+ check(main.get_node("Pause/Layout/Volume").visible and get_tree().paused and GameManager.state=="menu","Title Options opens settings without starting a run")
+ main.get_node("Pause/Layout/Back").pressed.emit()
+ check(not get_tree().paused and not main.get_node("Pause").visible and main.get_node("Menu").visible,"Options Back returns to the title")
+ main.get_node("Menu/Layout/Options").pressed.emit()
+ var escape: InputEventKey=InputEventKey.new()
+ escape.keycode=KEY_ESCAPE
+ escape.pressed=true
+ main._unhandled_key_input(escape)
+ check(not get_tree().paused and not main.get_node("Pause").visible,"Escape from title Options returns to the title")
  main.start()
  GameManager.motion=false
  main.crt_layer.visible=true

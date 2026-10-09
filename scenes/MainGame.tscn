@@ -154,9 +154,9 @@ custom_minimum_size = Vector2(0,42)
 layout_mode = 2
 text = "Collection"
 custom_minimum_size = Vector2(0,42)
-[node name="Codex" type="Button" parent="Menu/Layout"]
+[node name="Options" type="Button" parent="Menu/Layout"]
 layout_mode = 2
-text = "How to Play"
+text = "Options"
 custom_minimum_size = Vector2(0,42)
 [node name="Quit" type="Button" parent="Menu/Layout"]
 layout_mode = 2
