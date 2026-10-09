@@ -93,3 +93,5 @@ In the shop, switch from **Jokers** to **Candy Upgrades**. All six types are alw
 Upgrades have no slot or purchase-count limit. Each purchase adds half that type's original value, rounded up: +5 / +7 / +10 / +15 / +23 / +35 Candys. Prices start at $4 per type and rise by $2 for each purchase of that type. Different types have independent prices. Bonuses also add to gold and caramel coating values and apply to locked candies when broken, before Mult. Upgrades do not change spawn odds.
 
 Values persist through shops, rerolls and rounds, then reset with a new run. The Candy Guide and board hover text show the current values. No permanent resource data or preferences are changed.
+
+Roulette Licorice marks all candies of its chosen type with a small roulette wheel. Hover the owned Joker to see this round's type and whether its penalty has been avoided. The sidebar repeats the target and status. Markers remain after matching because x2 Mult stays active for the round.

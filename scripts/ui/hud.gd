@@ -40,7 +40,14 @@ func refresh() -> void:
  if gm.current_round().curse=="inspector":
   var board: GameBoard=get_parent().get_node("GameBoard") as GameBoard
   if board.model.locked_color>=0: $Layout/Curse.text="LOCKED: "+gm.config.candies[board.model.locked_color].display_name+"\nMatch 3 including it to break."
- if gm.poison >= 0: $Layout/Curse.text += "\nPoison: %s%s" % [gm.config.candies[gm.poison].display_name," | cleared" if gm.poison_cleared else " | uncleared"]
+ $Layout/Curse.add_theme_font_size_override("font_size",20 if gm.poison >= 0 else 24)
+ if gm.poison >= 0:
+  var rule: String=""
+  if gm.current_round().curse=="inspector":
+   var board: GameBoard=get_parent().get_node("GameBoard") as GameBoard
+   if board.model.locked_color>=0: rule="Locked: "+gm.config.candies[board.model.locked_color].display_name+"\n"
+  elif gm.current_round().curse=="heatwave": rule="Heatwave: 4 idle moves lock.\n"
+  $Layout/Curse.text=rule+"Roulette: "+gm.config.candies[gm.poison].display_name+"\n"+("Matched" if gm.poison_cleared else "Match needed")+" | x2 Mult"
 
 func display_score(value: float) -> void:
  shown_score = roundi(value)

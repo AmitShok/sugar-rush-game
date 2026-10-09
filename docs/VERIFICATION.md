@@ -79,3 +79,7 @@ Godot 4.7.2 with Dummy audio: 150 route/art checks, 51 core/gameplay checks and 
 ## Run-only candy upgrades
 
 Godot 4.7.2 with Dummy audio: UpgradeRunner 21, ShopRunner 30, RarityRunner 38, ThreeRunner 12 and TestRunner 51 checks passed. UpgradeRunner and RarityRunner ran with the OpenGL renderer; the upgrade shop and Candy Guide were visually inspected. Tests cover repeat purchases, independent types/prices, cash validation, buying with five Jokers, 100 repeat purchases, run reset, upgraded gold/caramel and locked-candy scoring, guide/hover values and physical clicks at three window sizes. UI reuses existing Aseprite candy sprites, font atlas and skins.
+
+## Roulette target visibility
+
+RouletteUIRunner passed 32 checks with the OpenGL renderer: every selected-type candy is marked, including locked/coated tiles; markers follow swaps/refills, remain after matching, reset between rounds and disappear without the Joker. The actual custom tooltip names the target and reports penalty status. HUD bounds checked for all six target types across normal, Inspector and Heatwave rounds. Rendered tooltip/board visually inspected. EffectsRunner passed 22 checks and RouteRunner passed 150 checks, including Aseprite source provenance.

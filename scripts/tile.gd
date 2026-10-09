@@ -9,6 +9,7 @@ var hinted: bool = false
 var hovered: bool = false
 var isotope: bool = false
 var locked: bool = false
+var roulette: bool = false
 var elapsed: float = 0.0
 @onready var sprite: TextureRect = $Icon
 func _ready() -> void:
@@ -23,14 +24,16 @@ func _ready() -> void:
  add_child(floor_tile)
  move_child(floor_tile,0)
  mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-func configure(i: int, value: CandyState, run_config: RunConfig, is_isotope: bool, is_locked: bool, bonus: int = 0) -> void:
+func configure(i: int, value: CandyState, run_config: RunConfig, is_isotope: bool, is_locked: bool, bonus: int = 0, is_roulette: bool = false) -> void:
  cell_index = i
  data = value
  isotope = is_isotope
  locked = is_locked
+ roulette = is_roulette
  sprite.texture = run_config.candies[data.color].texture
  sprite.modulate = Color("ffe59a") if data.coating == 2 else Color.WHITE
  tooltip_text = "%s | %s Candys%s%s" % [run_config.candies[data.color].display_name,data.value(run_config,bonus)," | LOCKED" if locked else ""," | Isotope x4" if isotope else ""]
+ if roulette: tooltip_text += " | Roulette: x2 Mult on matches"
  queue_redraw()
 func _process(delta: float) -> void:
  elapsed += delta
@@ -52,3 +55,4 @@ func _draw() -> void:
   if data.blocker > 0: mark("blocker")
   elif locked: mark("lock")
  if selected or hinted: mark("selected" if selected else "hint")
+ if roulette: mark("roulette")

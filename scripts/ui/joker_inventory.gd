@@ -27,7 +27,7 @@ func refresh() -> void:
   card.ignore_texture_size = true
   card.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
   card.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-  card.tooltip_text = item.display_name+"\n"+item.description
+  card.tooltip_text = item.display_name+"\n"+GameManager.joker_description(item)
   card.pressed.connect(func() -> void: inspect_requested.emit(item))
   card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
   slot.add_child(card)

@@ -11,7 +11,7 @@ func _make_custom_tooltip(_text: String) -> Object:
  title.custom_minimum_size.x = 320
  title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
  column.add_child(title)
- var description: Label = UIStyle.label(item.description,24)
+ var description: Label = UIStyle.label(GameManager.joker_description(item),24)
  description.custom_minimum_size.x = 320
  description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
  column.add_child(description)

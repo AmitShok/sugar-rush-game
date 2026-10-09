@@ -62,7 +62,7 @@ func sync_tiles(falling: bool) -> void:
    $Tiles.add_child(tile)
    tile.mouse_filter = Control.MOUSE_FILTER_IGNORE
    tile.position = Vector2(model.xy(i))*cell_size-Vector2(0,cell_size*2)
-  tile.configure(i,state,GameManager.config,i in model.isotopes,state.color==model.locked_color,model.candy_bonus(state.color))
+  tile.configure(i,state,GameManager.config,i in model.isotopes,state.color==model.locked_color,model.candy_bonus(state.color),GameManager.jokers.has("roulette") and state.color==GameManager.poison)
   tile.selected = i == selection
   tile.hinted = false
   tile.scale = Vector2.ONE
@@ -218,4 +218,4 @@ func _get_tooltip(at_position: Vector2) -> String:
  var i: int = model.index(cell)
  var candy: CandyState = model.cells[i]
  var value: int = candy.value(GameManager.config,model.candy_bonus(candy.color))
- return "%s | %s Candys%s" % [GameManager.config.candies[candy.color].display_name,value," | Include this candy in a match of 3 to break the lock" if model.is_locked_tile(i) else ""]
+ return "%s | %s Candys%s" % [GameManager.config.candies[candy.color].display_name,value,(" | Include this candy in a match of 3 to break the lock" if model.is_locked_tile(i) else "")+(" | Roulette: x2 Mult on matches" if GameManager.jokers.has("roulette") and candy.color==GameManager.poison else "")]

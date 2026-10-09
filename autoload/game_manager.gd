@@ -40,6 +40,12 @@ func save_preferences() -> void:
  prefs.set_value("settings","motion",motion)
  prefs.set_value("settings","sound",sound)
  prefs.save("user://preferences.cfg")
+func joker_description(item: JokerData) -> String:
+ if item.id != "roulette": return item.description
+ if not jokers.has("roulette") or poison < 0:
+  return item.description+"\nA random candy type is picked at the start of each round."
+ var status: String="Matched: penalty avoided. x2 Mult stays active." if poison_cleared else "Not matched yet: match this type or lose half your round score."
+ return "This round: %s\nMatches of this type get x2 Mult.\n%s\nThe wheel marks every candy of this type. Blast collateral does not count." % [config.candies[poison].display_name,status]
 func candy_level(color: int) -> int:
  return candy_levels[color] if color >= 0 and color < candy_levels.size() else 0
 func candy_bonus(color: int) -> int:
