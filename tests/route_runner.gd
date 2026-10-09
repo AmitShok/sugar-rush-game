@@ -48,7 +48,7 @@ func run_tests() -> void:
   await frames()
   check(main.get_node("Play/UI_Hud").get_global_rect().end.y<=710,"HUD including route and boss rule fits")
   var hud: Control=main.get_node("Play/UI_Hud")
-  check(hud.get_node("Layout/Ante").text.ends_with("06") and hud.get_node("Layout/Route").text.to_upper().contains(expected_bosses[(index+1)/3]),"HUD previews the current ante boss beyond round nine")
+  check(hud.get_node("Layout/Ante").text.ends_with("06") and hud.get_node("Layout/Route").text=="Small > Big > Boss","HUD shows six antes and a simple batch sequence without a countdown")
   check(route.enter_button.get_global_rect().end.y<=710,"Late-round map stays on canvas")
   if (index+1)%3==2: await capture("v5_boss_gameplay")
  GameManager.score=GameManager.current_round().quota
