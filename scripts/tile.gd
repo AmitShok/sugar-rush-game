@@ -23,14 +23,14 @@ func _ready() -> void:
  add_child(floor_tile)
  move_child(floor_tile,0)
  mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-func configure(i: int, value: CandyState, run_config: RunConfig, is_isotope: bool, is_locked: bool) -> void:
+func configure(i: int, value: CandyState, run_config: RunConfig, is_isotope: bool, is_locked: bool, bonus: int = 0) -> void:
  cell_index = i
  data = value
  isotope = is_isotope
  locked = is_locked
  sprite.texture = run_config.candies[data.color].texture
  sprite.modulate = Color("ffe59a") if data.coating == 2 else Color.WHITE
- tooltip_text = "%s | %s Candys%s%s" % [run_config.candies[data.color].display_name,data.chips(run_config)," | LOCKED" if locked else ""," | Isotope x4" if isotope else ""]
+ tooltip_text = "%s | %s Candys%s%s" % [run_config.candies[data.color].display_name,data.value(run_config,bonus)," | LOCKED" if locked else ""," | Isotope x4" if isotope else ""]
  queue_redraw()
 func _process(delta: float) -> void:
  elapsed += delta

@@ -30,11 +30,10 @@ func _ready() -> void:
  rows=VBoxContainer.new()
  rows.add_theme_constant_override("separation",4)
  column.add_child(rows)
- var note: Label=UIStyle.label("Odds are per new random candy; the board is not a fixed mix.
-Supply Jokers double their type's weight before normalization.
-
-Match through a locked tile: +10 / +25 / +50 Candys
-for matches of 3 / 4 / 5+, before Mult.",24)
+ var note: Label=UIStyle.label("Values include upgrades bought this run.
+Spawn odds include Supply Jokers; draws are random.
+Break locks: +10 / +25 / +50 Candys for matches
+of 3 / 4 / 5+, before Mult.",24)
  column.add_child(note)
  close_button=Button.new()
  close_button.text="Back"
@@ -63,7 +62,7 @@ func show_candies() -> void:
   var label: Label=UIStyle.label(candy.display_name+" / "+candy.rarity,24)
   label.custom_minimum_size.x=396
   row.add_child(label)
-  var value: Label=UIStyle.label(str(candy.base_chips),32,UIStyle.MINT)
+  var value: Label=UIStyle.label(str(GameManager.candy_value(i)),32,UIStyle.MINT)
   value.custom_minimum_size.x=116
   row.add_child(value)
   row.add_child(UIStyle.label("%.1f%%" % (chances[i]*100),32))

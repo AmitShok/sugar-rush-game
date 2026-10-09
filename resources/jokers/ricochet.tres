@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "ricochet"
 display_name = "Ricochet Pop"
-description = "Match 4+: clear its row/column. Extra candies refill as 30-Chip caramel."
+description = "Match 4+: clear its line. Extras refill as caramel."
 category = "Four"
 price = 10
 strength = 1

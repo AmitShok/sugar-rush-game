@@ -75,3 +75,7 @@ Godot 4.7.2, Dummy audio, `--test`: ThreeRunner 12, TestRunner 51, EffectsRunner
 ## Six-ante campaign
 
 Godot 4.7.2 with Dummy audio: 150 route/art checks, 51 core/gameplay checks and 21 synergy/economy checks passed. The route suite also passed 150 checks with the OpenGL renderer; the final ante preview was visually inspected. Tests walk all 18 rounds, verify boss previews and six-ante counters beyond round nine, preserve shop/back navigation and confirm victory only after round 18. These checks validate progression and scoring rules; the new difficulty curve is an initial balance pass, not a guarantee of equal win rates across Joker builds.
+
+## Run-only candy upgrades
+
+Godot 4.7.2 with Dummy audio: UpgradeRunner 21, ShopRunner 30, RarityRunner 38, ThreeRunner 12 and TestRunner 51 checks passed. UpgradeRunner and RarityRunner ran with the OpenGL renderer; the upgrade shop and Candy Guide were visually inspected. Tests cover repeat purchases, independent types/prices, cash validation, buying with five Jokers, 100 repeat purchases, run reset, upgraded gold/caramel and locked-candy scoring, guide/hover values and physical clicks at three window sizes. UI reuses existing Aseprite candy sprites, font atlas and skins.

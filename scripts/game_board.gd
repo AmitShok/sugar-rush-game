@@ -36,6 +36,7 @@ func start_round() -> void:
  model.height = rows
  model.setup(GameManager.config,GameManager.jokers,GameManager.run_seed+GameManager.round_index*7919)
  model.locked_color = model.rng.randi_range(0,GameManager.config.candies.size()-1) if GameManager.current_round().curse == "inspector" else -1
+ model.candy_bonuses = GameManager.candy_bonuses
  model.fill_fresh()
  # Persistent obstacles give destruction/revival builds targets in every round.
  for i: int in starting_blockers:
@@ -61,7 +62,7 @@ func sync_tiles(falling: bool) -> void:
    $Tiles.add_child(tile)
    tile.mouse_filter = Control.MOUSE_FILTER_IGNORE
    tile.position = Vector2(model.xy(i))*cell_size-Vector2(0,cell_size*2)
-  tile.configure(i,state,GameManager.config,i in model.isotopes,state.color==model.locked_color)
+  tile.configure(i,state,GameManager.config,i in model.isotopes,state.color==model.locked_color,model.candy_bonus(state.color))
   tile.selected = i == selection
   tile.hinted = false
   tile.scale = Vector2.ONE
@@ -216,5 +217,5 @@ func _get_tooltip(at_position: Vector2) -> String:
  if not model.inside(cell) or model.cells.is_empty(): return ""
  var i: int = model.index(cell)
  var candy: CandyState = model.cells[i]
- var value: int = GameManager.config.candies[candy.color].base_chips if candy.blocker > 0 else candy.chips(GameManager.config)
+ var value: int = candy.value(GameManager.config,model.candy_bonus(candy.color))
  return "%s | %s Candys%s" % [GameManager.config.candies[candy.color].display_name,value," | Include this candy in a match of 3 to break the lock" if model.is_locked_tile(i) else ""]

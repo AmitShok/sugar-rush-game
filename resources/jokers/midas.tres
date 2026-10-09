@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "midas"
 display_name = "Midas Touch"
-description = "Match 5+: turn that color Gold before scoring. Gold gives 80 Candys."
+description = "Match 5+: gild that color. Gold = 80 + type bonus."
 category = "Five"
 price = 12
 strength = 1

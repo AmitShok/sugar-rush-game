@@ -4,7 +4,88 @@ var selected: JokerData
 var selected_owned: bool = false
 var offer_buttons: Dictionary = {}
 var card_buttons: Dictionary = {}
+var upgrades_open: bool = false
+var upgrade_rows: VBoxContainer
+var upgrade_buttons: Array[Button] = []
+var joker_tab: Button
+var upgrade_tab: Button
+func make_tab(text: String, x: float) -> Button:
+ var button: Button=Button.new()
+ button.text=text
+ button.position=Vector2(x,44)
+ button.size=Vector2(290,40)
+ button.add_theme_font_size_override("font_size",24)
+ add_child(button)
+ return button
+func show_upgrades(open: bool) -> void:
+ upgrades_open=open
+ refresh()
+func refresh_upgrades() -> void:
+ $Offers.visible=not upgrades_open
+ upgrade_rows.visible=upgrades_open
+ $Actions/Reroll.visible=not upgrades_open
+ joker_tab.disabled=not upgrades_open
+ upgrade_tab.disabled=upgrades_open
+ if not upgrades_open:
+  $Details/Status.position.y=78
+  $Details/Description.add_theme_font_size_override("font_size",24)
+  return
+ for child: Node in upgrade_rows.get_children():
+  upgrade_rows.remove_child(child)
+  child.queue_free()
+ upgrade_buttons.clear()
+ for color: int in range(GameManager.config.candies.size()):
+  var candy: CandyData=GameManager.config.candies[color]
+  var row: HBoxContainer=HBoxContainer.new()
+  row.custom_minimum_size=Vector2(596,40)
+  row.add_theme_constant_override("separation",6)
+  upgrade_rows.add_child(row)
+  var icon: TextureRect=TextureRect.new()
+  icon.texture=candy.texture
+  icon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
+  icon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+  icon.custom_minimum_size=Vector2(36,36)
+  row.add_child(icon)
+  var label: Label=UIStyle.label(candy.display_name,24)
+  label.custom_minimum_size.x=220
+  label.tooltip_text="Level %s | +%s Candys from upgrades" % [GameManager.candy_level(color),GameManager.candy_bonus(color)]
+  row.add_child(label)
+  var value: Label=UIStyle.label("%s > %s" % [GameManager.candy_value(color),GameManager.candy_value(color)+GameManager.upgrade_gain(color)],24,UIStyle.MINT)
+  value.custom_minimum_size.x=142
+  row.add_child(value)
+  var buy: Button=Button.new()
+  var cost: int=GameManager.upgrade_cost(color)
+  buy.text="Buy %s" % UIStyle.money(cost)
+  buy.custom_minimum_size=Vector2(164,40)
+  buy.add_theme_font_size_override("font_size",24)
+  buy.disabled=GameManager.gummies<cost
+  buy.tooltip_text="+%s Candys each | Level %s > %s\n%s" % [GameManager.upgrade_gain(color),GameManager.candy_level(color),GameManager.candy_level(color)+1,("Need %s more cash" % UIStyle.money(cost-GameManager.gummies) if buy.disabled else "Cash after purchase: "+UIStyle.money(GameManager.gummies-cost))]
+  buy.pressed.connect(purchase_upgrade.bind(color))
+  row.add_child(buy)
+  upgrade_buttons.append(buy)
+ $Details.show()
+ $Details/Name.text="Candy values | This run only"
+ $Details/Description.add_theme_font_size_override("font_size",22)
+ $Details/Description.text="Current > next Candys. Buys stack; no slots.\nGold and caramel get the bonus too."
+ $Details/Status.text="Each type starts at $4; its next price rises by $2 per buy."
+ $Details/Status.position.y=80
+ $Details/Action.hide()
+func purchase_upgrade(color: int) -> void:
+ var cost: int=GameManager.upgrade_cost(color)
+ if GameManager.buy_candy_upgrade(color):
+  $Receipt.text="%s: +%s Candys | Level %s | -%s" % [GameManager.config.candies[color].display_name,GameManager.upgrade_gain(color),GameManager.candy_level(color),UIStyle.money(cost)]
+
 func _ready() -> void:
+ joker_tab=make_tab("Jokers",188)
+ upgrade_tab=make_tab("Candy Upgrades",488)
+ joker_tab.pressed.connect(show_upgrades.bind(false))
+ upgrade_tab.pressed.connect(show_upgrades.bind(true))
+ upgrade_rows=VBoxContainer.new()
+ upgrade_rows.position=Vector2(188,92)
+ upgrade_rows.add_theme_constant_override("separation",3)
+ add_child(upgrade_rows)
+ upgrade_rows.hide()
+ GameManager.shop_opened.connect(func() -> void: upgrades_open=false)
  GameManager.changed.connect(refresh)
  $Actions/Reroll.pressed.connect(reroll)
  $Actions/Continue.pressed.connect(func() -> void: continue_requested.emit())
@@ -20,6 +101,7 @@ func reason(item: JokerData) -> String:
  if GameManager.gummies < item.price: return "Need %s more cash." % UIStyle.money(item.price-GameManager.gummies)
  return "Cash after purchase: %s" % UIStyle.money(GameManager.gummies-item.price)
 func inspect(item: JokerData, owned: bool = false) -> void:
+ if upgrades_open: show_upgrades(false)
  selected = item
  selected_owned = owned
  update_details()
@@ -111,3 +193,4 @@ func refresh() -> void:
   offer_buttons[item.id] = buy
  if selected != null and selected not in GameManager.offers and selected not in GameManager.jokers.equipped: selected = null
  update_details()
+ refresh_upgrades()

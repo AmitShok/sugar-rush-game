@@ -85,3 +85,11 @@ The run now has six antes (18 rounds). Antes 1–3 retain their original targets
 | 6 | 62,000 / 80,000 / 105,000 | 7 / 7 / 9 | Heatwave |
 
 Victory follows the sixth boss. Shops remain available between rounds, including after the first five bosses.
+
+### Candy upgrades (this run only)
+
+In the shop, switch from **Jokers** to **Candy Upgrades**. All six types are always available. Each row shows the current value, next value and buy price; hovering shows its level and the cash remaining after purchase. A purchase receipt confirms the new level. Your cash stays visible in the sidebar.
+
+Upgrades have no slot or purchase-count limit. Each purchase adds half that type's original value, rounded up: +5 / +7 / +10 / +15 / +23 / +35 Candys. Prices start at $4 per type and rise by $2 for each purchase of that type. Different types have independent prices. Bonuses also add to gold and caramel coating values and apply to locked candies when broken, before Mult. Upgrades do not change spawn odds.
+
+Values persist through shops, rerolls and rounds, then reset with a new run. The Candy Guide and board hover text show the current values. No permanent resource data or preferences are changed.

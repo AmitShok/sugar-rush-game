@@ -10,6 +10,9 @@ var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var rules: JokerManager
 var config: RunConfig
 var locked_color: int = -1
+var candy_bonuses: Array[int] = []
+func candy_bonus(color: int) -> int:
+ return candy_bonuses[color] if color >= 0 and color < candy_bonuses.size() else 0
 func setup(run_config: RunConfig, joker_rules: JokerManager, seed_value: int) -> void:
  config = run_config
  rules = joker_rules
@@ -265,11 +268,11 @@ func expand(group: Dictionary) -> Dictionary:
  for i: int in ids:
   var value: int = 0
   if cells[i] != null:
-   value = cells[i].chips(config)
+   value = cells[i].chips(config,candy_bonus(cells[i].color))
    if is_locked_tile(i):
     # Blockers hide a real candy; award its value as well as the breaking bonus.
     if cells[i].blocker > 0:
-     value = config.gold_chips if cells[i].coating == 2 else (config.caramel_chips if cells[i].coating == 1 else config.candies[cells[i].color].base_chips)
+     value = cells[i].value(config,candy_bonus(cells[i].color))
     value += break_bonus
     broken.append(i)
   contributions[i] = value

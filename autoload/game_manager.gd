@@ -24,6 +24,8 @@ var motion: bool = true
 var sound: bool = true
 var offers: Array[JokerData] = []
 var reroll_cost: int = 3
+var candy_levels: Array[int] = []
+var candy_bonuses: Array[int] = []
 func _ready() -> void:
  jokers = preload("res://scenes/JokerManager.tscn").instantiate() as JokerManager
  jokers.name = "JokerManager"
@@ -38,6 +40,25 @@ func save_preferences() -> void:
  prefs.set_value("settings","motion",motion)
  prefs.set_value("settings","sound",sound)
  prefs.save("user://preferences.cfg")
+func candy_level(color: int) -> int:
+ return candy_levels[color] if color >= 0 and color < candy_levels.size() else 0
+func candy_bonus(color: int) -> int:
+ return candy_bonuses[color] if color >= 0 and color < candy_bonuses.size() else 0
+func candy_value(color: int) -> int:
+ return config.candies[color].base_chips+candy_bonus(color)
+func upgrade_gain(color: int) -> int:
+ return ceili(config.candies[color].base_chips*0.5)
+func upgrade_cost(color: int) -> int:
+ return 4+candy_level(color)*2
+func buy_candy_upgrade(color: int) -> bool:
+ if state != "shop" or color < 0 or color >= config.candies.size(): return false
+ var cost: int=upgrade_cost(color)
+ if gummies < cost: return false
+ gummies -= cost
+ candy_levels[color] += 1
+ candy_bonuses[color] += upgrade_gain(color)
+ changed.emit()
+ return true
 func current_round() -> RoundData:
  return config.rounds[round_index]
 func start_run(seed_value: int = 0) -> void:
@@ -46,6 +67,10 @@ func start_run(seed_value: int = 0) -> void:
  round_index = 0
  gummies = config.starting_gummies
  jokers.equipped.clear()
+ candy_levels.resize(config.candies.size())
+ candy_levels.fill(0)
+ candy_bonuses.resize(config.candies.size())
+ candy_bonuses.fill(0)
  start_round()
 func start_round() -> void:
  score = 0

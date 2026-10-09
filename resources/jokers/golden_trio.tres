@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "golden_trio"
 display_name = "Golden Trio"
-description = "Match exactly 3: turn those 3 gold, worth 80 Candys each."
+description = "Match exactly 3: gild the trio. Gold = 80 + type bonus."
 category = "Three"
 price = 11
 icon = ExtResource("2")
