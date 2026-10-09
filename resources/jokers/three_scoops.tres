@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="JokerData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/data/joker_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/exported/three_scoops.png" id="2"]
+[resource]
+script = ExtResource("1")
+id = "three_scoops"
+display_name = "Three Scoops"
+description = "Match exactly 3: add 30 Candys before Mult."
+category = "Three"
+price = 5
+icon = ExtResource("2")

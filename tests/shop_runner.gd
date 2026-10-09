@@ -56,7 +56,7 @@ func run_tests() -> void:
   shop.inspect(card)
   await frames()
   descriptions_fit = descriptions_fit and shop.get_node("Details/Description").get_line_count() <= 2
- check(descriptions_fit,"All 22 descriptions fit the two-line detail area")
+ check(descriptions_fit,"All Joker descriptions fit the two-line detail area")
  check(main.get_node("Play/UI_Hud").is_visible_in_tree(),"Cash sidebar remains visible in the shop")
  check(main.get_node("Play/JokerInventory").is_visible_in_tree(),"Owned Jokers remain visible in the shop")
  check(not main.get_node("Play/GameBoard").is_visible_in_tree(),"Board is hidden while shopping")

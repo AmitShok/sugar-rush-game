@@ -88,3 +88,10 @@ Godot still performs layout, hit testing, text composition and animation; these 
 | `ui_wild.aseprite` | `ui_wild.png` | 56 x 56 |
 
 Six new Supply card illustrations and the transparent-center blocker frame were created in Aseprite with `tools/create_supply_art.lua`.
+
+Four exact-three Joker cards are drawn and exported by `tools/create_three_art.lua` using Aseprite. Each 70 x 94 card retains separate stock, illustration and lettering layers:
+
+- `assets/source/aseprite/pop_rock.aseprite` → `assets/exported/pop_rock.png`
+- `assets/source/aseprite/sweet_tooth.aseprite` → `assets/exported/sweet_tooth.png`
+- `assets/source/aseprite/golden_trio.aseprite` → `assets/exported/golden_trio.png`
+- `assets/source/aseprite/three_scoops.aseprite` → `assets/exported/three_scoops.png`

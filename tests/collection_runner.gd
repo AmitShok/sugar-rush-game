@@ -33,7 +33,7 @@ func run_tests() -> void:
  await capture("v7_title")
  await click(main.get_node("Menu/Layout/Collection"))
  var collection: Control=main.get_node("Collection")
- check(collection.visible and collection.page_count()==4,"Menu opens a four-page collection")
+ check(collection.visible and collection.page_count()==ceili(GameManager.config.jokers.size()/6.0),"Menu opens all collection pages")
  check(collection.previous.disabled and not collection.next.disabled,"First-page navigation boundaries are correct")
  var seen: Dictionary={}
  for page: int in range(collection.page_count()):
@@ -44,10 +44,11 @@ func run_tests() -> void:
    check(collection.portrait.texture==item.icon and collection.description.text==item.description and collection.title.text==item.display_name,"Art and effect match the resource: "+item.display_name)
    check(collection.description.get_minimum_size().y<=150 and collection.title.get_minimum_size().y<=72,"Details fit: "+item.display_name)
   if page==0: await capture("v7_collection")
+  if page==collection.page_count()-1: await capture("three_collection")
   if page<collection.page_count()-1: await click(collection.next)
- check(seen.size()==22 and collection.next.disabled,"Every Joker, including all six Supply Jokers, is reachable")
+ check(seen.size()==GameManager.config.jokers.size() and collection.next.disabled,"Every Joker, including all six Supply Jokers, is reachable")
  await click(collection.previous)
- check(collection.page==2,"Previous returns to the preceding page")
+ check(collection.page==collection.page_count()-2,"Previous returns to the preceding page")
  await click(collection.back)
  check(not collection.visible and GameManager.state=="menu","Back closes collection without starting a run")
  for dimensions: Vector2i in [Vector2i(800,500),Vector2i(720,960),Vector2i(1600,700)]:

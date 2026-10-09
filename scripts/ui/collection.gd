@@ -126,6 +126,6 @@ func inspect(item: JokerData) -> void:
  selected=item
  portrait.texture=item.icon
  title.text=item.display_name
- var type: String={"Four":"4+ match","Five":"5+ match"}.get(item.category,item.category)
+ var type: String={"Three":"Exactly 3","Four":"4+ match","Five":"5+ match"}.get(item.category,item.category)
  category.text="%s | Shop price %s" % [type,UIStyle.money(item.price)]
  description.text=item.description

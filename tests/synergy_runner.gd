@@ -35,7 +35,7 @@ func run_tests() -> void:
    if a == b: continue
    rules.equipped.clear()
    pairs_ok = rules.add(a) and rules.add(b) and pairs_ok
- check(pairs_ok,"All 231 distinct Joker pairs can be equipped in either order")
+ check(pairs_ok,"All distinct Joker pairs can be equipped in either order")
  rules.equipped.clear()
  for id: String in ["paintball","gravity","sledgehammer","ricochet","labyrinth"]: rules.add(item(id))
  check(rules.equipped.size()==5 and not rules.add(item("midas")),"A full four-match build fits five slots; capacity still applies")
@@ -112,13 +112,13 @@ func run_tests() -> void:
  main.get_node("Pause/Layout/Abandon").pressed.emit()
  check(not get_tree().paused and GameManager.state=="menu" and main.get_node("Menu").visible,"Quit to Title unpauses and ends the run")
  # Real scene resolver with each stacked build, including cascades.
- for build: Array in [["paintball","gravity","sledgehammer","ricochet","labyrinth"],["nuclear","midas","prism","necro","gravity"]]:
+ for build: Array in [["paintball","gravity","sledgehammer","ricochet","labyrinth"],["nuclear","midas","prism","necro","gravity"],["pop_rock","sweet_tooth","golden_trio","three_scoops"]]:
   main.start()
   GameManager.motion=false
   for id: String in build: GameManager.jokers.add(item(id))
   board.model=fixture(GameManager.jokers)
   board.sync_tiles(false)
-  var groups: Array[Dictionary]=[group(4 if build[0]=="paintball" else 5)]
+  var groups: Array[Dictionary]=[group(3 if build[0]=="pop_rock" else (4 if build[0]=="paintball" else 5))]
   await board.resolve(groups)
   check(null not in board.model.cells and board.model.matches().is_empty() and GameManager.score>0,"Stacked build resolves and refills through the live board: "+str(build))
  print("RESULT: %s synergy/economy/pause checks, %s failures" % [checks,failures])

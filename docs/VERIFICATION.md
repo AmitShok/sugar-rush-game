@@ -67,3 +67,7 @@ The reported behavior was reproduced as a rule mismatch: the previous implementa
 ## Sugar Rush v0.7 — Collection
 
 58 collection/name checks passed: title/HUD/application branding, all 22 artwork/effect bindings, every description fitting its panel, all four pages, navigation boundaries, Back/Escape, and physical clicks after resizing to landscape, portrait and ultrawide windows. Reviewed v7_title.png and v7_collection.png. Existing preferences retain the previous user-data directory across the rename. The collection reuses the existing Aseprite assets; it does not introduce code-drawn art.
+
+## Exact-three Jokers
+
+Godot 4.7.2, Dummy audio, `--test`: ThreeRunner 12, TestRunner 51, EffectsRunner 22, SynergyRunner 21, ShopRunner 30, CollectionRunner 66, LockedSwapRunner 46 and RouteRunner 51 checks passed (299 checks). CollectionRunner also passed all 66 checks with the OpenGL renderer. Visually inspected each new Aseprite export and the rendered final collection page. Coverage includes stacked live-board resolution, clipping the 3x3 blast, unique scoring, gold and lock bonuses, preserving larger-match effects, excluding synthetic wild clears, shop text fit and collection pagination.

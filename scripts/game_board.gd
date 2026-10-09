@@ -156,7 +156,7 @@ func resolve(initial: Array[Dictionary]) -> void:
     for i: int in effect.cells:
      if i not in group.cells:
       create_tween().tween_property(tiles[i],"position",point-Vector2.ONE*28,0.15).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_IN)
-   if group.length >= 4:
+   if group.length >= 4 or not effect.effects.is_empty():
     special_triggered.emit(effect.effect if not effect.effect.is_empty() else "sugar blast",point)
    if GameManager.sound and not "--test" in OS.get_cmdline_user_args():
     audio.pitch_scale = minf(1.0+cascade*0.12,2.0)

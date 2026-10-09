@@ -17,11 +17,11 @@ func run_checks() -> void:
  GameManager.motion=false
  var board: GameBoard=main.get_node("Play/GameBoard")
  for item: JokerData in GameManager.config.jokers:
-  if item.category not in ["Four","Five"]: continue
+  if item.category not in ["Three","Four","Five"]: continue
   GameManager.jokers.equipped.clear()
   GameManager.jokers.add(item)
   GameManager.start_round()
-  var size: int=4 if item.category=="Four" else 5
+  var size: int=3 if item.category=="Three" else (4 if item.category=="Four" else 5)
   var ids: Array[int]=[]
   for i: int in range(size):
    board.model.cells[i].color=0

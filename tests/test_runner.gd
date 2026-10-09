@@ -46,7 +46,7 @@ func _ready() -> void:
  call_deferred("run_tests")
 
 func run_tests() -> void:
- check(cfg.candies.size()==6 and cfg.jokers.size()==22 and cfg.rounds.size()==9,"All content resources load")
+ check(cfg.candies.size()==6 and cfg.jokers.size()==26 and cfg.rounds.size()==9,"All content resources load")
  fixture([0,1,2])
  check(model.matches().size()==1,"Ordinary horizontal match")
  fixture([0,8,16])

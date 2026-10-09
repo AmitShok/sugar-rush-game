@@ -1,6 +1,6 @@
 # Sugar Rush — v0.7
 
-A playable, local Godot 4 game: tactical match-3, a Candys × Mult scoring engine, 22 rule-changing Jokers, and nine batches across three antes. Original pixel art is supplied as layered Aseprite sources.
+A playable, local Godot 4 game: tactical match-3, a Candys × Mult scoring engine, 26 rule-changing Jokers, and nine batches across three antes. Original pixel art is supplied as layered Aseprite sources.
 
 ## Resize and art revision
 
@@ -10,7 +10,7 @@ The art direction now uses original cream-stock Joker cards, new 24-pixel candy 
 
 ## Collection
 
-Choose **Collection** on the title menu to browse all 22 Jokers. Select a card to see its artwork, effect, category and shop price. Previous/Next switches pages; Back to Menu or Esc closes it. All cards are visible immediately. Browsing does not change a run or spend cash.
+Choose **Collection** on the title menu to browse all 26 Jokers. Select a card to see its artwork, effect, category and shop price. Previous/Next switches pages; Back to Menu or Esc closes it. All cards are visible immediately. Browsing does not change a run or spend cash.
 
 ## Play
 
@@ -46,7 +46,7 @@ Match three candies in a line that includes the candy inside a blocked or Inspec
 
 ## Included
 
-- The original 16 Jokers plus six Supply Jokers, with resource definitions, unique Aseprite cards, and executable effects.
+- The original 16 Jokers, six Supply Jokers and four exact-three Jokers, with resource definitions, unique Aseprite cards, and executable effects.
 - Diagonal and wrapping matches; Labyrinth minimum-length rules; merged L/T shapes.
 - Stacking 4+ and 5+ match effects in any combination; five total Joker slots; purchase, sale, and reroll economy.
 - Inspector color locks and Heatwave aging; blocker destruction, revival, coated candy, Wild Prisms, and persistent isotope squares.
@@ -62,3 +62,14 @@ See [the visual asset inventory](docs/ASSETS.md) for the Aseprite source of ever
 This is a complete first playable implementation of the supplied brief. Balance and difficulty are initial tuning values, not the result of a player study. Active runs are session-only; only sound/motion preferences persist. Windows release binaries are not included; the project and local launcher use your installed Godot editor.
 
 The title screen and game window show **Sugar Rush | v0.7 — Joker Collection**. An already-open older game must be closed or replaced by this new window to load the corrected scripts.
+
+### Exact-three builds
+
+Four new Jokers trigger on a connected match of exactly three candies, including cascades, diagonal matches and wrapped matches. They all stack within the usual five slots:
+
+- **Pop Rock ($9):** clears a 3x3 area centered on the middle candy; board edges clip the blast. Destroyed locks award their normal breaking bonus.
+- **Sweet Tooth ($7):** clears up to two additional candies of the matched color, choosing the nearest remaining candidates after the blast.
+- **Golden Trio ($11):** coats the three matched candies in gold before scoring, making each worth 80 Candys.
+- **Three Scoops ($5):** adds 30 Candys before Mult.
+
+Gold applies before destruction. Each cleared candy scores once, even where effects overlap. These effects do not fire on larger matches, merged L/T shapes or synthetic wild-swap clears. Labyrinth still requires matches of four or more, so it prevents exact-three triggers. Cash rewards remain independent of score.

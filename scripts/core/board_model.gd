@@ -167,7 +167,7 @@ func wild_groups(a: int,b: int) -> Array[Dictionary]:
   for i: int in range(cells.size()):
    if ids.size() >= 3: break
    if same(i,color) and i not in ids: ids.append(i)
-  if not ids.is_empty(): result.append({"cells":ids,"color":color,"length":3,"diagonal":false,"shape":false,"axis":Vector2i.RIGHT})
+  if not ids.is_empty(): result.append({"cells":ids,"color":color,"length":3,"diagonal":false,"shape":false,"axis":Vector2i.RIGHT,"synthetic":true})
  return result
 func expand(group: Dictionary) -> Dictionary:
  var ids: Array[int] = []
@@ -178,17 +178,35 @@ func expand(group: Dictionary) -> Dictionary:
  var bonus: int = 0
  var wild: int = -1
  var effects: Array[String] = []
+ if group.cells.size() == 3 and not group.get("synthetic",false): effects.append_array(rules.modifiers("Three"))
  if group.length >= 4: effects.append_array(rules.modifiers("Four"))
  if group.length >= 5: effects.append_array(rules.modifiers("Five"))
  if effects.is_empty():
   if group.length == 4: effects.append("line")
   elif group.length >= 5: effects.append("color")
  # Repainting happens first so attraction and gilding can use the new color.
- var order: Array[String] = ["paintball","gravity","sledgehammer","ricochet","necro","midas","nuclear","prism","line","color"]
+ var order: Array[String] = ["golden_trio","pop_rock","sweet_tooth","three_scoops","paintball","gravity","sledgehammer","ricochet","necro","midas","nuclear","prism","line","color"]
  for active: String in order:
   if active not in effects: continue
   effect = active
   match effect:
+   "golden_trio":
+    for i: int in group.cells:
+     if cells[i] != null: cells[i].coating = 2
+   "pop_rock":
+    # The middle candy anchors the blast, including diagonal and wrapped runs.
+    var center: Vector2i = xy(group.cells[1])
+    for dy: int in range(-1,2):
+     for dx: int in range(-1,2):
+      var p: Vector2i = center+Vector2i(dx,dy)
+      if inside(p) and index(p) not in ids: ids.append(index(p))
+   "sweet_tooth":
+    var candidates: Array[int] = []
+    for i: int in range(cells.size()):
+     if cells[i] != null and cells[i].color == color and cells[i].blocker == 0 and i not in ids: candidates.append(i)
+    candidates.sort_custom(func(a: int,b: int) -> bool: return xy(a).distance_squared_to(xy(origin)) < xy(b).distance_squared_to(xy(origin)))
+    for i: int in range(mini(2,candidates.size())): ids.append(candidates[i])
+   "three_scoops": bonus += 30
    "gravity":
     var candidates: Array[int] = []
     for i: int in range(cells.size()):
