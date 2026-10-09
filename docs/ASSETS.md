@@ -97,3 +97,5 @@ Four exact-three Joker cards are drawn and exported by `tools/create_three_art.l
 - `assets/source/aseprite/three_scoops.aseprite` → `assets/exported/three_scoops.png`
 
 `ui_roulette.aseprite` → `ui_roulette.png`: transparent 56 x 56 tile overlay with a small roulette wheel in the upper-right corner. Created and exported in Aseprite by `tools/create_roulette_art.lua`; separate rim, pockets and hub layers.
+
+`readable_font_atlas.aseprite` → `readable_font_atlas.png`: 768 x 256 body-text glyph atlas based on the bundled OFL Pixelify Sans Medium. `tools/create_readable_font.lua` creates the native master and exports its PNG and BMFont metrics. Large headings retain m6x11. See `assets/fonts/CREDITS.md`.

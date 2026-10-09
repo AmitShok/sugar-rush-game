@@ -1,10 +1,11 @@
 class_name UIStyle
 extends RefCounted
 const INK: Color = Color("17262b")
-const CREAM: Color = Color("fff3d4")
-const MUTED: Color = Color("a6bab5")
+const CREAM: Color = Color("fff8e7")
+const MUTED: Color = Color("c4d0cc")
 const PINK: Color = Color("ef6355")
 const MINT: Color = Color("f5b957")
+const BODY_FONT: Font = preload("res://assets/exported/readable_font.fnt")
 const FONT: Font = preload("res://assets/exported/ui_font.fnt")
 static var textures: Dictionary = {}
 static func texture(name: String) -> Texture2D:
@@ -33,7 +34,7 @@ static func box(color: Color, _border: Color = Color("677b80"), _width: int = 2)
  return skin(name)
 static func apply(root: Control) -> void:
  var theme: Theme = Theme.new()
- theme.default_font = FONT
+ theme.default_font = BODY_FONT
  theme.default_font_size = 32
  theme.set_color("font_color","Label",CREAM)
  theme.set_color("font_shadow_color","Label",Color("132326"))
@@ -42,7 +43,7 @@ static func apply(root: Control) -> void:
  theme.set_color("font_color","Button",CREAM)
  theme.set_color("font_hover_color","Button",Color.WHITE)
  theme.set_color("font_shadow_color","Button",Color("3c2420"))
- theme.set_constant("shadow_offset_y","Button",1)
+ theme.set_constant("shadow_offset_y","Button",0)
  theme.set_stylebox("panel","PanelContainer",box(Color("344951"),Color("65797b"),3))
  theme.set_stylebox("normal","Button",box(Color("ba493e"),Color("f07859"),2))
  theme.set_stylebox("hover","Button",skin("ui_button_hover"))
@@ -60,8 +61,8 @@ static func apply(root: Control) -> void:
  theme.set_stylebox("background","ProgressBar",box(Color("172b30"),Color("536564")))
  theme.set_stylebox("fill","ProgressBar",box(Color("f5b957"),Color("f5b957"),0))
  theme.set_stylebox("normal","LineEdit",box(Color("20353b"),Color("84978e")))
- theme.set_font("normal_font","RichTextLabel",FONT)
- theme.set_font("bold_font","RichTextLabel",FONT)
+ theme.set_font("normal_font","RichTextLabel",BODY_FONT)
+ theme.set_font("bold_font","RichTextLabel",BODY_FONT)
  for type: String in ["CheckButton","CheckBox"]:
   for state: String in ["checked","checked_disabled"]: theme.set_icon(state,type,texture("ui_toggle_on"))
   for state: String in ["unchecked","unchecked_disabled"]: theme.set_icon(state,type,texture("ui_toggle_off"))
@@ -71,10 +72,15 @@ static func apply(root: Control) -> void:
   theme.set_icon(icon_name,"VScrollBar",texture("ui_arrow"))
  theme.set_stylebox("panel","TooltipPanel",skin("ui_inset"))
  root.theme = theme
+ preserve_headings(root)
+static func preserve_headings(node: Node) -> void:
+ if node is Label and node.get_theme_font_size("font_size") >= 32:
+  node.add_theme_font_override("font",FONT)
+ for child: Node in node.get_children(): preserve_headings(child)
 static func label(text: String,size: int = 32,color: Color = CREAM) -> Label:
  var node: Label = Label.new()
  node.text = text
- node.add_theme_font_override("font",FONT)
+ node.add_theme_font_override("font",FONT if size >= 32 else BODY_FONT)
  node.add_theme_font_size_override("font_size",size)
  node.add_theme_color_override("font_color",color)
  return node

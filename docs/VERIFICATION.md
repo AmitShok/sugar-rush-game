@@ -83,3 +83,7 @@ Godot 4.7.2 with Dummy audio: UpgradeRunner 21, ShopRunner 30, RarityRunner 38, 
 ## Roulette target visibility
 
 RouletteUIRunner passed 32 checks with the OpenGL renderer: every selected-type candy is marked, including locked/coated tiles; markers follow swaps/refills, remain after matching, reset between rounds and disappear without the Joker. The actual custom tooltip names the target and reports penalty status. HUD bounds checked for all six target types across normal, Inspector and Heatwave rounds. Rendered tooltip/board visually inspected. EffectsRunner passed 22 checks and RouteRunner passed 150 checks, including Aseprite source provenance.
+
+## Readability pass
+
+All 368 checks passed using Godot 4.7.2 OpenGL with Dummy audio: ShopRunner 30, UpgradeRunner 21, RouletteUIRunner 32, CollectionRunner 66, RouteRunner 150, RarityRunner 38 and ResizeRunner 31. Visually inspected the rendered shop, upgrade page, collection and Roulette tooltip. Coverage includes two-line shop descriptions, all collection cards, late-ante panels, boss/roulette HUD text and click alignment across window sizes. Body text uses the new Aseprite-exported Pixelify Sans Medium atlas with expanded word spaces; major headings and scores keep the original font.
