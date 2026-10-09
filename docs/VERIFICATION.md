@@ -71,3 +71,7 @@ The reported behavior was reproduced as a rule mismatch: the previous implementa
 ## Exact-three Jokers
 
 Godot 4.7.2, Dummy audio, `--test`: ThreeRunner 12, TestRunner 51, EffectsRunner 22, SynergyRunner 21, ShopRunner 30, CollectionRunner 66, LockedSwapRunner 46 and RouteRunner 51 checks passed (299 checks). CollectionRunner also passed all 66 checks with the OpenGL renderer. Visually inspected each new Aseprite export and the rendered final collection page. Coverage includes stacked live-board resolution, clipping the 3x3 blast, unique scoring, gold and lock bonuses, preserving larger-match effects, excluding synthetic wild clears, shop text fit and collection pagination.
+
+## Six-ante campaign
+
+Godot 4.7.2 with Dummy audio: 150 route/art checks, 51 core/gameplay checks and 21 synergy/economy checks passed. The route suite also passed 150 checks with the OpenGL renderer; the final ante preview was visually inspected. Tests walk all 18 rounds, verify boss previews and six-ante counters beyond round nine, preserve shop/back navigation and confirm victory only after round 18. These checks validate progression and scoring rules; the new difficulty curve is an initial balance pass, not a guarantee of equal win rates across Joker builds.

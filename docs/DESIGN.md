@@ -24,7 +24,7 @@ After all cascades, Heatwave ages surviving candies. Swapped, newly spawned, and
 
 A round settles as soon as its adjusted score reaches the quota, or when moves run out. If Roulette's selected color was never matched, half the score is deducted before checking the quota. Clearing that color in an actual match group satisfies the requirement; merely hitting it as collateral does not.
 
-Score never converts to cash. Start with $4; Small / Big / Boss batches pay $5 / $7 / $10. Add $1 per three unused moves, capped at $3. Across nine wins the maximum income is $93 plus starting cash, regardless of score. Every shop offers four distinct unequipped Jokers when available. Prices range from $1 to $13. Selling pays half the purchase price, rounded down. Rerolls cost $3, then $5, $7, etc. within that shop.
+Score never converts to cash. Start with $4; Small / Big / Boss batches pay $5 / $7 / $10. Add $1 per three unused moves, capped at $3. Across eighteen wins the maximum income is $186 plus starting cash, regardless of score. Every shop offers four distinct unequipped Jokers when available. Prices range from $1 to $13. Selling pays half the purchase price, rounded down. Rerolls cost $3, then $5, $7, etc. within that shop.
 
 ## Effects and board state
 

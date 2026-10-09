@@ -14,7 +14,7 @@ func refresh() -> void:
  for key: String in ["Goal","ScoreLabel","Score","Progress","Math","Equation","Moves","Curse"]:
   $Layout.get_node(key).visible = not shopping
  size.y = 360 if shopping else 664
- $Layout/Ante.text = "ANTE %02d   /   %02d" % [gm.round_index/3+1,3]
+ $Layout/Ante.text = "ANTE %02d   /   %02d" % [gm.round_index/3+1,gm.config.rounds.size()/3]
  $Layout/Blind.text = gm.current_round().display_name
  if gm.current_round().curse == "inspector": $Layout/Blind.text = "The Inspector"
  if shopping: $Layout/Blind.text = "SHOP"
@@ -32,7 +32,7 @@ func refresh() -> void:
  $Layout/Math/Mult.text = str(int(gm.last_mult)) if is_equal_approx(gm.last_mult,roundf(gm.last_mult)) else str(snappedf(gm.last_mult,0.1))
  $Layout/Moves.text = "%02d   MOVES LEFT" % gm.moves
  $Layout/Wallet.text = UIStyle.money(gm.gummies)
- var preview_index: int=mini(gm.round_index+(1 if gm.state=="shop" else 0),8)
+ var preview_index: int=mini(gm.round_index+(1 if gm.state=="shop" else 0),gm.config.rounds.size()-1)
  var gap: int=2-preview_index%3
  var boss: String="Inspector" if gm.config.rounds[preview_index/3*3+2].curse=="inspector" else "Heatwave"
  $Layout/Route.text = "Small > Big > BOSS\n"+("BOSS ROUND: "+boss if gap==0 else "%s %s until %s" % [gap,"clear" if gap==1 else "clears",boss])

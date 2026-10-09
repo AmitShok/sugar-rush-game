@@ -46,7 +46,7 @@ func _ready() -> void:
  call_deferred("run_tests")
 
 func run_tests() -> void:
- check(cfg.candies.size()==6 and cfg.jokers.size()==26 and cfg.rounds.size()==9,"All content resources load")
+ check(cfg.candies.size()==6 and cfg.jokers.size()==26 and cfg.rounds.size()==18,"All content resources load")
  fixture([0,1,2])
  check(model.matches().size()==1,"Ordinary horizontal match")
  fixture([0,8,16])
@@ -222,11 +222,11 @@ func integration() -> void:
  check(GameManager.score==400 and GameManager.state=="over","Uncleared poison halves score before quota evaluation")
  await capture("game_over")
  GameManager.start_run(38038)
- for i: int in range(9):
+ for i: int in range(cfg.rounds.size()):
   GameManager.score=GameManager.current_round().quota
   GameManager.settle_round()
-  if i<8: GameManager.next_round()
- check(GameManager.round_index==8 and GameManager.state=="over","Nine-batch campaign reaches victory")
+  if i<cfg.rounds.size()-1: GameManager.next_round()
+ check(GameManager.round_index==cfg.rounds.size()-1 and GameManager.state=="over","Eighteen-batch campaign reaches victory")
  await capture("victory")
  main.queue_free()
  await get_tree().process_frame

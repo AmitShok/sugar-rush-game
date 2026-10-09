@@ -1,6 +1,6 @@
 # Sugar Rush — v0.7
 
-A playable, local Godot 4 game: tactical match-3, a Candys × Mult scoring engine, 26 rule-changing Jokers, and nine batches across three antes. Original pixel art is supplied as layered Aseprite sources.
+A playable, local Godot 4 game: tactical match-3, a Candys × Mult scoring engine, 26 rule-changing Jokers, and eighteen batches across six antes. Original pixel art is supplied as layered Aseprite sources.
 
 ## Resize and art revision
 
@@ -73,3 +73,15 @@ Four new Jokers trigger on a connected match of exactly three candies, including
 - **Three Scoops ($5):** adds 30 Candys before Mult.
 
 Gold applies before destruction. Each cleared candy scores once, even where effects overlap. These effects do not fire on larger matches, merged L/T shapes or synthetic wild-swap clears. Labyrinth still requires matches of four or more, so it prevents exact-three triggers. Cash rewards remain independent of score.
+
+### Extended campaign
+
+The run now has six antes (18 rounds). Antes 1–3 retain their original targets and moves. Later antes require stronger Joker combinations; cash rewards still use the same fixed payouts.
+
+| Ante | Small / Big / Boss targets | Small / Big / Boss moves | Boss |
+| --- | --- | --- | --- |
+| 4 | 12,000 / 16,000 / 21,000 | 9 / 9 / 11 | Heatwave |
+| 5 | 28,000 / 37,000 / 48,000 | 8 / 8 / 10 | Inspector |
+| 6 | 62,000 / 80,000 / 105,000 | 7 / 7 / 9 | Heatwave |
+
+Victory follows the sixth boss. Shops remain available between rounds, including after the first five bosses.

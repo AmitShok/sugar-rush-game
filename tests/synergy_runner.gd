@@ -75,14 +75,14 @@ func run_tests() -> void:
  check(payout==7 and GameManager.last_award==payout and GameManager.gummies==11,"One million score pays the same $7 as exact quota with six moves left")
  var bounded: bool=true
  var total: int=0
- for round_id: int in range(9):
+ for round_id: int in range(GameManager.config.rounds.size()):
   GameManager.round_index=round_id
   GameManager.moves=100
   GameManager.score=1000000
   GameManager.settle_round()
   bounded = bounded and GameManager.last_award==[8,10,13][round_id%3]
   total += GameManager.last_award
- check(bounded and total==93,"Nine-round cash is bounded at $93 plus $4 starting cash")
+ check(bounded and total==186,"Eighteen-round cash is bounded at $186 plus $4 starting cash")
  var main: Control=preload("res://scenes/MainGame.tscn").instantiate()
  add_child(main)
  await get_tree().process_frame
