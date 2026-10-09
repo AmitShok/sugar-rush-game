@@ -95,3 +95,7 @@ Upgrades have no slot or purchase-count limit. Each purchase adds half that type
 Values persist through shops, rerolls and rounds, then reset with a new run. The Candy Guide and board hover text show the current values. No permanent resource data or preferences are changed.
 
 Roulette Licorice marks all candies of its chosen type with a small roulette wheel. Hover the owned Joker to see this round's type and whether its penalty has been avoided. The sidebar repeats the target and status. Markers remain after matching because x2 Mult stays active for the round.
+
+### CRT and audio options
+
+Pause → Options includes a Heavy CRT toggle and a 0–100% volume slider. The CRT treatment is enabled by default, with scanlines, RGB phosphor mask, color fringing, glow and vignette; it preserves input geometry. Motion, sound, CRT and volume save immediately to `user://preferences.cfg` and reload at startup. Existing settings files retain their previous choices; CRT defaults on and volume defaults to 80%. Pop sounds vary by ±10% pitch around the cascade pitch, using an independent random generator so seeded gameplay remains reproducible.

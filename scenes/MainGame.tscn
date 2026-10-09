@@ -82,23 +82,26 @@ text = "Click a candy, then a neighbor.\n\nH: free hint\nESC: pause"
 autowrap_mode = 2
 theme_override_font_sizes/font_size = 24
 [node name="Hint" type="Button" parent="Play"]
-offset_left = 440
+offset_left = 452
 offset_top = 670
-offset_right = 584
+offset_right = 592
 offset_bottom = 712
 text = "Hint"
+theme_override_font_sizes/font_size = 24
 [node name="Rules" type="Button" parent="Play"]
-offset_left = 600
+offset_left = 604
 offset_top = 670
-offset_right = 744
+offset_right = 748
 offset_bottom = 712
 text = "Run info"
+theme_override_font_sizes/font_size = 24
 [node name="MenuButton" type="Button" parent="Play"]
 offset_left = 760
 offset_top = 670
-offset_right = 904
+offset_right = 900
 offset_bottom = 712
 text = "Pause"
+theme_override_font_sizes/font_size = 24
 [node name="Shop" parent="." instance=ExtResource("6")]
 process_mode = 1
 z_index = 100
@@ -161,7 +164,7 @@ text = "Quit"
 custom_minimum_size = Vector2(0,42)
 [node name="Footer" type="Label" parent="Menu/Layout"]
 layout_mode = 2
-text = "v0.7 | Sugar Rush"
+text = "v0.13 | Sugar Rush"
 theme_override_font_sizes/font_size = 24
 [node name="PauseShade" type="TextureRect" parent="."]
 z_index = 199
@@ -204,6 +207,26 @@ visible = false
 layout_mode = 2
 text = "Sound effects"
 button_pressed = true
+[node name="CRT" type="CheckButton" parent="Pause/Layout"]
+visible = false
+layout_mode = 2
+text = "Heavy CRT effect"
+button_pressed = true
+[node name="Volume" type="VBoxContainer" parent="Pause/Layout"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 4
+[node name="Label" type="Label" parent="Pause/Layout/Volume"]
+layout_mode = 2
+text = "Volume: 80%"
+theme_override_font_sizes/font_size = 24
+[node name="Slider" type="HSlider" parent="Pause/Layout/Volume"]
+layout_mode = 2
+custom_minimum_size = Vector2(0,32)
+min_value = 0.0
+max_value = 100.0
+step = 1.0
+value = 80.0
 [node name="Back" type="Button" parent="Pause/Layout"]
 visible = false
 layout_mode = 2

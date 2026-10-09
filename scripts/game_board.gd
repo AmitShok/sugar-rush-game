@@ -160,7 +160,7 @@ func resolve(initial: Array[Dictionary]) -> void:
    if group.length >= 4 or not effect.effects.is_empty():
     special_triggered.emit(effect.effect if not effect.effect.is_empty() else "sugar blast",point)
    if GameManager.sound and not "--test" in OS.get_cmdline_user_args():
-    audio.pitch_scale = minf(1.0+cascade*0.12,2.0)
+    audio.pitch_scale = GameManager.next_sound_pitch(cascade)
     audio.play()
   if GameManager.motion:
    var tween: Tween = create_tween().set_parallel()

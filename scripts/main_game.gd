@@ -6,18 +6,32 @@ var collection: Control
 var candy_guide: Control
 var route: Control
 var route_new_run: bool = true
+var crt_layer: CanvasLayer
 var toast_tween: Tween
 func _ready() -> void:
  # A fixed logical canvas keeps drawing and native GUI input in the same space.
  # Physical window dimensions may change freely without changing game geometry.
  var window: Window = get_window()
- window.title = "Sugar Rush | v0.12 - Clearer Text"
+ window.title = "Sugar Rush | v0.13 - CRT & Audio"
  window.content_scale_size = DESIGN_SIZE
  window.content_scale_mode = Window.CONTENT_SCALE_MODE_VIEWPORT
  window.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_KEEP
  window.content_scale_stretch = Window.CONTENT_SCALE_STRETCH_FRACTIONAL
  window.min_size = Vector2i(640,400)
  UIStyle.apply(self)
+ crt_layer=CanvasLayer.new()
+ crt_layer.name="CRT"
+ crt_layer.layer=100
+ add_child(crt_layer)
+ var overlay: ColorRect=ColorRect.new()
+ overlay.name="Screen"
+ overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+ overlay.mouse_filter=Control.MOUSE_FILTER_IGNORE
+ var crt_material: ShaderMaterial=ShaderMaterial.new()
+ crt_material.shader=preload("res://shaders/crt.gdshader")
+ overlay.material=crt_material
+ crt_layer.add_child(overlay)
+ crt_layer.visible=GameManager.crt_enabled
  collection=preload("res://scripts/ui/collection.gd").new()
  collection.name="Collection"
  add_child(collection)
@@ -49,6 +63,11 @@ func _ready() -> void:
  $Pause/Layout/Abandon.pressed.connect(to_menu)
  $Pause/Layout/Motion.button_pressed = GameManager.motion
  $Pause/Layout/Sound.button_pressed = GameManager.sound
+ $Pause/Layout/CRT.button_pressed = GameManager.crt_enabled
+ $Pause/Layout/Volume/Slider.value = GameManager.master_volume*100.0
+ $Pause/Layout/Volume/Label.text = "Volume: %s%%" % roundi(GameManager.master_volume*100.0)
+ $Pause/Layout/CRT.toggled.connect(func(value: bool) -> void: GameManager.crt_enabled=value; crt_layer.visible=value; GameManager.save_preferences())
+ $Pause/Layout/Volume/Slider.value_changed.connect(func(value: float) -> void: GameManager.master_volume=value/100.0; $Pause/Layout/Volume/Label.text="Volume: %s%%" % roundi(value); GameManager.save_preferences())
  $Pause/Layout/Motion.toggled.connect(func(value: bool) -> void: GameManager.motion = value; GameManager.save_preferences())
  $Pause/Layout/Sound.toggled.connect(func(value: bool) -> void: GameManager.sound = value; GameManager.save_preferences())
  $Codex/Layout/Close.pressed.connect(close_codex)
@@ -134,7 +153,7 @@ func set_paused(value: bool) -> void:
  show_options(false)
 func show_options(value: bool) -> void:
  $Pause/Layout/Title.text = "OPTIONS" if value else "PAUSED"
- for key: String in ["Motion","Sound","Back"]: $Pause/Layout.get_node(key).visible = value
+ for key: String in ["Motion","Sound","CRT","Volume","Back"]: $Pause/Layout.get_node(key).visible = value
  for key: String in ["Resume","Options","Abandon","Quit"]: $Pause/Layout.get_node(key).visible = not value
 func show_codex() -> void:
  if board.busy: return

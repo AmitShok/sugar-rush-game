@@ -22,6 +22,10 @@ var last_award: int = 0
 var last_summary: String = ""
 var motion: bool = true
 var sound: bool = true
+var crt_enabled: bool = true
+var master_volume: float = 0.8
+var preferences_path: String = "user://preferences.cfg"
+var audio_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var offers: Array[JokerData] = []
 var reroll_cost: int = 3
 var candy_levels: Array[int] = []
@@ -31,15 +35,30 @@ func _ready() -> void:
  jokers.name = "JokerManager"
  add_child(jokers)
  jokers.capacity = config.joker_slots
+ audio_rng.randomize()
+ load_preferences()
+func load_preferences() -> void:
  var prefs: ConfigFile = ConfigFile.new()
- if prefs.load("user://preferences.cfg") == OK:
+ if prefs.load(preferences_path) == OK:
   motion = prefs.get_value("settings","motion",true)
   sound = prefs.get_value("settings","sound",true)
+  crt_enabled = prefs.get_value("settings","crt_enabled",true)
+  master_volume = clampf(float(prefs.get_value("settings","master_volume",0.8)),0.0,1.0)
+ apply_audio_settings()
+func apply_audio_settings() -> void:
+ AudioServer.set_bus_volume_db(0,linear_to_db(maxf(master_volume,0.0001)))
+ AudioServer.set_bus_mute(0,not sound or master_volume<=0.0)
+func next_sound_pitch(cascade: int) -> float:
+ return clampf((1.0+cascade*0.12)*audio_rng.randf_range(0.90,1.10),0.8,2.2)
 func save_preferences() -> void:
  var prefs: ConfigFile = ConfigFile.new()
  prefs.set_value("settings","motion",motion)
  prefs.set_value("settings","sound",sound)
- prefs.save("user://preferences.cfg")
+ prefs.set_value("settings","crt_enabled",crt_enabled)
+ prefs.set_value("settings","master_volume",master_volume)
+ apply_audio_settings()
+ var error: Error=prefs.save(preferences_path)
+ if error != OK: push_warning("Could not save settings: "+error_string(error))
 func joker_description(item: JokerData) -> String:
  if item.id != "roulette": return item.description
  if not jokers.has("roulette") or poison < 0:

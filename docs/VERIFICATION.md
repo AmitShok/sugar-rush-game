@@ -87,3 +87,7 @@ RouletteUIRunner passed 32 checks with the OpenGL renderer: every selected-type 
 ## Readability pass
 
 All 368 checks passed using Godot 4.7.2 OpenGL with Dummy audio: ShopRunner 30, UpgradeRunner 21, RouletteUIRunner 32, CollectionRunner 66, RouteRunner 150, RarityRunner 38 and ResizeRunner 31. Visually inspected the rendered shop, upgrade page, collection and Roulette tooltip. Coverage includes two-line shop descriptions, all collection cards, late-ante panels, boss/roulette HUD text and click alignment across window sizes. Body text uses the new Aseprite-exported Pixelify Sans Medium atlas with expanded word spaces; major headings and scores keep the original font.
+
+## CRT, audio and settings
+
+98 checks passed with the OpenGL renderer and Dummy audio: SettingsRunner 16, ResizeRunner 31, SynergyRunner 21 and ShopRunner 30. Settings coverage includes disk save/reload of all four options, old-file defaults, a physical slider click while paused, zero-volume mute/full-volume restore, pitch bounds/variation and RNG independence. Visually inspected CRT on/off and the options panel. Resize tests cover 496 board hitboxes and physical controls through eight window sizes with CRT enabled. Settings tests use and remove a separate test file; player preferences are preserved.

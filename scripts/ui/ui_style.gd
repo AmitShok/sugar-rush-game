@@ -71,6 +71,10 @@ static func apply(root: Control) -> void:
  for icon_name: String in ["increment","increment_highlight","increment_pressed","decrement","decrement_highlight","decrement_pressed"]:
   theme.set_icon(icon_name,"VScrollBar",texture("ui_arrow"))
  theme.set_stylebox("panel","TooltipPanel",skin("ui_inset"))
+ theme.set_stylebox("slider","HSlider",skin("ui_inset"))
+ theme.set_stylebox("grabber_area","HSlider",skin("ui_progress_gold"))
+ theme.set_stylebox("grabber_area_highlight","HSlider",skin("ui_progress_gold"))
+ for state: String in ["grabber","grabber_highlight","grabber_disabled"]: theme.set_icon(state,"HSlider",texture("ui_volume_knob"))
  root.theme = theme
  preserve_headings(root)
 static func preserve_headings(node: Node) -> void:
