@@ -1,4 +1,5 @@
 extends Control
+signal consumables_requested
 signal continue_requested
 var selected: JokerData
 var selected_owned: bool = false
@@ -88,7 +89,7 @@ func _ready() -> void:
  shaker_buy.icon=UIStyle.texture("sugar_shaker")
  shaker_buy.expand_icon=true
  shaker_buy.add_theme_constant_override("icon_max_width",24)
- shaker_buy.pressed.connect(purchase_shaker)
+ shaker_buy.pressed.connect(func() -> void: consumables_requested.emit())
  add_child(shaker_buy)
  joker_tab=make_tab("Jokers",188)
  upgrade_tab=make_tab("Candy Upgrades",488)
@@ -158,9 +159,9 @@ func reroll() -> void:
  $Receipt.text = "New stock: -%s" % UIStyle.money(cost)
 func refresh() -> void:
  if GameManager.state != "shop": return
- shaker_buy.text="Sugar Shaker  $4   |   Held %s / 2" % GameManager.shakers
- shaker_buy.disabled=GameManager.shakers>=GameManager.SHAKER_CAPACITY or GameManager.gummies<GameManager.SHAKER_PRICE
- shaker_buy.tooltip_text="One use: rearrange unlocked candies during a round. No move spent.\n"+("Inventory full (2/2)." if GameManager.shakers>=2 else ("Need $%s more." % (4-GameManager.gummies) if GameManager.gummies<4 else "Cash after purchase: "+UIStyle.money(GameManager.gummies-4)))
+ shaker_buy.text="Consumables   |   Held %s / 2   |   Browse" % GameManager.consumables.size()
+ shaker_buy.disabled=false
+ shaker_buy.tooltip_text="Browse four single-use cards. All share two inventory slots."
  $Actions/Continue.text = "Next:\n"+("Boss" if (GameManager.round_index+1)%3==2 else ("Small" if (GameManager.round_index+1)%3==0 else "Big"))
  $Heading.text = "SHOP"
  $Wallet.text = "Available cash: %s" % UIStyle.money(GameManager.gummies)

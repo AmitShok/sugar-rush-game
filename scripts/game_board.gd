@@ -19,6 +19,8 @@ var busy: bool = false
 var paused: bool = false
 var shake_queued: bool = false
 var shaking: bool = false
+var queued_consumable: String = ""
+var target_consumable: String = ""
 var selection: int = -1
 var cursor: int = 0
 var final_move: bool = false
@@ -31,10 +33,13 @@ func _ready() -> void:
  move_made.connect(GameManager.begin_move)
  resolution_finished.connect(GameManager.finish_move)
  resolution_finished.connect(flush_shake_request)
+ shuffle_finished.connect(flush_shake_request)
  GameManager.round_started.connect(start_round)
 func start_round() -> void:
  juice.clear_effects()
  shake_queued=false
+ queued_consumable=""
+ target_consumable=""
  shaking=false
  $Tiles.position=Vector2.ZERO
  busy = false
@@ -82,14 +87,78 @@ func sync_tiles(falling: bool) -> void:
   else: tile.position = target
   tiles.append(tile)
  for tile: SugarTile in old.values(): tile.queue_free()
+func cancel_consumable_target() -> void:
+ target_consumable=""
+ sync_tiles(false)
+ GameManager.changed.emit()
+func request_consumable(id: String) -> void:
+ if paused or GameManager.state!="playing" or id not in GameManager.consumables: return
+ if id=="sugar_shaker":
+  request_shake()
+  return
+ if busy:
+  if queued_consumable.is_empty() and not shake_queued:
+   queued_consumable=id
+   GameManager.toast.emit("Item queued after this move")
+  return
+ target_consumable=""
+ selection=-1
+ if id=="extra_serving":
+  GameManager.moves+=2
+  GameManager.consume_item(id)
+  GameManager.toast.emit("Extra Serving | +2 moves this round")
+ else:
+  target_consumable=id
+  GameManager.toast.emit("%s: choose a candy | Esc cancels" % ConsumableCatalog.ITEMS[id].name)
+  for tile: SugarTile in tiles:
+   tile.selected=false
+   tile.hinted=true
+   tile.queue_redraw()
+  GameManager.changed.emit()
+func use_targeted_consumable(i: int) -> void:
+ var id: String=target_consumable
+ if busy or paused or GameManager.state!="playing" or id not in GameManager.consumables: return
+ if i<0 or i>=model.cells.size() or model.cells[i]==null: return
+ var color: int=model.cells[i].color
+ if id=="golden_glaze":
+  var count: int=0
+  for cell: CandyState in model.cells:
+   if cell!=null and cell.color==color and cell.coating!=2 and cell.coating!=3:
+    cell.coating=2
+    count+=1
+  if count==0:
+   GameManager.toast.emit("No candies to gild | item kept; choose another type")
+   return
+  target_consumable=""
+  GameManager.consume_item(id)
+  sync_tiles(false)
+  GameManager.toast.emit("Gilded %s %s candies" % [count,GameManager.config.candies[color].display_name])
+ elif id=="candy_hammer":
+  target_consumable=""
+  busy=true
+  final_move=false
+  population=0
+  GameManager.consume_item(id)
+  var groups: Array[Dictionary]=[{"cells":[i],"color":color,"length":1,"axis":Vector2i.RIGHT,"shape":false,"diagonal":false,"synthetic":true,"direct":true}]
+  await resolve(groups)
+  if model.legal_moves().is_empty(): model.reshuffle()
+  sync_tiles(false)
+  busy=false
+  resolution_finished.emit()
 func request_shake() -> void:
  if paused or shaking or GameManager.state != "playing" or GameManager.shakers<=0: return
  if busy:
+  if not queued_consumable.is_empty(): return
   shake_queued=true
   GameManager.toast.emit("Sugar Shaker queued after this move")
   return
  use_shaker()
 func flush_shake_request() -> void:
+ if not queued_consumable.is_empty():
+  var id: String=queued_consumable
+  queued_consumable=""
+  if GameManager.state=="playing": call_deferred("request_consumable",id)
+  else: GameManager.toast.emit("Round finished | item kept")
  if not shake_queued: return
  shake_queued=false
  if GameManager.state=="playing": call_deferred("request_shake")
@@ -104,8 +173,7 @@ func use_shaker() -> void:
   shaking=false
   GameManager.toast.emit("No safe rearrangement | Sugar Shaker kept")
   return
- GameManager.shakers-=1
- GameManager.changed.emit()
+ GameManager.consume_item("sugar_shaker")
  if GameManager.sound and not "--test" in OS.get_cmdline_user_args():
   audio.pitch_scale=GameManager.next_sound_pitch(0)*0.9
   audio.play()
@@ -121,6 +189,9 @@ func use_shaker() -> void:
  GameManager.toast.emit("Bowl rearranged | no move spent")
  shuffle_finished.emit()
 func choose(i: int) -> void:
+ if not target_consumable.is_empty():
+  use_targeted_consumable(i)
+  return
  if busy or paused or GameManager.state != "playing": return
  if not model.playable(i):
   GameManager.toast.emit("Frame: line up 3 including this candy, or match beside it.")
@@ -191,7 +262,8 @@ func resolve(initial: Array[Dictionary]) -> void:
     if i in removed and model.cells[i] != null: chips -= int(effect.contributions[i])
     elif i not in removed: removed.append(i)
    var result: Dictionary = ScoreEngine.calculate(maxi(0,chips),group,effect.isotope,GameManager.jokers,GameManager.streak,group.color==GameManager.poison,final_move,population,cascade)
-   matches_resolved.emit(result,group.color)
+   if group.get("direct",false): result={"chips":chips,"mult":1.0,"total":chips}
+   matches_resolved.emit(result,-1 if group.get("direct",false) else group.color)
    if fresh_breaks > 0:
     juice.popup("BREAK +%s" % (fresh_breaks*effect.break_bonus),Vector2(model.xy(effect.origin))*cell_size+Vector2(0,40),UIStyle.MINT)
    var point: Vector2 = Vector2(model.xy(effect.origin))*cell_size+Vector2.ONE*28

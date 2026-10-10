@@ -44,16 +44,19 @@ func run_tests() -> void:
  GameManager.gummies=20
  GameManager.changed.emit()
  for i: int in range(5): GameManager.jokers.add(GameManager.config.jokers[i])
- await click(shop.shaker_buy)
- await click(shop.shaker_buy)
+ if not main.item_panel.visible: await click(shop.shaker_buy)
+ await click(main.item_panel.buttons["sugar_shaker"])
+ if not main.item_panel.visible: await click(shop.shaker_buy)
+ await click(main.item_panel.buttons["sugar_shaker"])
  check(GameManager.shakers==2 and GameManager.gummies==12 and GameManager.jokers.equipped.size()==5,"Two physical purchases cost $8 and use no Joker slots")
- check(shop.shaker_buy.disabled and not GameManager.buy_shaker(),"Inventory cap blocks a third item without charging")
+ check(main.item_panel.buttons["sugar_shaker"].disabled and not GameManager.buy_shaker(),"Inventory cap blocks a third item without charging")
  await capture("shaker_shop")
  GameManager.shakers=1
  GameManager.gummies=3
  check(not GameManager.buy_shaker() and GameManager.shakers==1,"Insufficient cash cannot buy a consumable")
  GameManager.shakers=2
  GameManager.jokers.equipped.clear()
+ main.close_items()
  GameManager.next_round()
  var before_cells: Array[CandyState]=board.model.cells.duplicate()
  var before_ids: Array[int]=[]
@@ -62,6 +65,7 @@ func run_tests() -> void:
  var score: int=GameManager.score
  var streak: int=GameManager.streak
  await click(main.get_node("Play/Shaker"))
+ await click(main.item_panel.buttons["sugar_shaker"])
  var after_ids: Array[int]=[]
  for cell: CandyState in board.model.cells: after_ids.append(cell.get_instance_id())
  before_ids.sort()
@@ -77,6 +81,7 @@ func run_tests() -> void:
   GameManager.changed.emit()
   await frames()
   await click(main.get_node("Play/Shaker"))
+  await click(main.item_panel.buttons["sugar_shaker"])
   check(GameManager.shakers==1,"Physical Shaker hitbox works at "+str(dimensions))
  var instruction: Control=main.get_node("Play/Instruction")
  check(instruction.position.y+instruction.get_minimum_size().y<main.get_node("Play/Shaker").position.y,"Instructions remain above the consumable button")

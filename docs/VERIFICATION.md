@@ -95,3 +95,8 @@ All 368 checks passed using Godot 4.7.2 OpenGL with Dummy audio: ShopRunner 30, 
 ## Sugar Shaker consumable
 
 252 checks passed: ShakerRunner 20 and ShopRunner 30 rendered, SynergyRunner 21, RouteRunner 150, ResizeRunner 31 rendered. Coverage includes physical purchases/use, two-item capacity independent of five Jokers, unchanged score/moves/streak, object/lock/coating/age preservation, safe-board generation, failure refunds, queued use, cancellation on round end, pause/quit during animation and run reset. Visually inspected shop and gameplay with CRT enabled. The headless resize run waited on its existing screenshot callback; it passed when rerun using its intended renderer.
+
+
+## Sweet consumables (v0.15)
+
+272 checks passed: ConsumableRunner 20, ShakerRunner 20, ShopRunner 30, SynergyRunner 21, RouteRunner 150 and ResizeRunner 31. Consumable, Shaker, shop and resize suites ran with the renderer and Dummy audio. New coverage includes mixed two-slot inventory, exact prices, duplicate cards, discards, extra moves, targeted input at a portrait window size, cancellation and no-op preservation, type-specific gilding with Wild preservation, direct Hammer scoring and frame destruction, Roulette exclusion, queued use and round-end preservation. Existing suites cover all eighteen rounds, Joker synergies, pause/quit, eight window sizes, and Aseprite masters for every exported raster. Visually inspected the four-card shop browser with CRT enabled and aligned purchase controls.

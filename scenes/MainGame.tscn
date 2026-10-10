@@ -164,7 +164,7 @@ text = "Quit"
 custom_minimum_size = Vector2(0,42)
 [node name="Footer" type="Label" parent="Menu/Layout"]
 layout_mode = 2
-text = "v0.14 | Sugar Rush"
+text = "v0.15 | Sugar Rush"
 theme_override_font_sizes/font_size = 24
 [node name="PauseShade" type="TextureRect" parent="."]
 z_index = 199
@@ -294,7 +294,7 @@ offset_left = 934.0
 offset_top = 556.0
 offset_right = 1138.0
 offset_bottom = 606.0
-text = "Shake 0 / 2"
+text = "Items 0 / 2"
 expand_icon = true
 theme_override_font_sizes/font_size = 24
 theme_override_constants/icon_max_width = 28

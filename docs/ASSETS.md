@@ -103,3 +103,8 @@ Four exact-three Joker cards are drawn and exported by `tools/create_three_art.l
 `ui_volume_knob.aseprite` → `ui_volume_knob.png`: 16 x 24 slider grip created/exported in Aseprite by `tools/create_volume_art.lua`. Slider tracks reuse existing Aseprite skins. `shaders/crt.gdshader` provides the runtime screen treatment without changing the underlying art or pointer geometry.
 
 `sugar_shaker.aseprite` → `sugar_shaker.png`: 32 x 40 consumable icon, drawn/exported in Aseprite by `tools/create_shaker_art.lua`, with separate glass, sugar-crystal and lid layers.
+
+
+### Consumable cards (v0.15)
+
+`tools/create_consumable_art.lua` draws and exports four layered 70 x 94 cards in Aseprite: `sugar_shaker_card`, `extra_serving`, `golden_glaze`, and `candy_hammer`. Editable masters are in `assets/source/aseprite/`; runtime PNGs are in `assets/exported/`. They share a cream card frame, pixel lettering and the existing game palette; the Shaker card incorporates the original Aseprite jar artwork.

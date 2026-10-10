@@ -102,4 +102,16 @@ Pause â†’ Options includes a Heavy CRT toggle and a 0â€“100% volume slider. The 
 
 ### Sugar Shaker consumable
 
-Buy a Sugar Shaker for $4 in the shop and carry up to two, separately from Joker slots. The in-round **Shake** button consumes one to rearrange unlocked candies, spending no move and changing neither score nor streak. It preserves all candy objects, coatings, ages, upgrades and fixed locks; the new arrangement has no immediate matches and at least one legal move. Requests during a move queue once; if that move finishes the round, the item is kept. If no safe rearrangement can be found, nothing is consumed. Unused items carry across rounds and shops, and new runs start empty.
+Buy a Sugar Shaker for $4 in the shop and carry up to two, separately from Joker slots. The in-round **Items** button opens your inventory; using Sugar Shaker consumes one to rearrange unlocked candies, spending no move and changing neither score nor streak. It preserves all candy objects, coatings, ages, upgrades and fixed locks; the new arrangement has no immediate matches and at least one legal move. Requests during a move queue once; if that move finishes the round, the item is kept. If no safe rearrangement can be found, nothing is consumed. Unused items carry across rounds and shops, and new runs start empty.
+
+
+### Sweet consumables (v0.15)
+
+The shop's **Consumables** browser offers four cards with prices, effects, held count, and your current cash. Any combination of two cards can be held, including duplicates, independently of Joker slots. Cards carry between rounds and reset on a new run. A held card can be discarded in the shop without a refund.
+
+- **Sugar Shaker — $4:** rearrange unlocked candies, preserving locks and coatings.
+- **Extra Serving — $6:** add two moves to the current round.
+- **Golden Glaze — $7:** select a candy to gild every candy of its type currently on the board, except Wilds. Gold is worth 80 Candys plus that type's run upgrades.
+- **Candy Hammer — $5:** select one candy to smash for its value, plus 10 if locked. The direct hit does not trigger match Jokers or count as a Roulette match; refill cascades resolve normally.
+
+Open **Items** during a round and choose Use. Glaze and Hammer then let you click a board candy; Esc or Cancel target keeps the card. All cards cost no moves. A Glaze that would change nothing is kept. Busy-board requests wait for resolution, and are kept if the round ends first.

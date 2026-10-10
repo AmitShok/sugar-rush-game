@@ -28,7 +28,13 @@ var preferences_path: String = "user://preferences.cfg"
 var audio_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 const SHAKER_CAPACITY: int = 2
 const SHAKER_PRICE: int = 4
-var shakers: int = 0
+var consumables: Array[String] = []
+# Compatibility for the original Shaker API; all items share the same capacity.
+var shakers: int:
+ get: return consumables.count("sugar_shaker")
+ set(value):
+  while "sugar_shaker" in consumables: consumables.erase("sugar_shaker")
+  for i: int in range(mini(maxi(value,0),SHAKER_CAPACITY-consumables.size())): consumables.append("sugar_shaker")
 var offers: Array[JokerData] = []
 var reroll_cost: int = 3
 var candy_levels: Array[int] = []
@@ -95,7 +101,7 @@ func start_run(seed_value: int = 0) -> void:
  round_index = 0
  gummies = config.starting_gummies
  jokers.equipped.clear()
- shakers=0
+ consumables.clear()
  candy_levels.resize(config.candies.size())
  candy_levels.fill(0)
  candy_bonuses.resize(config.candies.size())
@@ -163,11 +169,24 @@ func roll_offers() -> void:
   offers.append(pool[i])
   pool.remove_at(i)
 func buy_shaker() -> bool:
- if state != "shop" or shakers >= SHAKER_CAPACITY or gummies < SHAKER_PRICE: return false
- gummies -= SHAKER_PRICE
- shakers += 1
+ return buy_consumable("sugar_shaker")
+func buy_consumable(id: String) -> bool:
+ if state != "shop" or not ConsumableCatalog.ITEMS.has(id) or consumables.size()>=SHAKER_CAPACITY: return false
+ var price: int=ConsumableCatalog.ITEMS[id].price
+ if gummies<price: return false
+ gummies-=price
+ consumables.append(id)
  changed.emit()
  return true
+func consume_item(id: String) -> bool:
+ if state != "playing" or id not in consumables: return false
+ consumables.erase(id)
+ changed.emit()
+ return true
+func discard_consumable(index: int) -> void:
+ if state != "shop" or index<0 or index>=consumables.size(): return
+ consumables.remove_at(index)
+ changed.emit()
 func buy(item: JokerData) -> bool:
  if state != "shop" or item not in offers or gummies < item.price or not jokers.can_add(item): return false
  gummies -= item.price
