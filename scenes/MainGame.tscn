@@ -119,7 +119,7 @@ offset_right = 871.0
 offset_bottom = 530.0
 [node name="Menu" type="PanelContainer" parent="."]
 offset_left = 330
-offset_top = 60
+offset_top = 24
 offset_right = 822
 offset_bottom = 666
 [node name="Layout" type="VBoxContainer" parent="Menu"]
@@ -146,9 +146,14 @@ theme_override_font_sizes/font_size = 24
 layout_mode = 2
 placeholder_text = "Optional numeric seed"
 max_length = 12
+[node name="Continue" type="Button" parent="Menu/Layout"]
+layout_mode = 2
+text = "Continue"
+custom_minimum_size = Vector2(0,42)
 [node name="Play" type="Button" parent="Menu/Layout"]
 layout_mode = 2
-text = "Start Run"
+text = "New Run"
+tooltip_text = "Starting a new run replaces your saved run."
 custom_minimum_size = Vector2(0,42)
 [node name="Collection" type="Button" parent="Menu/Layout"]
 layout_mode = 2
@@ -164,7 +169,7 @@ text = "Quit"
 custom_minimum_size = Vector2(0,42)
 [node name="Footer" type="Label" parent="Menu/Layout"]
 layout_mode = 2
-text = "v0.15 | Sugar Rush"
+text = "v0.16 | Sugar Rush"
 theme_override_font_sizes/font_size = 24
 [node name="PauseShade" type="TextureRect" parent="."]
 z_index = 199

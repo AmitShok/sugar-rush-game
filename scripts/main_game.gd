@@ -10,11 +10,13 @@ var route_new_run: bool = true
 var options_from_menu: bool = false
 var crt_layer: CanvasLayer
 var toast_tween: Tween
+var run_save: Node
+var quitting: bool=false
 func _ready() -> void:
  # A fixed logical canvas keeps drawing and native GUI input in the same space.
  # Physical window dimensions may change freely without changing game geometry.
  var window: Window = get_window()
- window.title = "Sugar Rush | v0.15 - Sweet Consumables"
+ window.title = "Sugar Rush | v0.16 - Saved Runs"
  window.content_scale_size = DESIGN_SIZE
  window.content_scale_mode = Window.CONTENT_SCALE_MODE_VIEWPORT
  window.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_KEEP
@@ -59,7 +61,7 @@ func _ready() -> void:
  $Shop/CandyGuideButton.pressed.connect(show_candy_guide)
  $Menu/Layout/Play.pressed.connect(begin_run)
  $Menu/Layout/Options.pressed.connect(open_menu_options)
- $Menu/Layout/Quit.pressed.connect(func() -> void: get_tree().quit())
+ $Menu/Layout/Quit.pressed.connect(quit_game)
  $Play/Hint.pressed.connect(board.hint)
  $Play/Shaker.icon=UIStyle.texture("sugar_shaker")
  $Play/Shaker.pressed.connect(open_items)
@@ -71,7 +73,7 @@ func _ready() -> void:
  $Pause/Layout/Resume.pressed.connect(toggle_pause)
  $Pause/Layout/Options.pressed.connect(show_options.bind(true))
  $Pause/Layout/Back.pressed.connect(close_options)
- $Pause/Layout/Quit.pressed.connect(func() -> void: get_tree().quit())
+ $Pause/Layout/Quit.pressed.connect(quit_game)
  $Pause/Layout/Abandon.pressed.connect(to_menu)
  $Pause/Layout/Motion.button_pressed = GameManager.motion
  $Pause/Layout/Sound.button_pressed = GameManager.sound
@@ -94,6 +96,35 @@ func _ready() -> void:
  $Menu.visible = true
  $Play.visible = false
  fill_codex()
+ run_save=preload("res://scripts/run_save.gd").new()
+ run_save.main=self
+ add_child(run_save)
+ $Menu/Layout/Continue.pressed.connect(continue_run)
+ refresh_continue()
+ get_tree().auto_accept_quit=false
+func refresh_continue() -> void:
+ $Menu/Layout/Continue.disabled=not run_save.has_save()
+func continue_run() -> void:
+ if run_save.restore():
+  set_paused(false)
+  round_started()
+  if GameManager.state=="shop": open_shop()
+  GameManager.changed.emit()
+ else:
+  show_toast("Saved run could not be loaded. You can start a New Run.")
+  refresh_continue()
+func _notification(what: int) -> void:
+ if what==NOTIFICATION_WM_CLOSE_REQUEST: quit_game()
+func quit_game() -> void:
+ if quitting: return
+ quitting=true
+ set_paused(false)
+ board.paused=false
+ if board.busy:
+  if board.shaking: await board.shuffle_finished
+  else: await board.resolution_finished
+ run_save.checkpoint()
+ get_tree().quit()
 func open_items() -> void:
  if not board.target_consumable.is_empty():
   board.cancel_consumable_target()
@@ -161,12 +192,13 @@ func end_run(won: bool) -> void:
  $Play.visible = false
  $GameOverScreen.show_result(won)
 func to_menu() -> void:
+ run_save.checkpoint()
  close_items()
  set_paused(false)
  if board.busy:
-  GameManager.state = "leaving"
   if board.shaking: await board.shuffle_finished
   else: await board.resolution_finished
+ run_save.checkpoint()
  GameManager.state = "menu"
  $Play.visible = false
  $Shop.visible = false
@@ -174,6 +206,7 @@ func to_menu() -> void:
  $Pause.visible = false
  $Menu.visible = true
  board.paused = false
+ refresh_continue()
 func toggle_pause() -> void:
  if GameManager.state not in ["playing","shop"]: return
  set_paused(not $Pause.visible)
@@ -207,7 +240,7 @@ func close_codex() -> void:
  board.paused = false
 func fill_codex() -> void:
  var text: String = "[font_size=27][color=#ffd06a]The confectioner's handbook[/color][/font_size]\n\nClick a candy, then an adjacent candy to swap. Or use arrows + Enter. H shows a free hint. Invalid swaps consume a move and break your streak.\n\n[b]Score = Candys x Mult[/b]\nCandy values: 10 / 14 / 20 / 30 / 45 / 70 Candys. Higher-value types spawn less often. Open Candy Guide to see current spawn odds. Match 3 for x1, 4 for x2, 5 for x3. Each cascade adds +0.5 Mult. Score only beats the quota; it never converts to cash. Start with $4. Small / Big / Boss clears pay $5 / $7 / $10, plus $1 per 3 unused moves (maximum $3). Rerolls start at $3 and rise by $2 per use; selling returns half price, rounded down.\n\nWin eighteen batches across six antes. Rounds end automatically once your score (after any poison tax) meets the quota. The final-move bonus applies only when starting a move with one left.\n\n[b]Your recipe[/b]\nEquip up to five different Jokers in any combination. All 4+ Jokers trigger together on matches of 4 or more; all 5+ Jokers join them on matches of 5 or more. Effects run in a fixed order: repaint, attract, hammer, ricochet, revive, gild, nuclear, wild. Buying order does not matter. Sell in the shop for half price. With no triggered Joker effect, four clears a line and five clears its color. Wild activations clear up to three of each color and do not trigger 4+/5+ effects, even with Labyrinth. Each candy scores once per cascade wave.\n\n[b]Board marks[/b]\nFrames mark blockers; padlocks mark locked colors. Match 3 including the candy inside either to break it. Framed tiles stay in place; align candies around them. Nearby matches also break them. Each broken tile gives its candy value plus 10 / 25 / 50 Candys for matches of 3 / 4 / 5+, before Mult. Gold outline = 80 + type upgrade bonus; caramel underline = 30 + type upgrade bonus; green outline = persistent x4 isotope; diamond overlay = Wild Prism. Blockers anchor gravity. Specials can destroy locked candies. Dead blocker positions remain available to Necromancer until revived.\n\n[b]Bosses[/b]\nInspector holds one color in place during falls. You can swap it and match 3 including it to break the locks. Heatwave blocks candies that remain untouched for four moves. A board with no legal moves reshuffles automatically, free of charge.\n\n"
- text += "[b]Consumables[/b]\nBuy cards in the shop's Consumables browser. Carry any two, separately from Jokers, and open Items during a round to use one. Sugar Shaker ($4) safely rearranges unlocked candies. Extra Serving ($6) adds two moves. Golden Glaze ($7) gilds the selected candy type currently on the board, except Wilds. Candy Hammer ($5) smashes one candy, including its frame, then resolves refill matches. Targeted cards are spent only after choosing a valid candy; Esc cancels. Items cost no moves. Requests during a cascade wait until it ends; if the round ends first, the item is kept. Unused cards carry between rounds and reset on a new run.\n\n"
+ text += "[b]Consumables[/b]\nEach shop refresh offers two random consumable cards, each purchasable once. Refresh restocks both Jokers and consumables. Carry any two, separately from Jokers, and open Items during a round to use one. Sugar Shaker ($4) safely rearranges unlocked candies. Extra Serving ($6) adds two moves. Golden Glaze ($7) gilds the selected candy type currently on the board, except Wilds. Candy Hammer ($5) smashes one candy, including its frame, then resolves refill matches. Targeted cards are spent only after choosing a valid candy; Esc cancels. Items cost no moves. Requests during a cascade wait until it ends; if the round ends first, the item is kept. Unused cards carry between rounds and reset on a new run.\n\n"
  text += "[b]Candy upgrades[/b]\nShop > Candy Upgrades raises each type's value for this run. Repeat buys stack without using Joker slots. Each type starts at $4; its next price rises by $2 per buy. Bonuses also add to gold and caramel. Candy Guide shows current values. New runs reset all upgrades.\n\n"
  text += "[b]Supply Jokers[/b]\nEach doubles the spawn weight of its candy type. Weights are normalized together; different Supply Jokers stack. Odds apply to new random draws, not a guaranteed board composition.\n\n"
  for item: JokerData in GameManager.config.jokers:

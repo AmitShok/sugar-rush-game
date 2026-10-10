@@ -35,6 +35,7 @@ var shakers: int:
  set(value):
   while "sugar_shaker" in consumables: consumables.erase("sugar_shaker")
   for i: int in range(mini(maxi(value,0),SHAKER_CAPACITY-consumables.size())): consumables.append("sugar_shaker")
+var consumable_offers: Array[String] = []
 var offers: Array[JokerData] = []
 var reroll_cost: int = 3
 var candy_levels: Array[int] = []
@@ -102,6 +103,8 @@ func start_run(seed_value: int = 0) -> void:
  gummies = config.starting_gummies
  jokers.equipped.clear()
  consumables.clear()
+ consumable_offers.clear()
+ offers.clear()
  candy_levels.resize(config.candies.size())
  candy_levels.fill(0)
  candy_bonuses.resize(config.candies.size())
@@ -160,6 +163,11 @@ func round_reward() -> int:
   2: return config.boss_reward
  return config.clear_reward
 func roll_offers() -> void:
+ consumable_offers.clear()
+ var card_pool: Array=ConsumableCatalog.ITEMS.keys()
+ for slot: int in range(2):
+  var pick: int=rng.randi_range(0,card_pool.size()-1)
+  consumable_offers.append(card_pool.pop_at(pick))
  offers.clear()
  var pool: Array[JokerData] = []
  for item: JokerData in config.jokers:
@@ -171,11 +179,12 @@ func roll_offers() -> void:
 func buy_shaker() -> bool:
  return buy_consumable("sugar_shaker")
 func buy_consumable(id: String) -> bool:
- if state != "shop" or not ConsumableCatalog.ITEMS.has(id) or consumables.size()>=SHAKER_CAPACITY: return false
+ if state != "shop" or id not in consumable_offers or consumables.size()>=SHAKER_CAPACITY: return false
  var price: int=ConsumableCatalog.ITEMS[id].price
  if gummies<price: return false
  gummies-=price
  consumables.append(id)
+ consumable_offers.erase(id)
  changed.emit()
  return true
 func consume_item(id: String) -> bool:

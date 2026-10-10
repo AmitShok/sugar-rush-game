@@ -115,3 +115,12 @@ The shop's **Consumables** browser offers four cards with prices, effects, held 
 - **Candy Hammer — $5:** select one candy to smash for its value, plus 10 if locked. The direct hit does not trigger match Jokers or count as a Roulette match; refill cascades resolve normally.
 
 Open **Items** during a round and choose Use. Glaze and Hammer then let you click a board candy; Esc or Cancel target keeps the card. All cards cost no moves. A Glaze that would change nothing is kept. Busy-board requests wait for resolution, and are kept if the round ends first.
+
+
+### Shop stock and saved runs (v0.16)
+
+Each shop stocks two random, distinct consumable cards. Each offer can be bought once, even if you discard the purchased card. The shared paid **Refresh shop** action replaces both Joker offers and consumable offers; its price increases as before. Your two-item inventory limit still applies. New shops restock automatically.
+
+Runs autosave after completed actions and shop transactions to `user://run_save.cfg`. **Continue** on the title screen restores your board, current round, cash, score, moves, Jokers, upgrades, inventory, shop stock and random sequences. Quit to Title also preserves the run. Normal desktop/window quitting finishes any active resolution before saving; an abrupt termination restores the last completed checkpoint. Winning or losing clears the saved run. **New Run** replaces it when you confirm the first batch; backing out of the preview keeps the old save. Settings remain separate.
+
+Saves use a versioned, validated ConfigFile with temporary-file replacement. Automated tests use separate save files and never overwrite the player's run.

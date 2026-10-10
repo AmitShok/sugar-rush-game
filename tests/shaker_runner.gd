@@ -41,14 +41,19 @@ func run_tests() -> void:
  GameManager.score=GameManager.current_round().quota
  GameManager.settle_round()
  shop=main.get_node("Shop")
+ GameManager.consumable_offers.assign(["sugar_shaker"])
  GameManager.gummies=20
  GameManager.changed.emit()
  for i: int in range(5): GameManager.jokers.add(GameManager.config.jokers[i])
  if not main.item_panel.visible: await click(shop.shaker_buy)
  await click(main.item_panel.buttons["sugar_shaker"])
+ GameManager.consumable_offers.assign(["sugar_shaker"])
+ main.item_panel.refresh()
  if not main.item_panel.visible: await click(shop.shaker_buy)
  await click(main.item_panel.buttons["sugar_shaker"])
  check(GameManager.shakers==2 and GameManager.gummies==12 and GameManager.jokers.equipped.size()==5,"Two physical purchases cost $8 and use no Joker slots")
+ GameManager.consumable_offers.assign(["sugar_shaker"])
+ main.item_panel.refresh()
  check(main.item_panel.buttons["sugar_shaker"].disabled and not GameManager.buy_shaker(),"Inventory cap blocks a third item without charging")
  await capture("shaker_shop")
  GameManager.shakers=1

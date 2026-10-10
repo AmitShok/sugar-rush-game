@@ -7,6 +7,7 @@ var summary: Label
 var cards: HBoxContainer
 var owned: HBoxContainer
 var buttons: Dictionary={}
+var refresh_button: Button
 func _ready() -> void:
  z_index=190
  set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -42,6 +43,12 @@ func _ready() -> void:
  back.add_theme_font_size_override("font_size",24)
  back.pressed.connect(func() -> void: closed.emit())
  add_child(back)
+ refresh_button=Button.new()
+ refresh_button.position=Vector2(64,624)
+ refresh_button.size=Vector2(450,44)
+ refresh_button.add_theme_font_size_override("font_size",24)
+ refresh_button.pressed.connect(GameManager.reroll)
+ add_child(refresh_button)
  GameManager.changed.connect(refresh)
  hide()
 func open(in_shop: bool) -> void:
@@ -50,14 +57,18 @@ func open(in_shop: bool) -> void:
  refresh()
 func refresh() -> void:
  if not visible: return
- summary.text="Held %s / 2 | %s" % [GameManager.consumables.size(),("Cash: "+UIStyle.money(GameManager.gummies)+" | Single-use cards; no Joker slots") if shop_mode else "Choose a card to use. Unused cards carry to the next round."]
+ refresh_button.visible=shop_mode
+ refresh_button.text="Refresh shop "+UIStyle.money(GameManager.reroll_cost)
+ refresh_button.disabled=GameManager.gummies<GameManager.reroll_cost
+ refresh_button.tooltip_text="Refreshes Jokers and both consumable offers. The price rises after use."
+ summary.text="Held %s / 2 | %s" % [GameManager.consumables.size(),("Cash: "+UIStyle.money(GameManager.gummies)+" | Two random offers per refresh") if shop_mode else "Choose a card to use. Unused cards carry to the next round."]
  for row: Control in [cards,owned]:
   for child: Node in row.get_children():
    row.remove_child(child)
    child.queue_free()
  buttons.clear()
- var ids: Array=ConsumableCatalog.ITEMS.keys() if shop_mode else GameManager.consumables.duplicate()
- if ids.is_empty(): cards.add_child(UIStyle.label("No cards held. Buy consumables in the shop.",24))
+ var ids: Array=GameManager.consumable_offers.duplicate() if shop_mode else GameManager.consumables.duplicate()
+ if ids.is_empty(): cards.add_child(UIStyle.label("Sold out. Refresh the shop for two new cards." if shop_mode else "No cards held. Buy consumables in the shop.",24))
  for id: String in ids:
   var item: Dictionary=ConsumableCatalog.ITEMS[id]
   var column: VBoxContainer=VBoxContainer.new()

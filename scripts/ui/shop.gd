@@ -161,7 +161,7 @@ func refresh() -> void:
  if GameManager.state != "shop": return
  shaker_buy.text="Consumables   |   Held %s / 2   |   Browse" % GameManager.consumables.size()
  shaker_buy.disabled=false
- shaker_buy.tooltip_text="Browse four single-use cards. All share two inventory slots."
+ shaker_buy.tooltip_text="Two random cards per shop refresh. Each offer can be bought once; hold up to two."
  $Actions/Continue.text = "Next:\n"+("Boss" if (GameManager.round_index+1)%3==2 else ("Small" if (GameManager.round_index+1)%3==0 else "Big"))
  $Heading.text = "SHOP"
  $Wallet.text = "Available cash: %s" % UIStyle.money(GameManager.gummies)
