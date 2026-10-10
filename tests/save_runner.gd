@@ -35,10 +35,14 @@ func run_tests() -> void:
  check(saver.read_save()==saved,"Mid-cascade state cannot overwrite stable checkpoint")
  board.busy=false
  saver.restore()
- main.to_menu()
+ main.toggle_pause()
+ await frames()
+ await click(main.get_node("Pause/Layout/Abandon"))
+ check(not get_tree().paused and main.get_node("Menu").visible,"Physical Quit to Title returns from pause")
  check(not main.get_node("Menu/Layout/Continue").disabled,"Title offers Continue after leaving a run")
  await click(main.get_node("Menu/Layout/Continue"))
  check(GameManager.state=="playing" and main.get_node("Play").visible,"Continue button restores gameplay")
+ check(saver.snapshot()==saved,"Quit to Title then Continue preserves the entire round")
  GameManager.score=GameManager.current_round().quota
  GameManager.settle_round()
  GameManager.gummies=100
@@ -64,6 +68,11 @@ func run_tests() -> void:
  GameManager.roll_offers()
  check(saver.restore() and saver.snapshot()==saved,"Shop save retains stock, cash, prices and purchased slots")
  main.close_items()
+ main.toggle_pause()
+ await frames()
+ await click(main.get_node("Pause/Layout/Abandon"))
+ await click(main.get_node("Menu/Layout/Continue"))
+ check(GameManager.state=="shop" and main.get_node("Shop").visible and saver.snapshot()==saved,"Quit to Title then Continue restores exact shop state")
  main.to_menu()
  await frames()
  await RenderingServer.frame_post_draw

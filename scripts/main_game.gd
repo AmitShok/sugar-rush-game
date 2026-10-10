@@ -104,6 +104,7 @@ func _ready() -> void:
  get_tree().auto_accept_quit=false
 func refresh_continue() -> void:
  $Menu/Layout/Continue.disabled=not run_save.has_save()
+ $Menu/Layout/Continue.tooltip_text="Resume your saved run, including after Quit to Title."
 func continue_run() -> void:
  if run_save.restore():
   set_paused(false)
@@ -207,6 +208,9 @@ func to_menu() -> void:
  $Menu.visible = true
  board.paused = false
  refresh_continue()
+ if not $Menu/Layout/Continue.disabled:
+  $Menu/Layout/Continue.grab_focus()
+  show_toast("Run saved | choose Continue to resume")
 func toggle_pause() -> void:
  if GameManager.state not in ["playing","shop"]: return
  set_paused(not $Pause.visible)

@@ -139,6 +139,8 @@ func run_tests() -> void:
  check(board.busy and GameManager.shakers==1,"Pausing a shake freezes it without consuming another item")
  await main.to_menu()
  check(GameManager.state=="menu" and not board.busy and not get_tree().paused,"Quit to Title during a shake completes without hanging")
+ main.continue_run()
+ check(GameManager.state=="playing" and GameManager.shakers==1 and not board.busy,"Continue after quitting a paused shake restores the completed action")
  main.start()
  check(GameManager.shakers==0,"Starting a new run resets consumable inventory")
  print("RESULT: %s shaker checks, %s failures" % [checks,failures])

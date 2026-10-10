@@ -240,7 +240,7 @@ custom_minimum_size = Vector2(0,48)
 [node name="Abandon" type="Button" parent="Pause/Layout"]
 layout_mode = 2
 text = "Quit to Title"
-tooltip_text = "End this run and return to the title."
+tooltip_text = "Save this run and return to the title. Choose Continue to resume."
 custom_minimum_size = Vector2(0,48)
 [node name="Quit" type="Button" parent="Pause/Layout"]
 layout_mode = 2

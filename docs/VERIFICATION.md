@@ -105,3 +105,8 @@ All 368 checks passed using Godot 4.7.2 OpenGL with Dummy audio: ShopRunner 30, 
 ## Random stock and saved runs (v0.16)
 
 143 checks passed: SaveRunner 18, SaveBootRunner 3 across separate write/quit and read/continue processes, ShopRunner 30, ConsumableRunner 20, ShakerRunner 20, SynergyRunner 21, ResizeRunner 31. Saves round-trip all serialized gameplay/board fields and RNG continuation, reject malformed files, preserve purchased shop slots, refuse partial-cascade checkpoints, replace on New Run, and clear on run end. Physical UI checks cover Continue, buying/removing stock and shared paid refresh. Visually inspected title menu and two-card shop; existing Aseprite skins/art are reused without new raster assets. All game tests use isolated save paths, Dummy audio and --test.
+
+
+## Quit to Title continuation
+
+42 checks passed across rendered SaveRunner (21) and ShakerRunner (21). Physical pause-menu Quit to Title followed by Continue preserves the complete round and shop snapshots. Continuing after quitting during a paused Shaker animation restores the completed action and remaining inventory. Corrected the obsolete tooltip claiming Quit to Title ends the run; title now focuses Continue and confirms the saved run.
