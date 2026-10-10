@@ -49,7 +49,7 @@ For a custom fixed board, modify `GameBoard.start_round` after `fill_fresh`, ass
 
 ## Aseprite workflow
 
-Editable masters are in `assets/source/aseprite/`. Open them directly in Aseprite. Candy documents are 24 × 24; Joker cards are 70 × 94; the background is 576 × 360. Nine-slice UI skins are 24 × 24, tile overlays 56 × 56, and badges 32 × 32.
+Editable masters are in `assets/source/aseprite/`. Open them directly in Aseprite. Candy documents are 24 × 24; Joker cards are 70 × 94; the table felt is 576 × 360. Nine-slice UI skins are 24 × 24, tile overlays 56 × 56, and badges 32 × 32.
 
 - Candy layers: ink silhouette and pixel finish.
 - Card layers: Card stock and ink, Illustration, Title and edition marks.

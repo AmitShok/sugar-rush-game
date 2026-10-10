@@ -1,4 +1,4 @@
-# Sugar Rush — v0.7
+# Sugar Rush
 
 A playable, local Godot 4 game: tactical match-3, a Candys × Mult scoring engine, 26 rule-changing Jokers, and eighteen batches across six antes. Original pixel art is supplied as layered Aseprite sources.
 

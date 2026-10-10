@@ -1,2 +1,5 @@
 .godot/
 *.tmp
+
+# Documentation screenshots are not game resources.
+docs/**/*.import

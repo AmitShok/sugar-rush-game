@@ -1,6 +1,5 @@
 class_name SugarTile
 extends Control
-signal chosen(index: int)
 @export var idle_bob: float = 1.4
 var cell_index: int = 0
 var data: CandyState
@@ -38,10 +37,6 @@ func configure(i: int, value: CandyState, run_config: RunConfig, is_isotope: boo
 func _process(delta: float) -> void:
  elapsed += delta
  if is_instance_valid(sprite): sprite.position.y = 4.0 + (sin(elapsed*2.0+cell_index)*idle_bob if GameManager.motion and (selected or hinted) else 0.0)
-func _gui_input(event: InputEvent) -> void:
- if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-  chosen.emit(cell_index)
-  accept_event()
 func mark(name: String) -> void:
  draw_texture(UIStyle.texture("ui_"+name),Vector2.ZERO)
 func _draw() -> void:

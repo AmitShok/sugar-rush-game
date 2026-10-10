@@ -77,9 +77,6 @@ func purchase_upgrade(color: int) -> void:
  if GameManager.buy_candy_upgrade(color):
   $Receipt.text="%s: +%s Candys | Level %s | -%s" % [GameManager.config.candies[color].display_name,GameManager.upgrade_gain(color),GameManager.candy_level(color),UIStyle.money(cost)]
 
-func purchase_shaker() -> void:
- if GameManager.buy_shaker():
-  $Receipt.text="Sugar Shaker bought | %s / 2 held | -$4" % GameManager.shakers
 func _ready() -> void:
  shaker_buy=Button.new()
  shaker_buy.name="BuyShaker"

@@ -16,13 +16,12 @@ UI panels use nine-slice texture borders. The gold progress fill has a separate 
 
 `font_atlas.aseprite` contains rasterized m6x11 glyphs by Daniel Linssen; attribution and permission remain in `assets/fonts/`. `ui_font.fnt` provides character spacing and atlas coordinates so dynamic scores and descriptions remain real text. The font shapes are credited to their original designer.
 
-Godot still performs layout, hit testing, text composition and animation; these are runtime behavior, not image assets. Audio remains WAV because Aseprite edits images. The earlier felt shader and TTF files are retained as unused reference sources, and are not the active visual render path.
+Godot still performs layout, hit testing, text composition and animation; these are runtime behavior, not image assets. Audio remains WAV because Aseprite edits images. The original TTF files and licenses remain available for editing and regenerating typography; runtime text uses the exported bitmap fonts.
 
 ## Complete image inventory
 
 | Aseprite master | PNG export | Pixels |
 | --- | --- | --- |
-| `background.aseprite` | `background.png` | 576 x 360 |
 | `candy_0.aseprite` | `candy_0.png` | 24 x 24 |
 | `candy_1.aseprite` | `candy_1.png` | 24 x 24 |
 | `candy_2.aseprite` | `candy_2.png` | 24 x 24 |
@@ -84,7 +83,6 @@ Godot still performs layout, hit testing, text composition and animation; these 
 | `ui_tile_b.aseprite` | `ui_tile_b.png` | 56 x 56 |
 | `ui_toggle_off.aseprite` | `ui_toggle_off.png` | 32 x 32 |
 | `ui_toggle_on.aseprite` | `ui_toggle_on.png` | 32 x 32 |
-| `ui_white.aseprite` | `ui_white.png` | 32 x 32 |
 | `ui_wild.aseprite` | `ui_wild.png` | 56 x 56 |
 
 Six new Supply card illustrations and the transparent-center blocker frame were created in Aseprite with `tools/create_supply_art.lua`.

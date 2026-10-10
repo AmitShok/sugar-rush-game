@@ -27,7 +27,6 @@ var master_volume: float = 0.8
 var preferences_path: String = "user://preferences.cfg"
 var audio_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 const SHAKER_CAPACITY: int = 2
-const SHAKER_PRICE: int = 4
 var consumables: Array[String] = []
 # Compatibility for the original Shaker API; all items share the same capacity.
 var shakers: int:

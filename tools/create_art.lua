@@ -220,8 +220,4 @@ for k=0,15 do
  for n=0,k%4 do diamond(type,25+n*6,84,1,ink) end
  save(s,"joker_"..k)
 end
-local s=Sprite(576,360);s.layers[1].name="Deep green felt";local im=s.cels[1].image
-rect(im,0,0,576,360,c("214e43"))
-for yy=0,359,2 do for xx=0,575,2 do if (xx+yy)%6==0 then rect(im,xx,yy,1,1,c("244f45")) end end end
-save(s,"background")
 print("Created the complete consistent 70x94 illustrated Joker collection.")

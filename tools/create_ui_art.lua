@@ -64,10 +64,9 @@ for _,name in ipairs({"focus","hover","selected","hint","gold","isotope","carame
  end
  save(s,"ui_"..name)
 end
-for _,name in ipairs({"small","big","inspector","heatwave","done","arrow","toggle_on","toggle_off","particle","shade","white"}) do
+for _,name in ipairs({"small","big","inspector","heatwave","done","arrow","toggle_on","toggle_off","particle","shade"}) do
  local s=Sprite(32,32);s.layers[1].name="Ink silhouette";local im=s.cels[1].image
  if name=="shade" then rect(im,0,0,32,32,app.pixelColor.rgba(4,8,10,210))
- elseif name=="white" then rect(im,0,0,32,32,c("ffffff"))
  elseif name=="particle" then diamond(im,16,16,12,c("ffffff"))
  elseif name=="toggle_on" or name=="toggle_off" then
   rect(im,1,8,30,16,c("20242c"));rect(im,3,10,26,12,c(name=="toggle_on" and "388e63" or "65797b"));rect(im,name=="toggle_on" and 19 or 3,10,10,12,c("fff3d4"))

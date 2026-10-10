@@ -120,3 +120,10 @@ Root cause: BoardModel.refill sets new candy ages to -1, but run-save validation
 ## Player-facing text review
 
 Reviewed menu/HUD/shop/collection/consumable text, tooltips, handbook, candy/Joker/round resources and card-art lettering sources. Preserved the requested score term Candys and intentional names/abbreviations. Corrected singular round/move labels and the results screen total (now derived from the configured 18 rounds rather than hard-coded 9). Existing RouteRunner 150 and rendered ShopRunner 30 checks pass, including progression, HUD layout and Joker-description fit.
+
+
+## Repository cleanup
+
+Audited tracked runtime resources, dynamic texture references, scenes, scripts, tests and art/export tools. Removed 33 obsolete files: 24 documentation-image import sidecars (including three orphan sidecars), the unused felt shader and UID, two unused texture/master/import sets (old background and white tile), and stale VERSION.txt. Removed the disconnected tile click signal/handler, obsolete direct Shaker purchase handler and unused SHAKER_PRICE constant. Art generators no longer recreate removed assets. Documentation has .gdignore so screenshots remain useful records without becoming game resources. Active Aseprite masters, font source/licensing, test suites and art tools remain.
+
+Godot editor import completed successfully and static runtime resource paths have no missing targets. 256 checks passed: core TestRunner 51, RouteRunner 150, rendered ResizeRunner 31, SaveRefillRunner 4 and ConsumableRunner 20. Pre-existing unrelated project settings and generated metadata were left unstaged.
