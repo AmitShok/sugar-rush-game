@@ -110,3 +110,8 @@ All 368 checks passed using Godot 4.7.2 OpenGL with Dummy audio: ShopRunner 30, 
 ## Quit to Title continuation
 
 42 checks passed across rendered SaveRunner (21) and ShakerRunner (21). Physical pause-menu Quit to Title followed by Continue preserves the complete round and shop snapshots. Continuing after quitting during a paused Shaker animation restores the completed action and remaining inventory. Corrected the obsolete tooltip claiming Quit to Title ends the run; title now focuses Continue and confirms the saved run.
+
+
+## Continue disabled after refill — fix
+
+Root cause: BoardModel.refill sets new candy ages to -1, but run-save validation rejected every negative field in candy rows. The loader now permits age -1 while retaining nonnegative color/coating/blocker constraints and rejecting ages below -1. Reproduced failure before the fix using a read-only copy of the player's existing save; after the fix all serialized fields round-trip unchanged. SaveRefillRunner passes 7 checks (including the optional external fixture), with real-match refill followed by physical Quit to Title/Continue. SaveRunner passes 21 checks. The player's original save was not modified.

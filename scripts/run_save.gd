@@ -84,8 +84,9 @@ func read_save() -> Dictionary:
   for row: Variant in board[key]:
    if not row is Array or row.size()!=4: return {}
    for number: Variant in row:
-    if not number is int or number<0: return {}
-   if row[0]>5 or row[1]>3: return {}
+    if not number is int: return {}
+   # Refill uses -1 so newly spawned candies are age zero after Heatwave ticks.
+   if row[0]<0 or row[0]>5 or row[1]<0 or row[1]>3 or row[2]<0 or row[3]<-1: return {}
  for key: String in ["isotopes","graves"]:
   for index: Variant in board[key]:
    if not index is int or index<0 or index>=64: return {}
