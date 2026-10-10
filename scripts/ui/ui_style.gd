@@ -6,7 +6,7 @@ const MUTED: Color = Color("c4d0cc")
 const PINK: Color = Color("ef6355")
 const MINT: Color = Color("f5b957")
 const BODY_FONT: Font = preload("res://assets/exported/readable_font.fnt")
-const FONT: Font = preload("res://assets/exported/ui_font.fnt")
+const FONT: Font = BODY_FONT
 static var textures: Dictionary = {}
 static func texture(name: String) -> Texture2D:
  if not textures.has(name): textures[name] = load("res://assets/exported/"+name+".png")

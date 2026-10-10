@@ -127,3 +127,8 @@ Reviewed menu/HUD/shop/collection/consumable text, tooltips, handbook, candy/Jok
 Audited tracked runtime resources, dynamic texture references, scenes, scripts, tests and art/export tools. Removed 33 obsolete files: 24 documentation-image import sidecars (including three orphan sidecars), the unused felt shader and UID, two unused texture/master/import sets (old background and white tile), and stale VERSION.txt. Removed the disconnected tile click signal/handler, obsolete direct Shaker purchase handler and unused SHAKER_PRICE constant. Art generators no longer recreate removed assets. Documentation has .gdignore so screenshots remain useful records without becoming game resources. Active Aseprite masters, font source/licensing, test suites and art tools remain.
 
 Godot editor import completed successfully and static runtime resource paths have no missing targets. 256 checks passed: core TestRunner 51, RouteRunner 150, rendered ResizeRunner 31, SaveRefillRunner 4 and ConsumableRunner 20. Pre-existing unrelated project settings and generated metadata were left unstaged.
+
+
+## Clearer interface typography
+
+Replaced runtime Pixelify Sans/m6x11 typography with Chakra Petch SemiBold across body text, controls, headings and score/cash numbers. Glyphs were drawn into a native 1536 x 576 Aseprite atlas and exported through Aseprite with BMFont metrics; source font and OFL attribution are included. Existing card illustration lettering remains intact. Visually inspected title, gameplay and shop with CRT enabled. 147 rendered checks passed: ShopRunner 30, ResizeRunner 31 (eight window sizes), CollectionRunner 66 (all 26 descriptions), ConsumableRunner 20. Import completed without errors.

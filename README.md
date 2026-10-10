@@ -6,7 +6,7 @@ A playable, local Godot 4 game: tactical match-3, a Candys × Mult scoring engin
 
 The game now uses one protected 1152 × 720 logical canvas. The physical window can be resized freely; nonmatching aspect ratios receive letterboxing. Candy hitboxes are computed by the board in the same logical space, and input stays locked until all movement finishes.
 
-The art direction now uses original cream-stock Joker cards, new 24-pixel candy silhouettes displayed at exactly 2×, an Aseprite-painted green felt background, m6x11 pixel lettering by Daniel Linssen, beveled controls, and blue Candys/red Mult counters. All artwork remains editable in Aseprite. Typography licensing is in `assets/fonts/`.
+The art direction now uses original cream-stock Joker cards, new 24-pixel candy silhouettes displayed at exactly 2×, an Aseprite-painted green felt background, Chakra Petch SemiBold interface lettering and original pixel card titles, beveled controls, and blue Candys/red Mult counters. All artwork remains editable in Aseprite. Typography licensing is in `assets/fonts/`.
 
 ## Collection
 
