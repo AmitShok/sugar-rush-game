@@ -30,7 +30,7 @@ func refresh() -> void:
  $Layout/Progress.value = gm.score
  $Layout/Math/Chips.text = str(int(gm.last_chips)) if is_equal_approx(gm.last_chips,roundf(gm.last_chips)) else str(snappedf(gm.last_chips,0.1))
  $Layout/Math/Mult.text = str(int(gm.last_mult)) if is_equal_approx(gm.last_mult,roundf(gm.last_mult)) else str(snappedf(gm.last_mult,0.1))
- $Layout/Moves.text = "%02d   MOVES LEFT" % gm.moves
+ $Layout/Moves.text = "%02d   %s LEFT" % [gm.moves,"MOVE" if gm.moves==1 else "MOVES"]
  $Layout/Wallet.text = UIStyle.money(gm.gummies)
  $Layout/Route.hide()
  $Layout/Curse.text = gm.current_round().description

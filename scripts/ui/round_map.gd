@@ -53,7 +53,7 @@ func show_round(index: int) -> void:
  var ante: int=index/3
  heading.text="ANTE %s / %s   |   THE ROAD AHEAD" % [ante+1,GameManager.config.rounds.size()/3]
  var gap: int=2-index%3
- subtitle.text="BOSS NEXT: %s" % boss_name(ante*3+2) if gap==0 else "%s rounds to clear before %s" % [gap,boss_name(ante*3+2)]
+ subtitle.text="BOSS NEXT: %s" % boss_name(ante*3+2) if gap==0 else "%s %s to clear before %s" % [gap,"round" if gap==1 else "rounds",boss_name(ante*3+2)]
  for child: Node in row.get_children():
   row.remove_child(child)
   child.queue_free()

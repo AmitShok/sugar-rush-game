@@ -115,3 +115,8 @@ All 368 checks passed using Godot 4.7.2 OpenGL with Dummy audio: ShopRunner 30, 
 ## Continue disabled after refill — fix
 
 Root cause: BoardModel.refill sets new candy ages to -1, but run-save validation rejected every negative field in candy rows. The loader now permits age -1 while retaining nonnegative color/coating/blocker constraints and rejecting ages below -1. Reproduced failure before the fix using a read-only copy of the player's existing save; after the fix all serialized fields round-trip unchanged. SaveRefillRunner passes 7 checks (including the optional external fixture), with real-match refill followed by physical Quit to Title/Continue. SaveRunner passes 21 checks. The player's original save was not modified.
+
+
+## Player-facing text review
+
+Reviewed menu/HUD/shop/collection/consumable text, tooltips, handbook, candy/Joker/round resources and card-art lettering sources. Preserved the requested score term Candys and intentional names/abbreviations. Corrected singular round/move labels and the results screen total (now derived from the configured 18 rounds rather than hard-coded 9). Existing RouteRunner 150 and rendered ShopRunner 30 checks pass, including progression, HUD layout and Joker-description fit.
