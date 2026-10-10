@@ -3,6 +3,7 @@ extends Control
 signal matches_resolved(result: Dictionary, color: int)
 signal move_made(valid: bool)
 signal special_triggered(effect: String, origin: Vector2)
+signal shuffle_finished
 signal resolution_finished
 @export var columns: int = 8
 @export var rows: int = 8
@@ -16,6 +17,8 @@ var tiles: Array[SugarTile] = []
 var movement_tweens: Array[Tween] = []
 var busy: bool = false
 var paused: bool = false
+var shake_queued: bool = false
+var shaking: bool = false
 var selection: int = -1
 var cursor: int = 0
 var final_move: bool = false
@@ -27,9 +30,13 @@ func _ready() -> void:
  matches_resolved.connect(GameManager.award)
  move_made.connect(GameManager.begin_move)
  resolution_finished.connect(GameManager.finish_move)
+ resolution_finished.connect(flush_shake_request)
  GameManager.round_started.connect(start_round)
 func start_round() -> void:
  juice.clear_effects()
+ shake_queued=false
+ shaking=false
+ $Tiles.position=Vector2.ZERO
  busy = false
  selection = -1
  model.width = columns
@@ -75,6 +82,44 @@ func sync_tiles(falling: bool) -> void:
   else: tile.position = target
   tiles.append(tile)
  for tile: SugarTile in old.values(): tile.queue_free()
+func request_shake() -> void:
+ if paused or shaking or GameManager.state != "playing" or GameManager.shakers<=0: return
+ if busy:
+  shake_queued=true
+  GameManager.toast.emit("Sugar Shaker queued after this move")
+  return
+ use_shaker()
+func flush_shake_request() -> void:
+ if not shake_queued: return
+ shake_queued=false
+ if GameManager.state=="playing": call_deferred("request_shake")
+ else: GameManager.toast.emit("Round finished | Sugar Shaker kept")
+func use_shaker() -> void:
+ if busy or paused or GameManager.state != "playing" or GameManager.shakers<=0: return
+ busy=true
+ shaking=true
+ selection=-1
+ if not model.shake_candies():
+  busy=false
+  shaking=false
+  GameManager.toast.emit("No safe rearrangement | Sugar Shaker kept")
+  return
+ GameManager.shakers-=1
+ GameManager.changed.emit()
+ if GameManager.sound and not "--test" in OS.get_cmdline_user_args():
+  audio.pitch_scale=GameManager.next_sound_pitch(0)*0.9
+  audio.play()
+ if GameManager.motion:
+  var tween: Tween=create_tween()
+  for offset: Vector2 in [Vector2(-5,0),Vector2(5,0),Vector2(-3,0),Vector2(3,0),Vector2.ZERO]:
+   tween.tween_property($Tiles,"position",offset,0.045)
+  await tween.finished
+ sync_tiles(true)
+ if GameManager.motion: await get_tree().create_timer(fall_duration,false).timeout
+ busy=false
+ shaking=false
+ GameManager.toast.emit("Bowl rearranged | no move spent")
+ shuffle_finished.emit()
 func choose(i: int) -> void:
  if busy or paused or GameManager.state != "playing": return
  if not model.playable(i):

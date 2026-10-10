@@ -78,7 +78,7 @@ offset_left = 940
 offset_top = 450
 offset_right = 1114
 offset_bottom = 625
-text = "Click a candy, then a neighbor.\n\nH: free hint\nESC: pause"
+text = "Swap neighbors.\nH: Hint\nESC: Pause"
 autowrap_mode = 2
 theme_override_font_sizes/font_size = 24
 [node name="Hint" type="Button" parent="Play"]
@@ -164,7 +164,7 @@ text = "Quit"
 custom_minimum_size = Vector2(0,42)
 [node name="Footer" type="Label" parent="Menu/Layout"]
 layout_mode = 2
-text = "v0.13 | Sugar Rush"
+text = "v0.14 | Sugar Rush"
 theme_override_font_sizes/font_size = 24
 [node name="PauseShade" type="TextureRect" parent="."]
 z_index = 199
@@ -288,3 +288,13 @@ offset_right = 1138.0
 offset_bottom = 274.0
 theme_override_font_sizes/font_size = 24
 text = "Candy Guide"
+
+[node name="Shaker" type="Button" parent="Play"]
+offset_left = 934.0
+offset_top = 556.0
+offset_right = 1138.0
+offset_bottom = 606.0
+text = "Shake 0 / 2"
+expand_icon = true
+theme_override_font_sizes/font_size = 24
+theme_override_constants/icon_max_width = 28

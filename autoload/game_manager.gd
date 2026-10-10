@@ -26,6 +26,9 @@ var crt_enabled: bool = true
 var master_volume: float = 0.8
 var preferences_path: String = "user://preferences.cfg"
 var audio_rng: RandomNumberGenerator = RandomNumberGenerator.new()
+const SHAKER_CAPACITY: int = 2
+const SHAKER_PRICE: int = 4
+var shakers: int = 0
 var offers: Array[JokerData] = []
 var reroll_cost: int = 3
 var candy_levels: Array[int] = []
@@ -92,6 +95,7 @@ func start_run(seed_value: int = 0) -> void:
  round_index = 0
  gummies = config.starting_gummies
  jokers.equipped.clear()
+ shakers=0
  candy_levels.resize(config.candies.size())
  candy_levels.fill(0)
  candy_bonuses.resize(config.candies.size())
@@ -158,6 +162,12 @@ func roll_offers() -> void:
   var i: int = rng.randi_range(0,pool.size()-1)
   offers.append(pool[i])
   pool.remove_at(i)
+func buy_shaker() -> bool:
+ if state != "shop" or shakers >= SHAKER_CAPACITY or gummies < SHAKER_PRICE: return false
+ gummies -= SHAKER_PRICE
+ shakers += 1
+ changed.emit()
+ return true
 func buy(item: JokerData) -> bool:
  if state != "shop" or item not in offers or gummies < item.price or not jokers.can_add(item): return false
  gummies -= item.price

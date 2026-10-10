@@ -161,6 +161,20 @@ func reshuffle() -> void:
   for cell: CandyState in cells: cell.color = roll_color()
   stabilize()
   if not legal_moves().is_empty(): return
+func shake_candies() -> bool:
+ # Reorder existing candies only. Locks, coatings, ages and board marks survive.
+ var original: Array[CandyState]=cells.duplicate()
+ var movable: Array[int]=[]
+ for i: int in range(cells.size()):
+  if cells[i] != null and not is_locked_tile(i): movable.append(i)
+ for attempt: int in range(200):
+  for j: int in range(movable.size()-1,0,-1): swap(movable[j],movable[rng.randi_range(0,j)])
+  var different: bool=false
+  for i: int in movable:
+   if cells[i].color != original[i].color or cells[i].coating != original[i].coating: different=true
+  if different and matches().is_empty() and not legal_moves().is_empty(): return true
+ cells.assign(original)
+ return false
 func wild_groups(a: int,b: int) -> Array[Dictionary]:
  var result: Array[Dictionary] = []
  for color: int in range(config.candies.size()):

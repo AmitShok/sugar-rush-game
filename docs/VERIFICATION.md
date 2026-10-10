@@ -91,3 +91,7 @@ All 368 checks passed using Godot 4.7.2 OpenGL with Dummy audio: ShopRunner 30, 
 ## CRT, audio and settings
 
 98 checks passed with the OpenGL renderer and Dummy audio: SettingsRunner 16, ResizeRunner 31, SynergyRunner 21 and ShopRunner 30. Settings coverage includes disk save/reload of all four options, old-file defaults, a physical slider click while paused, zero-volume mute/full-volume restore, pitch bounds/variation and RNG independence. Visually inspected CRT on/off and the options panel. Resize tests cover 496 board hitboxes and physical controls through eight window sizes with CRT enabled. Settings tests use and remove a separate test file; player preferences are preserved.
+
+## Sugar Shaker consumable
+
+252 checks passed: ShakerRunner 20 and ShopRunner 30 rendered, SynergyRunner 21, RouteRunner 150, ResizeRunner 31 rendered. Coverage includes physical purchases/use, two-item capacity independent of five Jokers, unchanged score/moves/streak, object/lock/coating/age preservation, safe-board generation, failure refunds, queued use, cancellation on round end, pause/quit during animation and run reset. Visually inspected shop and gameplay with CRT enabled. The headless resize run waited on its existing screenshot callback; it passed when rerun using its intended renderer.

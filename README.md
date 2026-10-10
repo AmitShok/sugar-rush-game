@@ -99,3 +99,7 @@ Roulette Licorice marks all candies of its chosen type with a small roulette whe
 ### CRT and audio options
 
 Pause → Options includes a Heavy CRT toggle and a 0–100% volume slider. The CRT treatment is enabled by default, with scanlines, RGB phosphor mask, color fringing, glow and vignette; it preserves input geometry. Motion, sound, CRT and volume save immediately to `user://preferences.cfg` and reload at startup. Existing settings files retain their previous choices; CRT defaults on and volume defaults to 80%. Pop sounds vary by ±10% pitch around the cascade pitch, using an independent random generator so seeded gameplay remains reproducible.
+
+### Sugar Shaker consumable
+
+Buy a Sugar Shaker for $4 in the shop and carry up to two, separately from Joker slots. The in-round **Shake** button consumes one to rearrange unlocked candies, spending no move and changing neither score nor streak. It preserves all candy objects, coatings, ages, upgrades and fixed locks; the new arrangement has no immediate matches and at least one legal move. Requests during a move queue once; if that move finishes the round, the item is kept. If no safe rearrangement can be found, nothing is consumed. Unused items carry across rounds and shops, and new runs start empty.

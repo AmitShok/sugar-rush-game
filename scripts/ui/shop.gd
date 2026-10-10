@@ -9,6 +9,7 @@ var upgrade_rows: VBoxContainer
 var upgrade_buttons: Array[Button] = []
 var joker_tab: Button
 var upgrade_tab: Button
+var shaker_buy: Button
 func make_tab(text: String, x: float) -> Button:
  var button: Button=Button.new()
  button.text=text
@@ -75,7 +76,20 @@ func purchase_upgrade(color: int) -> void:
  if GameManager.buy_candy_upgrade(color):
   $Receipt.text="%s: +%s Candys | Level %s | -%s" % [GameManager.config.candies[color].display_name,GameManager.upgrade_gain(color),GameManager.candy_level(color),UIStyle.money(cost)]
 
+func purchase_shaker() -> void:
+ if GameManager.buy_shaker():
+  $Receipt.text="Sugar Shaker bought | %s / 2 held | -$4" % GameManager.shakers
 func _ready() -> void:
+ shaker_buy=Button.new()
+ shaker_buy.name="BuyShaker"
+ shaker_buy.position=Vector2(188,0)
+ shaker_buy.size=Vector2(590,38)
+ shaker_buy.add_theme_font_size_override("font_size",24)
+ shaker_buy.icon=UIStyle.texture("sugar_shaker")
+ shaker_buy.expand_icon=true
+ shaker_buy.add_theme_constant_override("icon_max_width",24)
+ shaker_buy.pressed.connect(purchase_shaker)
+ add_child(shaker_buy)
  joker_tab=make_tab("Jokers",188)
  upgrade_tab=make_tab("Candy Upgrades",488)
  joker_tab.pressed.connect(show_upgrades.bind(false))
@@ -144,6 +158,9 @@ func reroll() -> void:
  $Receipt.text = "New stock: -%s" % UIStyle.money(cost)
 func refresh() -> void:
  if GameManager.state != "shop": return
+ shaker_buy.text="Sugar Shaker  $4   |   Held %s / 2" % GameManager.shakers
+ shaker_buy.disabled=GameManager.shakers>=GameManager.SHAKER_CAPACITY or GameManager.gummies<GameManager.SHAKER_PRICE
+ shaker_buy.tooltip_text="One use: rearrange unlocked candies during a round. No move spent.\n"+("Inventory full (2/2)." if GameManager.shakers>=2 else ("Need $%s more." % (4-GameManager.gummies) if GameManager.gummies<4 else "Cash after purchase: "+UIStyle.money(GameManager.gummies-4)))
  $Actions/Continue.text = "Next:\n"+("Boss" if (GameManager.round_index+1)%3==2 else ("Small" if (GameManager.round_index+1)%3==0 else "Big"))
  $Heading.text = "SHOP"
  $Wallet.text = "Available cash: %s" % UIStyle.money(GameManager.gummies)

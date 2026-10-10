@@ -101,3 +101,5 @@ Four exact-three Joker cards are drawn and exported by `tools/create_three_art.l
 `readable_font_atlas.aseprite` → `readable_font_atlas.png`: 768 x 256 body-text glyph atlas based on the bundled OFL Pixelify Sans Medium. `tools/create_readable_font.lua` creates the native master and exports its PNG and BMFont metrics. Large headings retain m6x11. See `assets/fonts/CREDITS.md`.
 
 `ui_volume_knob.aseprite` → `ui_volume_knob.png`: 16 x 24 slider grip created/exported in Aseprite by `tools/create_volume_art.lua`. Slider tracks reuse existing Aseprite skins. `shaders/crt.gdshader` provides the runtime screen treatment without changing the underlying art or pointer geometry.
+
+`sugar_shaker.aseprite` → `sugar_shaker.png`: 32 x 40 consumable icon, drawn/exported in Aseprite by `tools/create_shaker_art.lua`, with separate glass, sugar-crystal and lid layers.
