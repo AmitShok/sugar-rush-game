@@ -3,3 +3,6 @@
 
 # Documentation screenshots are not game resources.
 docs/**/*.import
+
+# Reproducible exports; keep binaries out of source control.
+/builds/

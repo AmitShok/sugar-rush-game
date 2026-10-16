@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>$GODOT_PROJECT_NAME</title>
+<style>
+html,body{margin:0;padding:0;width:100%;height:100%;background:#172b30;color:#fff8e7;font:18px system-ui,sans-serif;overflow:hidden;overscroll-behavior:none}
+#canvas{display:block;touch-action:none;outline:none;width:100%;height:100%}
+.overlay{position:fixed;inset:0;z-index:5;background:#172b30;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;box-sizing:border-box}
+.box{max-width:520px}button{font:inherit;min-height:48px;padding:10px 22px;margin:8px;color:#fff8e7;background:#913e38;border:2px solid #f5b957;border-radius:5px;cursor:pointer;touch-action:manipulation}
+button:focus-visible{outline:3px solid white}progress{width:100%}#rotate{display:none}#rotate.dismissed{display:none!important}
+@media(pointer:coarse) and (orientation:portrait) and (max-width:600px){#rotate{display:flex}}
+</style>
+$GODOT_HEAD_INCLUDE
+</head>
+<body>
+<canvas id="canvas" tabindex="0" aria-label="Sugar Rush game"></canvas>
+<div id="start" class="overlay"><div class="box"><h1>Sugar Rush</h1><p>Match candies. Build your recipe.</p><p>Tap a candy, then a neighbor to swap. Tap owned Jokers to read their effects.</p><button id="play">Play</button><button id="fullscreen">Play full screen</button><p id="status" role="status">Your run saves in this browser.</p><progress id="progress" hidden></progress></div></div>
+<div id="rotate" class="overlay"><div class="box"><h2>Turn your phone sideways</h2><p>Landscape gives the board and controls more room.</p><button id="portrait">Play in portrait</button></div></div>
+<noscript>Enable JavaScript to play Sugar Rush.</noscript>
+<script src="$GODOT_URL"></script>
+<script>
+const config=$GODOT_CONFIG;
+const engine=new Engine(config);
+const status=document.getElementById('status');
+const progress=document.getElementById('progress');
+let started=false;
+document.getElementById('portrait').onclick=()=>document.getElementById('rotate').classList.add('dismissed');
+async function start(fullscreen){
+ if(started)return;
+ if(fullscreen && document.documentElement.requestFullscreen){
+  try{await document.documentElement.requestFullscreen();}catch(error){/* Continue in the browser when fullscreen is unavailable. */}
+ }
+ const missing=Engine.getMissingFeatures({threads:$GODOT_THREADS_ENABLED});
+ if(missing.length){status.textContent='This browser cannot run the game: '+missing.join(', ');return;}
+ started=true;
+ document.getElementById('play').disabled=true;
+ document.getElementById('fullscreen').disabled=true;
+ progress.hidden=false;
+ status.textContent='Loading Sugar Rush...';
+ try{
+  await engine.startGame({onProgress:(current,total)=>{progress.max=total||1;progress.value=current;}});
+  document.getElementById('start').remove();
+  document.getElementById('canvas').focus();
+ }catch(error){status.textContent='Could not load the game. Reload to retry. '+error.message;console.error(error);}
+}
+document.getElementById('play').onclick=()=>start(false);
+document.getElementById('fullscreen').onclick=()=>start(true);
+</script>
+</body>
+</html>

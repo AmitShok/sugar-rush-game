@@ -124,3 +124,8 @@ Each shop stocks two random, distinct consumable cards. Each offer can be bought
 Runs autosave after completed actions and shop transactions to `user://run_save.cfg`. **Continue** on the title screen restores your board, current round, cash, score, moves, Jokers, upgrades, inventory, shop stock and random sequences. Quit to Title also preserves the run. Normal desktop/window quitting finishes any active resolution before saving; an abrupt termination restores the last completed checkpoint. Winning or losing clears the saved run. **New Run** replaces it when you confirm the first batch; backing out of the preview keeps the old save. Settings remain separate.
 
 Saves use a versioned, validated ConfigFile with temporary-file replacement. Automated tests use separate save files and never overwrite the player's run.
+
+
+## Windows and web exports (v0.17)
+
+Run **Export Builds.cmd** with `GODOT_EXE` set, or use `tools/export.ps1 -GodotExe "C:/path/to/Godot.exe"`. Portable Windows and upload-ready web ZIPs are generated in `builds/`. Both support mouse and touch; owned Jokers can be tapped for details. See [export and testing instructions](docs/EXPORTING.md) for hosting, local saves and device coverage.

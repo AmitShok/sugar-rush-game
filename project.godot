@@ -17,7 +17,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 config/name="Sugar Rush"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="Godot/app_userdata/Sugar Roguelite"
-config/version="0.16"
+config/version="0.17"
 run/main_scene="res://scenes/MainGame.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://assets/exported/candy_0.png"
@@ -28,10 +28,16 @@ GameManager="*res://autoload/game_manager.gd"
 
 [display]
 
+window/size/viewport_width=1152
 window/size/viewport_height=720
 window/size/window_width_override=1152
 window/size/window_height_override=720
 window/stretch/mode="viewport"
+
+[input_devices]
+
+pointing/emulate_mouse_from_touch=true
+pointing/emulate_touch_from_mouse=false
 
 [rendering]
 

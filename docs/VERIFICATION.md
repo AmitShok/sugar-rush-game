@@ -132,3 +132,10 @@ Godot editor import completed successfully and static runtime resource paths hav
 ## Clearer interface typography
 
 Replaced runtime Pixelify Sans/m6x11 typography with Chakra Petch SemiBold across body text, controls, headings and score/cash numbers. Glyphs were drawn into a native 1536 x 576 Aseprite atlas and exported through Aseprite with BMFont metrics; source font and OFL attribution are included. Existing card illustration lettering remains intact. Visually inspected title, gameplay and shop with CRT enabled. 147 rendered checks passed: ShopRunner 30, ResizeRunner 31 (eight window sizes), CollectionRunner 66 (all 26 descriptions), ConsumableRunner 20. Import completed without errors.
+
+
+## Windows / web exports (v0.17)
+
+Built Windows x86-64 and single-threaded WebGL 2 release exports with Godot 4.7.2 and matching templates. Both export logs are free of script/export errors; ZIP integrity and bundled font/engine notices checked. Source art, tests, tools and documentation are excluded from the game pack. Actual Windows EXE input test passes new run, swap, save, Quit to Title/Continue, another swap and clean close. Actual web release passes the same flow plus IndexedDB persistence across reload in Chrome and Edge at 1152x720 desktop, 844x390 touch landscape, 768x1024 touch tablet and 390x844 touch portrait. Browser contexts are isolated and report no console/page errors.
+
+238 Godot checks pass: TouchRunner 17, SaveRunner 21, ResizeRunner 31, RouteRunner 150, SettingsRunner 19. Touch input includes real ScreenTouch events with mouse emulation, exact move counts, live Roulette inspection, modal close, pause/resume, volume and consumable purchase. Visually inspected web gameplay, pause, title and phone/tablet captures; corrected touch instructions to avoid Items overlap. Physical Android/iOS hardware, Safari and audible audio quality/latency remain untested. Full build/hosting/test instructions are in EXPORTING.md.

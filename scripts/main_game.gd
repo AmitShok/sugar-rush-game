@@ -12,16 +12,17 @@ var crt_layer: CanvasLayer
 var toast_tween: Tween
 var run_save: Node
 var quitting: bool=false
+var joker_details: Control
 func _ready() -> void:
  # A fixed logical canvas keeps drawing and native GUI input in the same space.
  # Physical window dimensions may change freely without changing game geometry.
  var window: Window = get_window()
- window.title = "Sugar Rush | v0.16 - Saved Runs"
+ window.title = "Sugar Rush | v0.17 - Desktop & Web"
  window.content_scale_size = DESIGN_SIZE
  window.content_scale_mode = Window.CONTENT_SCALE_MODE_VIEWPORT
  window.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_KEEP
  window.content_scale_stretch = Window.CONTENT_SCALE_STRETCH_FRACTIONAL
- window.min_size = Vector2i(640,400)
+ if not OS.has_feature("web"): window.min_size = Vector2i(640,400)
  UIStyle.apply(self)
  crt_layer=CanvasLayer.new()
  crt_layer.name="CRT"
@@ -92,7 +93,7 @@ func _ready() -> void:
  GameManager.run_ended.connect(end_run)
  GameManager.toast.connect(show_toast)
  board.special_triggered.connect(on_special)
- $Play/JokerInventory.inspect_requested.connect($Shop.inspect_owned)
+ $Play/JokerInventory.inspect_requested.connect(inspect_joker)
  $Menu.visible = true
  $Play.visible = false
  fill_codex()
@@ -102,6 +103,13 @@ func _ready() -> void:
  $Menu/Layout/Continue.pressed.connect(continue_run)
  refresh_continue()
  get_tree().auto_accept_quit=false
+ if OS.has_feature("web"):
+  $Menu/Layout/Quit.hide()
+  $Pause/Layout/Abandon.text="Save & Return to Title"
+  $Pause/Layout/Quit.hide()
+  if not OS.is_userfs_persistent(): show_toast("Browser storage unavailable | progress may not survive closing this tab")
+ if DisplayServer.is_touchscreen_available():
+  $Play/Instruction.text="Tap two candies\nto swap.\nTap Joker: info"
 func refresh_continue() -> void:
  $Menu/Layout/Continue.disabled=not run_save.has_save()
  $Menu/Layout/Continue.tooltip_text="Resume your saved run, including after Quit to Title."
@@ -117,6 +125,9 @@ func continue_run() -> void:
 func _notification(what: int) -> void:
  if what==NOTIFICATION_WM_CLOSE_REQUEST: quit_game()
 func quit_game() -> void:
+ if OS.has_feature("web"):
+  await to_menu()
+  return
  if quitting: return
  quitting=true
  set_paused(false)
@@ -126,6 +137,43 @@ func quit_game() -> void:
   else: await board.resolution_finished
  run_save.checkpoint()
  get_tree().quit()
+func inspect_joker(item: JokerData) -> void:
+ if GameManager.state=="shop":
+  $Shop.inspect_owned(item)
+  return
+ if board.busy or GameManager.state!="playing": return
+ board.paused=true
+ joker_details=Control.new()
+ joker_details.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+ joker_details.z_index=190
+ add_child(joker_details)
+ var shade: TextureRect=TextureRect.new()
+ shade.texture=UIStyle.texture("ui_shade")
+ shade.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
+ shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+ joker_details.add_child(shade)
+ var panel: PanelContainer=PanelContainer.new()
+ panel.position=Vector2(216,160)
+ panel.size=Vector2(720,400)
+ joker_details.add_child(panel)
+ var column: VBoxContainer=VBoxContainer.new()
+ panel.add_child(column)
+ column.add_child(UIStyle.label(item.display_name,32,UIStyle.MINT))
+ var description: Label=UIStyle.label(GameManager.joker_description(item),24)
+ description.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+ description.custom_minimum_size=Vector2(660,240)
+ column.add_child(description)
+ var close: Button=Button.new()
+ close.name="Close"
+ close.text="Back to the round"
+ close.custom_minimum_size.y=52
+ close.pressed.connect(close_joker_details)
+ column.add_child(close)
+func close_joker_details() -> void:
+ if is_instance_valid(joker_details):
+  joker_details.queue_free()
+  joker_details=null
+ board.paused=false
 func open_items() -> void:
  if not board.target_consumable.is_empty():
   board.cancel_consumable_target()
@@ -193,6 +241,7 @@ func end_run(won: bool) -> void:
  $Play.visible = false
  $GameOverScreen.show_result(won)
 func to_menu() -> void:
+ close_joker_details()
  run_save.checkpoint()
  close_items()
  set_paused(false)
@@ -234,7 +283,7 @@ func close_options() -> void:
 func show_options(value: bool) -> void:
  $Pause/Layout/Title.text = "OPTIONS" if value else "PAUSED"
  for key: String in ["Motion","Sound","CRT","Volume","Back"]: $Pause/Layout.get_node(key).visible = value
- for key: String in ["Resume","Options","Abandon","Quit"]: $Pause/Layout.get_node(key).visible = not value
+ for key: String in ["Resume","Options","Abandon","Quit"]: $Pause/Layout.get_node(key).visible = not value and (key!="Quit" or not OS.has_feature("web"))
 func show_codex() -> void:
  if board.busy: return
  $Codex.visible = true
@@ -267,7 +316,8 @@ func on_special(effect: String, _origin: Vector2) -> void:
   shake.tween_property(board,"position",Vector2(452,216)+offset,0.045)
 func _unhandled_key_input(event: InputEvent) -> void:
  if event.is_action_pressed("ui_cancel"):
-  if item_panel.visible: close_items()
+  if is_instance_valid(joker_details): close_joker_details()
+  elif item_panel.visible: close_items()
   elif not board.target_consumable.is_empty(): board.cancel_consumable_target()
   elif collection.visible: collection.closed.emit()
   elif candy_guide.visible: close_candy_guide()
