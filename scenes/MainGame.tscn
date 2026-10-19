@@ -86,7 +86,7 @@ offset_left = 452
 offset_top = 670
 offset_right = 592
 offset_bottom = 712
-text = "Hint"
+text = "Hint $1"
 theme_override_font_sizes/font_size = 24
 [node name="Rules" type="Button" parent="Play"]
 offset_left = 604

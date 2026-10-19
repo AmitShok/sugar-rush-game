@@ -299,12 +299,19 @@ func resolve(initial: Array[Dictionary]) -> void:
   model.stabilize()
   GameManager.toast.emit("Cascade safety limit reached | board settled")
 func hint() -> void:
- if busy or paused or GameManager.state != "playing": return
+ if busy or paused or not target_consumable.is_empty() or GameManager.state != "playing": return
+ var cost: int = GameManager.hint_cost()
+ if GameManager.gummies < cost:
+  GameManager.toast.emit("A hint costs $%s" % cost)
+  return
  var legal: Array[Vector2i] = model.legal_moves()
  if legal.is_empty(): return
+ GameManager.gummies -= cost
+ GameManager.hints_used += 1
  for tile: SugarTile in tiles:
   tile.hinted = tile.cell_index in [legal[0].x,legal[0].y]
   tile.queue_redraw()
+ GameManager.changed.emit()
 func _unhandled_key_input(event: InputEvent) -> void:
  if not event.is_pressed() or busy or paused or GameManager.state != "playing": return
  if event.is_action_pressed("ui_left"): cursor = maxi(0,cursor-1)
@@ -312,7 +319,10 @@ func _unhandled_key_input(event: InputEvent) -> void:
  elif event.is_action_pressed("ui_up"): cursor = maxi(0,cursor-columns)
  elif event.is_action_pressed("ui_down"): cursor = mini(model.cells.size()-1,cursor+columns)
  elif event.is_action_pressed("ui_accept"): choose(cursor)
- elif event is InputEventKey and event.keycode == KEY_H: hint()
+ elif event is InputEventKey and event.keycode == KEY_H:
+  if not event.echo: hint()
+  get_viewport().set_input_as_handled()
+  return
  else: return
  for tile: SugarTile in tiles:
   tile.hinted = tile.cell_index == cursor

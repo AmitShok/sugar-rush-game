@@ -27,6 +27,7 @@ var master_volume: float = 0.8
 var preferences_path: String = "user://preferences.cfg"
 var audio_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 const SHAKER_CAPACITY: int = 2
+var hints_used: int = 0
 var consumables: Array[String] = []
 # Compatibility for the original Shaker API; all items share the same capacity.
 var shakers: int:
@@ -39,6 +40,8 @@ var offers: Array[JokerData] = []
 var reroll_cost: int = 3
 var candy_levels: Array[int] = []
 var candy_bonuses: Array[int] = []
+func hint_cost() -> int:
+ return 1+hints_used
 func _ready() -> void:
  jokers = preload("res://scenes/JokerManager.tscn").instantiate() as JokerManager
  jokers.name = "JokerManager"
@@ -100,6 +103,7 @@ func start_run(seed_value: int = 0) -> void:
  rng.seed = run_seed
  round_index = 0
  gummies = config.starting_gummies
+ hints_used = 0
  jokers.equipped.clear()
  consumables.clear()
  consumable_offers.clear()

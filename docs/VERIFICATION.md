@@ -154,3 +154,10 @@ Inspected https://amitshok.itch.io/sugar-rush and its public html-classic.itch.z
 
 Both presets now exclude builds/*; export tooling and capture tests create builds/.gdignore before import. Rebuilt Windows and web packs are 361,788 bytes each, with 328 entries; inspected directories contain no builds/tests/tools/docs/source-art entries or imported capture images. Both ZIPs pass integrity checks. Windows release start/swap/save/title/Continue/exit passes.
 Chrome web smoke passes all four desktop/touch profiles, save/reload/Continue and visible error controls with no browser errors.
+
+
+## Escalating paid hints (2026-10-19)
+
+Hints cost $1 initially and increase by $1 after each successful purchase across the entire run. Button and H share the same charge, display, affordability and save path. Busy/paused/targeting/no-legal-move attempts do not charge; key repeats do not buy hints. Fixed keyboard hints being overwritten by the cursor highlight. Cash and hint count persist across rounds and Continue; old saves default to zero purchases. New Run resets the price. Updated button, tooltip, handbook and README. No artwork changes.
+
+55 rendered checks pass: HintRunner 15, SaveRunner 21, SettingsRunner 19. An initial headless SaveRunner timed out at its existing screenshot wait; rerunning with rendering passed. Windows and web exports rebuilt successfully.

@@ -1,6 +1,6 @@
 extends Node
 # Stable checkpoints never serialize a partly resolved swap/cascade.
-const FIELDS: Array[String]=["run_seed","round_index","score","moves","gummies","streak","poison","poison_cleared","state","last_chips","last_mult","last_award","last_summary","reroll_cost"]
+const FIELDS: Array[String]=["run_seed","round_index","score","moves","gummies","streak","poison","poison_cleared","state","last_chips","last_mult","last_award","last_summary","reroll_cost","hints_used"]
 var main: Control
 var path: String="user://run_save.cfg"
 var restoring: bool=false
@@ -55,9 +55,12 @@ func read_save() -> Dictionary:
  if not value is Dictionary: return {}
  var data: Dictionary=value
  if data.get("version")!=1: return {}
+ # Earlier runs had free hints, so they begin with the new $1 price.
+ if not data.has("hints_used"): data["hints_used"]=0
  for key: String in FIELDS:
   if not data.has(key) or typeof(data[key])!=typeof(GameManager.get(key)): return {}
  if data.state not in ["playing","shop"] or data.round_index<0 or data.round_index>=GameManager.config.rounds.size(): return {}
+ if data.hints_used<0 or data.hints_used>=9223372036854775807: return {}
  for key: String in ["consumables","consumable_offers","jokers","offers","candy_levels","candy_bonuses"]:
   if not data.get(key) is Array: return {}
  if data.consumables.size()>2 or data.consumable_offers.size()>2 or data.jokers.size()>5: return {}
