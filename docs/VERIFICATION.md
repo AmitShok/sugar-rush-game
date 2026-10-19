@@ -161,3 +161,11 @@ Chrome web smoke passes all four desktop/touch profiles, save/reload/Continue an
 Hints cost $1 initially and increase by $1 after each successful purchase across the entire run. Button and H share the same charge, display, affordability and save path. Busy/paused/targeting/no-legal-move attempts do not charge; key repeats do not buy hints. Fixed keyboard hints being overwritten by the cursor highlight. Cash and hint count persist across rounds and Continue; old saves default to zero purchases. New Run resets the price. Updated button, tooltip, handbook and README. No artwork changes.
 
 55 rendered checks pass: HintRunner 15, SaveRunner 21, SettingsRunner 19. An initial headless SaveRunner timed out at its existing screenshot wait; rerunning with rendering passed. Windows and web exports rebuilt successfully.
+
+
+## Explicit round-preview layout (2026-10-20)
+
+User clarified New Run leaves the menu dimly visible with no error. Reworked RoundMap to place panel/cards/labels/buttons in fixed logical rectangles and give its content an explicit z offset above the shade. Removed nested container layout from this modal. Reapply label rectangles after deferred text shaping, since tests exposed initial zero-width wrapping inflating label heights. Existing Aseprite skins and icons reused. The route and round-confirmation flow is unchanged.
+
+Rendered RouteRunner passes 168 checks including first-frame panel geometry, content layering, all card bounds across the six antes and round navigation. Visually inspected first route preview; rebuilt Windows and web exports. Physical iPhone resolution remains unconfirmed.
+Chrome actual web release passes desktop and three DPR-3 touch profiles: New Run, round confirmation, swaps, save/title/Continue, reload/Continue and error controls, with no browser errors. Inspected phone-landscape route capture.

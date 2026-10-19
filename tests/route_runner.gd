@@ -19,6 +19,8 @@ func run_tests() -> void:
  var route: Control=main.get_node("RoundMap")
  check(route.visible and GameManager.state=="menu" and route.target_index==0,"Starting a run previews the ante before gameplay")
  check(route.cards.size()==3 and route.subtitle.text.contains("2 rounds") and route.subtitle.text.contains("INSPECTOR"),"Preview shows Small, Big and Inspector two clears ahead")
+ var content: Control=route.get_node("Content")
+ check(content.size==Vector2(860,648) and content.z_index>0,"Modal content has explicit first-frame bounds above its dimming layer")
  await frames()
  check(route.enter_button.get_global_rect().end.y<=710,"Route confirmation stays on canvas")
  await capture("v5_round_map")
@@ -40,6 +42,12 @@ func run_tests() -> void:
   main.get_node("Shop/Actions/Continue").pressed.emit()
   check(route.subtitle.text.contains(expected_bosses[(index+1)/3]),"Correct upcoming boss for ante "+str((index+1)/3+1))
   check(route.heading.text.contains("/ 6"),"Route shows all six antes")
+  await frames()
+  var fits: bool=true
+  for card: Panel in route.cards:
+   for child: Control in card.get_children():
+    fits=fits and Rect2(Vector2.ZERO,card.size).encloses(child.get_rect())
+  check(fits,"All card text and icons fit the fixed layout for round "+str(index+1))
   if (index+1)%3==2:
    check(route.subtitle.text.begins_with("BOSS NEXT"),"Boss warning appears before entering boss")
    await capture("v5_boss_preview")
