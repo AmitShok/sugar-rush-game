@@ -40,8 +40,8 @@ async def launch(page):
  await page.locator('#play').click()
  await page.locator('#start').wait_for(state='detached',timeout=90000)
  await page.wait_for_timeout(700)
-async def exercise(browser,name,width,height,touch):
- context=await browser.new_context(viewport={'width':width,'height':height},has_touch=touch,device_scale_factor=3 if touch else 1,is_mobile=touch)
+async def exercise(browser,name,width,height,touch,locale='en-US'):
+ context=await browser.new_context(viewport={'width':width,'height':height},has_touch=touch,device_scale_factor=3 if touch else 1,is_mobile=touch,locale=locale)
  page=await context.new_page()
  errors=[]
  page.on('pageerror',lambda error:errors.append(str(error)))
@@ -88,7 +88,7 @@ async def main():
    browser=await p.webkit.launch(headless=True)
   else:
    browser=await p.chromium.launch(channel=os.environ.get('SUGAR_BROWSER_CHANNEL','chrome'),headless=True,args=['--mute-audio','--enable-unsafe-swiftshader'])
-  for args in [('desktop',1152,720,False),('phone-landscape',844,390,True),('tablet-portrait',768,1024,True),('phone-portrait',390,844,True)]:
+  for args in [('desktop',1152,720,False),('phone-landscape',844,390,True),('tablet-portrait',768,1024,True),('phone-portrait',390,844,True),('phone-hebrew',844,390,True,'he-IL'),('phone-arabic',844,390,True,'ar-SA')]:
    await exercise(browser,*args)
   await browser.close()
 asyncio.run(main())

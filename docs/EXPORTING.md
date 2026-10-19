@@ -30,6 +30,8 @@ Open `http://127.0.0.1:8765`. The single-threaded Compatibility build uses WebGL
 
 Tap a candy, then its neighbor to swap. Tap owned Jokers to read their current effect, including Roulette's chosen type. Shop cards, consumables, pause and settings are touch accessible. The web pause menu uses Save & Return to Title; it does not exit the engine and leave a dead canvas.
 
+The current English-only game explicitly uses English/LTR UI layout, including when the browser/device language is Hebrew or Arabic. This prevents automatic mirroring from placing dynamically built panels off-screen; it does not change the device's language settings. The web smoke test includes Hebrew and Arabic phone contexts in addition to English desktop/tablet/phone contexts.
+
 Runs and settings save locally: native Windows uses its Godot user-data directory, while the web build uses IndexedDB for that browser/site. Browser storage must be allowed. Clearing site data, changing browser/site, or private browsing can remove/prevent persistence. These saves do not sync between computers or between Windows and web. Prefer Save & Return to Title before closing a browser tab; abrupt termination during an animation returns to the last stable checkpoint. The game warns when the browser reports unavailable persistent storage.
 
 Turn CRT off in Options if a device struggles with the screen effect. Browser audio starts after interaction. Tests run muted; audible speaker quality and latency still require hardware testing.

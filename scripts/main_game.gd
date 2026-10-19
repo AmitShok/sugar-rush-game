@@ -13,6 +13,11 @@ var toast_tween: Tween
 var run_save: Node
 var quitting: bool=false
 var joker_details: Control
+func _enter_tree() -> void:
+ # The game currently ships only English text and a fixed LTR layout. Set its
+ # locale before child UI is built: unattached Controls otherwise use the OS
+ # locale and can mirror their offsets before inheriting the parent's direction.
+ TranslationServer.set_locale("en")
 func _ready() -> void:
  # A fixed logical canvas keeps drawing and native GUI input in the same space.
  # Physical window dimensions may change freely without changing game geometry.

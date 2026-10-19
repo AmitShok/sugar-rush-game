@@ -169,3 +169,11 @@ User clarified New Run leaves the menu dimly visible with no error. Reworked Rou
 
 Rendered RouteRunner passes 168 checks including first-frame panel geometry, content layering, all card bounds across the six antes and round navigation. Visually inspected first route preview; rebuilt Windows and web exports. Physical iPhone resolution remains unconfirmed.
 Chrome actual web release passes desktop and three DPR-3 touch profiles: New Run, round confirmation, swaps, save/title/Continue, reload/Continue and error controls, with no browser errors. Inspected phone-landscape route capture.
+
+
+## Confirmed RTL-locale off-screen panels (2026-10-20)
+
+The user screenshot revealed right-aligned English title/seed text. Setting the locale to he reproduced the exact dim-menu symptom: RoundMap content appeared at x=1298 outside the 1152-wide viewport, while the shade remained visible. User also reported Collection off-screen to the right. Root LTR alone was insufficient because dynamically created, unattached Controls use the application locale before inheriting their parent. MainGame now selects English in _enter_tree before child UI construction and explicitly declares LTR layout. The game currently ships English text only; this does not change device/browser settings.
+
+LocaleRunner failed before the fix and now passes 24 checks across Hebrew, Arabic and English system locales, including route bounds, visible Collection cards/details, physical Back/Play clicks and entering gameplay. Inspected Hebrew Collection and route captures. Added Hebrew/Arabic browser contexts to the actual exported web smoke test. Rebuilt both releases.
+Actual Chrome web export passes all six profiles (English desktop/phone/tablet, Hebrew phone, Arabic phone), including New Run, swaps, saves, title/Continue, reload/Continue and no browser errors.

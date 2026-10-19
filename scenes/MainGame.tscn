@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" path="res://scenes/MenuBackdrop.tscn" id="8"]
 [ext_resource type="Texture2D" path="res://assets/exported/ui_shade.png" id="9"]
 [node name="MainGame" type="Control"]
+layout_direction = 2
 process_mode = 3
 layout_mode = 3
 anchors_preset = 15
