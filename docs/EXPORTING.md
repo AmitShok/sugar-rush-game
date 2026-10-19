@@ -34,12 +34,15 @@ Runs and settings save locally: native Windows uses its Godot user-data director
 
 Turn CRT off in Options if a device struggles with the screen effect. Browser audio starts after interaction. Tests run muted; audible speaker quality and latency still require hardware testing.
 
+The web CRT uses a blended scanline/mask/vignette overlay without the desktop screen-copy glow. Runtime script errors, unexpected engine exits, and graphics-context loss display a readable message with Reload and Dismiss controls. Updating a hosted game requires replacing the complete web ZIP contents; pushing source to GitHub does not update an independently hosted export. Keep the same site/origin to preserve existing browser saves.
+
 ## Verification
 
 - Run `tests/TouchRunner.tscn` with the renderer, Dummy audio and `--test` for native touch-event controls, volume, shop purchase, Joker inspection and pause.
 - `python tests/windows_export_smoke.py` launches the real release executable with an isolated test save, sends native window input, checks swaps/save/title/Continue and closes it.
 - Install Python Playwright (`python -m pip install playwright`), start the local server above, then run `python tests/web_export_smoke.py`. This tests the actual web release in installed Chrome with fresh browser profiles. Set `SUGAR_BROWSER_CHANNEL=msedge` to test installed Edge. It checks desktop, landscape phone, portrait phone and portrait tablet input, exact move counts, IndexedDB persistence, and Continue after reload.
 - Tests never modify the player's existing save. Browser screenshots are written to `builds/test-captures`.
+- To investigate WebKit, install `python -m playwright install webkit`, set `SUGAR_BROWSER_ENGINE=webkit`, then run the web smoke test. It still fails on any browser graphics error; it is not a substitute for physical iPhone testing.
 
 Verified on this Windows machine, Chrome and Edge, including emulated touch viewports. Physical Android/iOS devices and Safari were not available; test those devices before advertising full device coverage. Browser emulation does not reproduce mobile GPU, memory, safe-area or audio behavior completely.
 

@@ -33,7 +33,9 @@ func _ready() -> void:
  overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
  overlay.mouse_filter=Control.MOUSE_FILTER_IGNORE
  var crt_material: ShaderMaterial=ShaderMaterial.new()
- crt_material.shader=preload("res://shaders/crt.gdshader")
+ # Reduce mobile WebGL work: keep web CRT as a blended overlay without
+ # the screen texture copies and multi-sample glow used on desktop.
+ crt_material.shader=preload("res://shaders/crt_web.gdshader") if OS.has_feature("web") else preload("res://shaders/crt.gdshader")
  overlay.material=crt_material
  crt_layer.add_child(overlay)
  crt_layer.visible=GameManager.crt_enabled

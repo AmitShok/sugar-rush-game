@@ -18,14 +18,31 @@ $GODOT_HEAD_INCLUDE
 <canvas id="canvas" tabindex="0" aria-label="Sugar Rush game"></canvas>
 <div id="start" class="overlay"><div class="box"><h1>Sugar Rush</h1><p>Match candies. Build your recipe.</p><p>Tap a candy, then a neighbor to swap. Tap owned Jokers to read their effects.</p><button id="play">Play</button><button id="fullscreen">Play full screen</button><p id="status" role="status">Your run saves in this browser.</p><progress id="progress" hidden></progress></div></div>
 <div id="rotate" class="overlay"><div class="box"><h2>Turn your phone sideways</h2><p>Landscape gives the board and controls more room.</p><button id="portrait">Play in portrait</button></div></div>
+<div id="failure" class="overlay" style="display:none;z-index:10"><div class="box"><h2>The game hit a problem</h2><p id="failure-message" role="alert"></p><p>Your last saved checkpoint is kept. Reload to try again.</p><button id="reload">Reload game</button><button id="dismiss-error">Dismiss</button></div></div>
 <noscript>Enable JavaScript to play Sugar Rush.</noscript>
 <script src="$GODOT_URL"></script>
 <script>
 const config=$GODOT_CONFIG;
+function showGameError(message){
+ document.getElementById('failure-message').textContent=String(message);
+ document.getElementById('failure').style.display='flex';
+}
+// Keep runtime failures visible on phones, where the developer console is hidden.
+config.onPrintError=(...args)=>{
+ const message=args.join(' ');
+ console.error(message);
+ if(/SCRIPT ERROR:|^ERROR:/.test(message))showGameError(message);
+};
+config.onExit=code=>{if(code!==0)showGameError('The game stopped (code '+code+').');};
 const engine=new Engine(config);
 const status=document.getElementById('status');
 const progress=document.getElementById('progress');
 let started=false;
+document.getElementById('reload').onclick=()=>location.reload();
+document.getElementById('dismiss-error').onclick=()=>document.getElementById('failure').style.display='none';
+document.getElementById('canvas').addEventListener('webglcontextlost',()=>showGameError('The browser lost its graphics connection. Close other tabs and reload.'));
+window.addEventListener('error',event=>showGameError(event.message||'A game file could not be loaded.'));
+window.addEventListener('unhandledrejection',event=>showGameError(event.reason?.message||event.reason||'The game could not finish loading.'));
 document.getElementById('portrait').onclick=()=>document.getElementById('rotate').classList.add('dismissed');
 async function start(fullscreen){
  if(started)return;
