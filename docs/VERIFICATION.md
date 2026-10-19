@@ -146,3 +146,11 @@ Built Windows x86-64 and single-threaded WebGL 2 release exports with Godot 4.7.
 User reports Chrome on iPhone goes dark after New Run. Windows-hosted Playwright WebKit displays the route screen and completes desktop new-run/swap/save/title/continue/reload checks, but its strict smoke test fails on repeated glBlitFramebuffer errors (read/write attachments are the same image). These persist without the original CRT and with canvas-item scaling, so they do not establish the cause on the phone. Retained original viewport scaling. Hosted URL, physical iPhone reproduction and CRT-off comparison are pending; this is not a confirmed iPhone fix.
 
 Web CRT now uses a blended overlay without screen-texture copies or multi-sample glow as a compatibility mitigation. Native CRT is unchanged. Added visible runtime/context-loss errors with reload/dismiss and optional WebKit testing. Rebuilt web release. Chrome passes all four viewport flows, including 3x DPR touch, exact moves, persisted Continue and injected graphics-loss message display/dismiss. Native SettingsRunner passes 19 checks. Player saves untouched.
+
+
+## Hosted iPhone investigation and export packaging (2026-10-19)
+
+Inspected https://amitshok.itch.io/sugar-rush and its public html-classic.itch.zone/html/19818933 export. Hosted HTML predates the runtime error overlay. Hosted pack is 7,233,092 bytes; pack directory comparison found imported test-capture images accounting for most of the excess. Hosted round-map and GameManager bytecode match local versions. The actual hosted game reaches the route screen and board in Windows WebKit at 844x390, DPR 3 with touch. This is not physical iPhone validation. User reports iPhone 14/latest iOS and CRT-off does not help; root cause remains unconfirmed.
+
+Both presets now exclude builds/*; export tooling and capture tests create builds/.gdignore before import. Rebuilt Windows and web packs are 361,788 bytes each, with 328 entries; inspected directories contain no builds/tests/tools/docs/source-art entries or imported capture images. Both ZIPs pass integrity checks. Windows release start/swap/save/title/Continue/exit passes.
+Chrome web smoke passes all four desktop/touch profiles, save/reload/Continue and visible error controls with no browser errors.

@@ -5,6 +5,8 @@ if (-not $GodotExe) { $GodotExe=(Get-Command godot -ErrorAction Stop).Source }
 if (-not (Test-Path -LiteralPath $GodotExe)) { throw 'Set GODOT_EXE or pass -GodotExe with the Godot executable path.' }
 $buildRoot=Join-Path $projectRoot 'builds'
 New-Item -ItemType Directory -Force -Path $buildRoot | Out-Null
+# Generated screenshots/builds must never become imported game resources.
+Set-Content -LiteralPath (Join-Path $buildRoot '.gdignore') -Value '' -Encoding ascii
 function Run-Godot([string[]]$ExportArgs, [string]$LogName) {
  $log=Join-Path $buildRoot ($LogName+'.log')
  $err=Join-Path $buildRoot ($LogName+'-errors.log')

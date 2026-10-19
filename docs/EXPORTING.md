@@ -10,7 +10,7 @@ Use Godot 4.7.2 with its matching official export templates. Set `GODOT_EXE` to 
 ./tools/export.ps1 -Target Windows -GodotExe "C:/path/to/Godot.exe"
 ```
 
-The script imports resources, checks export failures, creates release builds and packages them. `export_presets.cfg` also exposes both targets in Godot's Export dialog. Logs and generated output are under `builds/`, ignored by Git. Source art, font source files, documentation and test suites are excluded from the game pack. Font and engine notices are included alongside both releases.
+The script imports resources, checks export failures, creates release builds and packages them. `export_presets.cfg` also exposes both targets in Godot's Export dialog. Logs and generated output are under `builds/`, ignored by Git and Godot's importer. Both export presets exclude `builds/*` so test captures cannot inflate subsequent game packs. Source art, font source files, documentation and test suites are excluded from the game pack. Font and engine notices are included alongside both releases.
 
 ## Windows
 

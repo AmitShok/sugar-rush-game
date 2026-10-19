@@ -10,6 +10,7 @@ from playwright.async_api import async_playwright
 URL = sys.argv[1] if len(sys.argv)>1 else "http://127.0.0.1:8765"
 OUT = Path(__file__).resolve().parents[1]/"builds"/"test-captures"
 OUT.mkdir(parents=True,exist_ok=True)
+(OUT.parent/'.gdignore').touch()
 READ_FILE = """async name=>await new Promise((resolve,reject)=>{
  const req=indexedDB.open('/userfs');
  req.onerror=()=>reject(req.error);
