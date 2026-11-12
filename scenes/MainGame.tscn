@@ -170,7 +170,7 @@ text = "Quit"
 custom_minimum_size = Vector2(0,42)
 [node name="Footer" type="Label" parent="Menu/Layout"]
 layout_mode = 2
-text = "v0.30 | Sugar Rush"
+text = "v0.31 | Sugar Rush"
 theme_override_font_sizes/font_size = 24
 [node name="PauseShade" type="TextureRect" parent="."]
 z_index = 199
@@ -212,6 +212,11 @@ button_pressed = true
 visible = false
 layout_mode = 2
 text = "Sound effects"
+button_pressed = true
+[node name="Music" type="CheckButton" parent="Pause/Layout"]
+visible = false
+layout_mode = 2
+text = "Music"
 button_pressed = true
 [node name="CRT" type="CheckButton" parent="Pause/Layout"]
 visible = false

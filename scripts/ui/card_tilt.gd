@@ -26,7 +26,7 @@ func _ready() -> void:
  material.shader = SHADER
  card.material = material
  card.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
- card.mouse_entered.connect(func() -> void: hovering = true)
+ card.mouse_entered.connect(func() -> void: hovering = true; SoundBoard.play("hover",randf_range(0.95,1.08),-6.0))
  card.mouse_exited.connect(func() -> void: hovering = false)
  phase = float(card.get_instance_id() % 997)*0.37
 func _process(delta: float) -> void:

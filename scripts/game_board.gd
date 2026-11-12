@@ -231,6 +231,7 @@ func attempt_swap(a: int,b: int) -> void:
  var wild: bool = model.cells[a].coating == 3 or model.cells[b].coating == 3
  var special_swap: bool = model.is_special_swap(a,b)
  model.chocolate_broken = 0
+ SoundBoard.play("swap")
  await animate_swap(a,b)
  model.swap(a,b)
  var groups: Array[Dictionary] = []
@@ -247,6 +248,7 @@ func attempt_swap(a: int,b: int) -> void:
   model.swap(a,b)
   sync_tiles(true)
   juice.popup("No match",Vector2(model.xy(b))*cell_size,UIStyle.PINK)
+  SoundBoard.play("invalid")
   GameManager.toast.emit("No match: -1 move")
   if GameManager.motion: await get_tree().create_timer(fall_duration,false).timeout
  else:
@@ -257,7 +259,9 @@ func attempt_swap(a: int,b: int) -> void:
  if GameManager.curse() == "heatwave": model.age_candies([a,b])
  if GameManager.curse() == "chocolatier" and GameManager.state == "playing":
   var spread: int = model.spread_chocolate()
-  if spread >= 0: GameManager.toast.emit("The chocolate spreads!")
+  if spread >= 0:
+   GameManager.toast.emit("The chocolate spreads!")
+   SoundBoard.play("chocolate")
  if model.legal_moves().is_empty():
   model.reshuffle()
   GameManager.toast.emit("No moves left: reshuffled")
@@ -304,6 +308,11 @@ func resolve(initial: Array[Dictionary]) -> void:
    if GameManager.sound and not "--test" in OS.get_cmdline_user_args():
     audio.pitch_scale = GameManager.next_sound_pitch(cascade)
     audio.play()
+   # Reactive layers on top of the pop (v0.31): bigger matches, broken obstacles, specials, combos.
+   if group.get("special_swap",false): SoundBoard.play("combo")
+   elif not effect.fired.is_empty(): SoundBoard.play("special_fire",1.0+0.08*cascade)
+   elif group.length >= 4 or not effect.effects.is_empty(): SoundBoard.play("match_big",1.0+0.06*cascade)
+   if fresh_breaks > 0: SoundBoard.play("crack",1.0+0.05*cascade)
   if GameManager.motion:
    # Cleared candies swell with a bright flash, then pop away.
    var tween: Tween = create_tween().set_parallel()
@@ -321,6 +330,7 @@ func resolve(initial: Array[Dictionary]) -> void:
    if int(spawn.index) in wilds: continue
    model.place_spawn(spawn)
    juice.popup(CandyState.special_name(int(spawn.special)).get_slice(" (",0).to_upper()+"!",Vector2(model.xy(int(spawn.index)))*cell_size,UIStyle.CREAM)
+   SoundBoard.play("special_make")
   for i: int in wilds:
    model.cells[i] = CandyState.new(model.roll_color())
    model.cells[i].coating = 3

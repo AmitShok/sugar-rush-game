@@ -248,3 +248,7 @@ A quarter of packs are Jumbo (never Sugar Rush). Rare cards: **Glitter** (random
 ### Less text, Balatro style (v0.29)
 
 Persistent screens show numbers and short labels only; rules appear on hover, in short trigger-and-effect form, with Balatro-style keyword colours: Mult red, Candys blue, money gold (write numbers as "+4 Mult", "X1.5 Mult", "+30 Candys", "$10"; `UIStyle.rich()` colours them). Removed: the board's controls reminder, the normal-round quota sentence and round-start pop-up, the shop tabs' explainer boxes, the route's how-to-play footer and filler, and the second title tagline. Full rules stay in Run info.
+
+### Music and reactive sounds (v0.31)
+
+Three looping tracks crossfade by context: a laid-back jazzy track on the title screen and in the shop, an upbeat track during normal rounds and a driving minor-key track on boss rounds. Music ducks while paused and has its own **Music** toggle in Options (sound effects keep theirs). Sound effects react to play: swaps, failed swaps, big matches (4+), new special candies, specials firing, special combos, cracked obstacles, chocolate spreading, a rising tick while the score counts up, card hovers, every button press, coins on buying, selling, rerolling, pack opening and taking a card, using items, boss reveals, round wins, skips, victory and defeat. All audio is synthesised by `tools/generate_audio.gd` (no third-party files); `autoload/sound_board.gd` plays it.

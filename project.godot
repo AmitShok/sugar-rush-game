@@ -25,6 +25,7 @@ config/icon="res://assets/exported/candy_0.png"
 [autoload]
 
 GameManager="*res://autoload/game_manager.gd"
+SoundBoard="*res://autoload/sound_board.gd"
 
 [display]
 

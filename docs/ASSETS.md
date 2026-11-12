@@ -176,3 +176,11 @@ Regeneration order for all art: the original `create_*.lua` scripts, then `creat
 - Edition overlays `edition_foil`, `edition_holo`, `edition_poly` matching the 10 px card corners.
 - Route and boss icons at 48 x 48: `ui_small`, `ui_big`, `ui_done` and all nine bosses.
 - 56 x 56 tile overlays: striped (h/v), wrapped, chocolate, frosting (1/2), jelly, sour, blocker, lock, gold, caramel, wild, and rounded selection frames (selected, hint, hover, focus, isotope).
+
+## Audio (v0.31)
+
+Music (`assets/audio/music_*.wav`) and effects (`assets/audio/sfx_*.wav`) are synthesised from code, so there are no third-party audio licences. To regenerate after editing `tools/generate_audio.gd`:
+
+```
+Godot --headless --audio-driver Dummy --path . -s res://tools/generate_audio.gd
+```

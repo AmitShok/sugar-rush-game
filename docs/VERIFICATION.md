@@ -272,3 +272,10 @@ Researched Balatro's approach (numbers-only persistent HUD, rules in hover toolt
 
 Editions were static overlay pictures stacked over cards, so they never moved with the card tilt and were hard to notice. They are now drawn inside `shaders/card_tilt.gdshader`: Foil (blue chrome: blue-tinted greyscale with high-contrast dark and bright metal bands sweeping with the tilt), Holographic (hot magenta-pink tint that keeps the art in colour, twinkling sparkle dots, hologram lines and a pink rim) and Polychrome (whole card recoloured through a flowing rainbow), each with a glowing animated rim, stronger while hovered. `UIStyle.add_edition_overlay` now sets `CardTilt.edition`; the old `edition_*` overlay PNGs are unused. EditionRunner checks the edition reaches each card's shader (28 checks) and captures two live frames; After review, Holographic was separated from Polychrome (no rainbow) and then from Foil (pink full-colour vs blue chrome), so all three read differently at a glance.
 All 27 suites pass (910 checks).
+
+
+## Music and reactive sounds (v0.31, 2026-11-12)
+
+Added `tools/generate_audio.gd` (deterministic synthesis of 3 music loops and 22 effects into `assets/audio/`) and the `SoundBoard` autoload (two-player music crossfade, pause ducking, 10-voice effect pool with per-effect 40 ms throttle). GameManager gained an `sfx` signal and a saved `music` preference; Options gained a Music toggle. Board, HUD score count, card hover and every button now trigger sounds. Automated runs keep the Dummy audio driver.
+
+All 27 suites pass (910 checks). ResizeRunner, SaveRunner and SettingsRunner were run windowed: on this machine headless runs never receive `frame_post_draw` and miss one pushed slider click, which reproduces on v0.30 too.

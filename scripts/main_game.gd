@@ -25,7 +25,7 @@ func _ready() -> void:
  # A fixed logical canvas keeps drawing and native GUI input in the same space.
  # Physical window dimensions may change freely without changing game geometry.
  var window: Window = get_window()
- window.title = "Sugar Rush | v0.30 - Living Editions"
+ window.title = "Sugar Rush | v0.31 - Sugar Beats"
  window.content_scale_size = DESIGN_SIZE
  window.content_scale_mode = Window.CONTENT_SCALE_MODE_VIEWPORT
  window.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_KEEP
@@ -101,6 +101,8 @@ func _ready() -> void:
  $Pause/Layout/Volume/Slider.value_changed.connect(func(value: float) -> void: GameManager.master_volume=value/100.0; $Pause/Layout/Volume/Label.text="Volume: %s%%" % roundi(value); GameManager.save_preferences())
  $Pause/Layout/Motion.toggled.connect(func(value: bool) -> void: GameManager.motion = value; GameManager.save_preferences())
  $Pause/Layout/Sound.toggled.connect(func(value: bool) -> void: GameManager.sound = value; GameManager.save_preferences())
+ $Pause/Layout/Music.button_pressed = GameManager.music
+ $Pause/Layout/Music.toggled.connect(func(value: bool) -> void: GameManager.music = value; GameManager.save_preferences(); SoundBoard.refresh_volume())
  $Codex/Layout/Close.pressed.connect(close_codex)
  $GameOverScreen.restart_requested.connect(begin_run)
  $GameOverScreen.menu_requested.connect(to_menu)
@@ -111,6 +113,7 @@ func _ready() -> void:
  board.special_triggered.connect(on_special)
  $Play/JokerInventory.inspect_requested.connect(inspect_joker)
  $Menu.visible = true
+ SoundBoard.play_track("shop")
  $Play.visible = false
  fill_codex()
  run_save=preload("res://scripts/run_save.gd").new()
@@ -299,6 +302,7 @@ func to_menu() -> void:
  $GameOverScreen.visible = false
  $Pause.visible = false
  $Menu.visible = true
+ SoundBoard.play_track("shop")
  board.paused = false
  refresh_continue()
  if not $Menu/Layout/Continue.disabled:
@@ -311,6 +315,7 @@ func set_paused(value: bool) -> void:
  if not value: options_from_menu=false
  $Pause.visible = value
  $PauseShade.visible = value
+ SoundBoard.set_ducked(value)
  board.paused = value
  get_tree().paused = value
  show_options(false)
@@ -326,7 +331,7 @@ func close_options() -> void:
  else: show_options(false)
 func show_options(value: bool) -> void:
  $Pause/Layout/Title.text = "OPTIONS" if value else "PAUSED"
- for key: String in ["Motion","Sound","CRT","Volume","Back"]: $Pause/Layout.get_node(key).visible = value
+ for key: String in ["Motion","Sound","Music","CRT","Volume","Back"]: $Pause/Layout.get_node(key).visible = value
  for key: String in ["Resume","Options","Abandon","Quit"]: $Pause/Layout.get_node(key).visible = not value and (key!="Quit" or not OS.has_feature("web"))
 func show_codex() -> void:
  if board.busy: return

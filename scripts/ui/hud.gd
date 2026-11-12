@@ -60,7 +60,11 @@ func boss_rule() -> String:
  return ""
 
 func display_score(value: float) -> void:
+ var previous: int = shown_score
  shown_score = roundi(value)
+ # Counting ticks rise in pitch as the score climbs toward the quota.
+ if shown_score != previous and shown_score < target_score:
+  SoundBoard.tick(float(shown_score)/maxf(1.0,float(GameManager.current_round().quota)))
  $Layout/Score.text = str(shown_score)
 func _process(_delta: float) -> void:
  # Container minimum sizes update after fonts and visibility change.

@@ -4,6 +4,8 @@ signal round_started
 signal shop_opened
 signal run_ended(won: bool)
 signal toast(message: String)
+# Sound-effect events for SoundBoard (v0.31): "coin", "sell", "reroll", "pack_open", ...
+signal sfx(name: String)
 @export var config: RunConfig = preload("res://resources/default_run.tres")
 var jokers: JokerManager
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
@@ -22,6 +24,7 @@ var last_award: int = 0
 var last_summary: String = ""
 var motion: bool = true
 var sound: bool = true
+var music: bool = true
 var crt_enabled: bool = true
 var master_volume: float = 0.8
 var preferences_path: String = "user://preferences.cfg"
@@ -70,6 +73,7 @@ func load_preferences() -> void:
  if prefs.load(preferences_path) == OK:
   motion = prefs.get_value("settings","motion",true)
   sound = prefs.get_value("settings","sound",true)
+  music = prefs.get_value("settings","music",true)
   crt_enabled = prefs.get_value("settings","crt_enabled",true)
   master_volume = clampf(float(prefs.get_value("settings","master_volume",0.8)),0.0,1.0)
  apply_audio_settings()
@@ -82,6 +86,7 @@ func save_preferences() -> void:
  var prefs: ConfigFile = ConfigFile.new()
  prefs.set_value("settings","motion",motion)
  prefs.set_value("settings","sound",sound)
+ prefs.set_value("settings","music",music)
  prefs.set_value("settings","crt_enabled",crt_enabled)
  prefs.set_value("settings","master_volume",master_volume)
  apply_audio_settings()
@@ -154,6 +159,7 @@ func open_pack(slot: int) -> bool:
  gummies -= PackCatalog.price(pack)
  pack_offers.remove_at(slot)
  opened_pack = {"kind":pack.kind,"jumbo":pack.jumbo,"choices":pack_choices(pack,pack_rng(["open",slot,pack.kind])),"picks":PackCatalog.picks(pack)}
+ sfx.emit("pack_open")
  changed.emit()
  return true
 func pack_choices(pack: Dictionary, pack_random: RandomNumberGenerator) -> Array:
@@ -209,6 +215,7 @@ func take_pack_card(index: int) -> bool:
  opened_pack.choices.remove_at(index)
  opened_pack.picks = int(opened_pack.picks)-1
  if int(opened_pack.picks) <= 0 or opened_pack.choices.is_empty(): opened_pack = {}
+ sfx.emit("card_take")
  changed.emit()
  return true
 func skip_pack() -> void:
@@ -453,11 +460,13 @@ func buy_consumable(id: String) -> bool:
  gummies-=price
  consumables.append(id)
  consumable_offers.erase(id)
+ sfx.emit("coin")
  changed.emit()
  return true
 func consume_item(id: String) -> bool:
  if state != "playing" or id not in consumables: return false
  consumables.erase(id)
+ sfx.emit("use_item")
  changed.emit()
  return true
 func discard_consumable(index: int) -> void:
@@ -474,6 +483,7 @@ func buy(item: JokerData) -> bool:
  jokers.add(item,String(offer_editions.get(item.id,"")))
  offer_editions.erase(item.id)
  offers.erase(item)
+ sfx.emit("coin")
  changed.emit()
  return true
 func move_joker(item: JokerData, delta: int) -> bool:
@@ -486,6 +496,7 @@ func sell(item: JokerData) -> void:
  gummies += sell_value(item)
  free_owned.erase(item.id)
  jokers.remove(item)
+ sfx.emit("sell")
  changed.emit()
 func reroll() -> void:
  var cost: int = current_reroll_cost()
@@ -494,6 +505,7 @@ func reroll() -> void:
  if free_rerolls > 0: free_rerolls -= 1
  else: reroll_cost += config.reroll_increment
  roll_offers()
+ sfx.emit("reroll")
  changed.emit()
 func next_round() -> void:
  if state != "shop": return
