@@ -16,7 +16,7 @@ Choose **Collection** on the title menu to browse all 26 Jokers. Select a card t
 
 On this computer, double-click **Play.cmd**. Start Run opens the ante map; confirm the highlighted batch to begin. Leaving the shop previews the next batch, including the upcoming boss rule, before you commit. To edit, double-click **Open Editor.cmd**, or import **project.godot** into Godot and press **F5**. No scene wiring, plugins, or paid asset packs are required. Tested with the installed Godot **4.7.2**.
 
-- Click two neighboring candies to swap. Invalid swaps spend a move.
+- Drag a candy onto a neighbour to swap (mouse or finger), or tap one candy and then a neighbour. Invalid swaps spend a move. Phones and tablets work through the web build.
 - Arrows + Enter also work. **H** buys a hint ($1 initially, rising by $1 per purchase for the run); **Esc** pauses.
 - Reach the quota, then spend your round cash reward in the shop. Score does not convert to cash. The CASH counter shows your spendable balance in dollars. The finished-round scoreboard is hidden while shopping. All four offers, prices, Reroll, and Next Round stay visible. Select a shop card to reveal its effect, or an owned Joker to sell it; the detail panel shows the resulting balance before a transaction.
 - The handbook explains every Joker, board mark, and boss rule.

@@ -22,6 +22,10 @@ var shaking: bool = false
 var queued_consumable: String = ""
 var target_consumable: String = ""
 var selection: int = -1
+# Drag-to-swap (mouse and touch): the cell pressed and where the press started.
+var drag_from: int = -1
+var drag_start: Vector2 = Vector2.ZERO
+const DRAG_THRESHOLD: float = 0.4 # Fraction of a cell the pointer must travel to swap.
 var cursor: int = 0
 var final_move: bool = false
 var population: int = 0
@@ -379,10 +383,50 @@ func _gui_input(event: InputEvent) -> void:
   for tile: SugarTile in tiles:
    tile.hovered = not busy and model.xy(tile.cell_index) == over
    tile.queue_redraw()
- if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-  var cell: Vector2i = Vector2i((event.position / cell_size).floor())
-  if model.inside(cell): choose(model.index(cell))
+  if drag_from >= 0 and (event.button_mask & MOUSE_BUTTON_MASK_LEFT) != 0: drag_to(event.position)
+ if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+  if event.pressed:
+   var cell: Vector2i = Vector2i((event.position / cell_size).floor())
+   if model.inside(cell):
+    # A press still selects (tap one candy, then a neighbour); dragging swaps directly.
+    choose(model.index(cell))
+    var can_drag: bool = not busy and not paused and target_consumable.is_empty() and GameManager.state == "playing" and model.playable(model.index(cell))
+    drag_from = model.index(cell) if can_drag else -1
+    drag_start = event.position
+  else: end_drag()
   accept_event()
+
+# Mouse and touch drags (touch arrives as emulated mouse input): once the pointer has travelled
+# DRAG_THRESHOLD of a cell, swap toward the dominant direction. Before that the candy leans toward it.
+func drag_to(point: Vector2) -> void:
+ if busy or paused or drag_from < 0:
+  end_drag()
+  return
+ var delta: Vector2 = point-drag_start
+ var axis: Vector2i = Vector2i(signi(int(delta.x)),0) if absf(delta.x) >= absf(delta.y) else Vector2i(0,signi(int(delta.y)))
+ var distance: float = maxf(absf(delta.x),absf(delta.y))
+ if distance < cell_size*DRAG_THRESHOLD:
+  if GameManager.motion and drag_from < tiles.size():
+   tiles[drag_from].position = Vector2(model.xy(drag_from))*cell_size+Vector2(axis)*minf(distance,cell_size*DRAG_THRESHOLD)*0.5
+  return
+ var from: int = drag_from
+ var target: Vector2i = model.xy(from)+axis
+ end_drag()
+ if not model.inside(target): return
+ var to: int = model.index(target)
+ if not model.playable(to):
+  GameManager.toast.emit("Framed: match it or next to it")
+  return
+ selection = -1
+ for tile: SugarTile in tiles:
+  tile.selected = false
+  tile.queue_redraw()
+ attempt_swap(from,to)
+
+func end_drag() -> void:
+ if drag_from >= 0 and drag_from < tiles.size() and not busy:
+  tiles[drag_from].position = Vector2(model.xy(drag_from))*cell_size
+ drag_from = -1
 func _get_tooltip(at_position: Vector2) -> String:
  var cell: Vector2i = Vector2i((at_position / cell_size).floor())
  if not model.inside(cell) or model.cells.is_empty(): return ""

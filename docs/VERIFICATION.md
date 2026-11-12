@@ -279,3 +279,8 @@ All 27 suites pass (910 checks).
 Added `tools/generate_audio.gd` (deterministic synthesis of 3 music loops and 22 effects into `assets/audio/`) and the `SoundBoard` autoload (two-player music crossfade, pause ducking, 10-voice effect pool with per-effect 40 ms throttle). GameManager gained an `sfx` signal and a saved `music` preference; Options gained a Music toggle. Board, HUD score count, card hover and every button now trigger sounds. Automated runs keep the Dummy audio driver.
 
 All 27 suites pass (910 checks). ResizeRunner, SaveRunner and SettingsRunner were run windowed: on this machine headless runs never receive `frame_post_draw` and miss one pushed slider click, which reproduces on v0.30 too.
+
+
+## Drag-to-swap and touch play (v0.32, 2026-11-12)
+
+Candies can now be dragged onto a neighbour with a mouse or a finger (touch arrives as emulated mouse input). The candy leans toward the drag, and once the pointer travels 40% of a cell the swap fires in the dominant direction. Tap-then-tap and the keyboard still work. TouchRunner adds real `InputEventScreenTouch`/`InputEventScreenDrag` swipes at 1152x720, 844x390 and 720x960 (a short wiggle must not swap; a full drag spends exactly one move), plus a mouse drag.

@@ -12,6 +12,52 @@ func tap_point(logical: Vector2) -> void:
   event.pressed=down
   Input.parse_input_event(event)
   await frames()
+func to_screen(logical: Vector2) -> Vector2:
+ var size: Vector2=Vector2(get_window().size)
+ var factor: float=minf(size.x/1152.0,size.y/720.0)
+ return (size-Vector2(1152,720)*factor)*0.5+logical*factor
+# Finger down at a, slide to b in steps, lift.
+func swipe(a: Vector2, b: Vector2) -> void:
+ var down: InputEventScreenTouch=InputEventScreenTouch.new()
+ down.position=to_screen(a)
+ down.pressed=true
+ Input.parse_input_event(down)
+ await frames()
+ var last: Vector2=to_screen(a)
+ for step: int in range(1,7):
+  var drag: InputEventScreenDrag=InputEventScreenDrag.new()
+  drag.position=to_screen(a.lerp(b,step/6.0))
+  drag.relative=drag.position-last
+  last=drag.position
+  Input.parse_input_event(drag)
+  await frames()
+ var up: InputEventScreenTouch=InputEventScreenTouch.new()
+ up.position=last
+ up.pressed=false
+ Input.parse_input_event(up)
+ await frames()
+func mouse_drag(a: Vector2, b: Vector2) -> void:
+ var press: InputEventMouseButton=InputEventMouseButton.new()
+ press.button_index=MOUSE_BUTTON_LEFT
+ press.pressed=true
+ press.position=to_screen(a)
+ press.global_position=press.position
+ Input.parse_input_event(press)
+ await frames()
+ for step: int in range(1,7):
+  var motion: InputEventMouseMotion=InputEventMouseMotion.new()
+  motion.position=to_screen(a.lerp(b,step/6.0))
+  motion.global_position=motion.position
+  motion.button_mask=MOUSE_BUTTON_MASK_LEFT
+  Input.parse_input_event(motion)
+  await frames()
+ var release: InputEventMouseButton=InputEventMouseButton.new()
+ release.button_index=MOUSE_BUTTON_LEFT
+ release.pressed=false
+ release.position=to_screen(b)
+ release.global_position=release.position
+ Input.parse_input_event(release)
+ await frames()
 func run_tests() -> void:
  GameManager.preferences_path="user://test_touch_preferences.cfg"
  main=preload("res://scenes/MainGame.tscn").instantiate()
@@ -40,8 +86,32 @@ func run_tests() -> void:
   while board.busy: await frames()
   check(GameManager.moves==moves-1,"Two taps spend exactly one move at %s" % size)
   if GameManager.state=="shop": GameManager.next_round()
+ # Drag-to-swap with a finger at several screen shapes, then with a mouse.
+ GameManager.moves=20
+ for size: Vector2i in [Vector2i(1152,720),Vector2i(844,390),Vector2i(720,960)]:
+  get_window().size=size
+  await frames()
+  if GameManager.state=="shop": GameManager.next_round()
+  board.selection=-1
+  var pair: Vector2i=board.model.legal_moves()[0]
+  var moves: int=GameManager.moves
+  var from: Vector2=board.global_position+Vector2(board.model.xy(pair.x))*56+Vector2(28,28)
+  var to: Vector2=board.global_position+Vector2(board.model.xy(pair.y))*56+Vector2(28,28)
+  await swipe(from,from+(to-from)*0.2)
+  check(GameManager.moves==moves and not board.busy,"A short wiggle does not swap at %s" % size)
+  board.selection=-1
+  await swipe(from,to)
+  while board.busy: await frames()
+  check(GameManager.moves==moves-1 and board.selection==-1,"One touch drag swaps and spends one move at %s" % size)
  get_window().size=Vector2i(1152,720)
  await frames()
+ if GameManager.state=="shop": GameManager.next_round()
+ board.selection=-1
+ var mouse_pair: Vector2i=board.model.legal_moves()[0]
+ var mouse_moves: int=GameManager.moves
+ await mouse_drag(board.global_position+Vector2(board.model.xy(mouse_pair.x))*56+Vector2(28,28),board.global_position+Vector2(board.model.xy(mouse_pair.y))*56+Vector2(28,28))
+ while board.busy: await frames()
+ check(GameManager.moves==mouse_moves-1,"A mouse drag swaps candies")
  var roulette: JokerData=load("res://resources/jokers/roulette.tres")
  GameManager.jokers.add(roulette)
  GameManager.poison=2
