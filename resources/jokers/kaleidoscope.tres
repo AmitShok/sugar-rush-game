@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "kaleidoscope"
 display_name = "Kaleidoscope Prism"
-description = "Match diagonally too. Diagonal matches gain x1.5 Candys."
+description = "Diagonals match too, with X1.5 Candys"
 category = "Geometry"
 price = 9
 strength = 1.5

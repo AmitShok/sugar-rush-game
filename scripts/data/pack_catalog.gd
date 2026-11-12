@@ -3,20 +3,20 @@ extends RefCounted
 # Booster packs (v0.23): buy, open, keep some of the cards inside.
 const KINDS: Array[String] = ["joker","recipe","candy","treat","rush"]
 const ITEMS: Dictionary = {
- "joker": {"name":"Joker Pack","price":4,"jumbo_price":6,"size":2,"jumbo_size":4,"picks":1,"jumbo_picks":1,"weight":28,"art":"pack_joker","blurb":"Jokers, maybe with an edition."},
- "recipe": {"name":"Recipe Pack","price":4,"jumbo_price":6,"size":3,"jumbo_size":5,"picks":1,"jumbo_picks":2,"weight":27,"art":"pack_recipe","blurb":"+1 level to a recipe you choose."},
- "candy": {"name":"Candy Pack","price":3,"jumbo_price":5,"size":3,"jumbo_size":5,"picks":1,"jumbo_picks":2,"weight":25,"art":"pack_candy","blurb":"+1 upgrade level to a candy type."},
- "treat": {"name":"Treat Pack","price":4,"jumbo_price":6,"size":3,"jumbo_size":4,"picks":1,"jumbo_picks":1,"weight":10,"art":"pack_treat","blurb":"A consumable card (needs a free item slot)."},
- "rush": {"name":"Sugar Rush Pack","price":6,"jumbo_price":6,"size":2,"jumbo_size":2,"picks":1,"jumbo_picks":1,"weight":10,"art":"pack_rush","blurb":"Rare, powerful one-off cards."},
+ "joker": {"name":"Joker Pack","price":4,"jumbo_price":6,"size":2,"jumbo_size":4,"picks":1,"jumbo_picks":1,"weight":28,"art":"pack_joker","blurb":"Pick a Joker"},
+ "recipe": {"name":"Recipe Pack","price":4,"jumbo_price":6,"size":3,"jumbo_size":5,"picks":1,"jumbo_picks":2,"weight":27,"art":"pack_recipe","blurb":"Level up a recipe"},
+ "candy": {"name":"Candy Pack","price":3,"jumbo_price":5,"size":3,"jumbo_size":5,"picks":1,"jumbo_picks":2,"weight":25,"art":"pack_candy","blurb":"Upgrade a candy"},
+ "treat": {"name":"Treat Pack","price":4,"jumbo_price":6,"size":3,"jumbo_size":4,"picks":1,"jumbo_picks":1,"weight":10,"art":"pack_treat","blurb":"Pick a consumable"},
+ "rush": {"name":"Sugar Rush Pack","price":6,"jumbo_price":6,"size":2,"jumbo_size":2,"picks":1,"jumbo_picks":1,"weight":10,"art":"pack_rush","blurb":"Rare, powerful cards"},
 }
 const JUMBO_CHANCE: float = 0.25
 # Rare cards found only in Sugar Rush Packs.
 const RUSH: Dictionary = {
- "glitter": {"name":"Glitter","description":"A random owned Joker without an edition gets a random edition."},
- "cookbook_blast": {"name":"Cookbook Blast","description":"+1 level to every recipe."},
- "big_spoon": {"name":"Big Spoon","description":"+1 Joker slot (max 6), but lose $10."},
- "meltdown": {"name":"Meltdown","description":"Destroy a random owned Joker. Another random one turns Polychrome."},
- "golden_batch": {"name":"Golden Batch","description":"+$20 now, but your interest cap is halved for the run."},
+ "glitter": {"name":"Glitter","description":"A random Joker gets an edition"},
+ "cookbook_blast": {"name":"Cookbook Blast","description":"+1 level to every recipe"},
+ "big_spoon": {"name":"Big Spoon","description":"+1 Joker slot, but -$10"},
+ "meltdown": {"name":"Meltdown","description":"Destroy a random Joker; another turns Polychrome"},
+ "golden_batch": {"name":"Golden Batch","description":"+$20, but your interest cap is halved"},
 }
 const BIG_SPOON_COST: int = 10
 const MAX_JOKER_SLOTS: int = 6

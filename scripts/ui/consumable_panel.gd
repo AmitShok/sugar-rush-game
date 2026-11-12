@@ -63,7 +63,7 @@ func refresh() -> void:
  refresh_button.text="Refresh shop "+UIStyle.money(GameManager.reroll_cost)
  refresh_button.disabled=GameManager.gummies<GameManager.reroll_cost
  refresh_button.tooltip_text="Refreshes Jokers and both consumable offers. The price rises after use."
- summary.text="Held %s / 2 | %s" % [GameManager.consumables.size(),("Cash: "+UIStyle.money(GameManager.gummies)+" | Two random offers per refresh") if shop_mode else "Choose a card to use. Unused cards carry to the next round."]
+ summary.text="Items %s / 2" % GameManager.consumables.size()
  for row: Control in [cards,owned]:
   for child: Node in row.get_children():
    row.remove_child(child)
@@ -88,7 +88,7 @@ func refresh() -> void:
   icon.mouse_filter=Control.MOUSE_FILTER_PASS
   CardTilt.attach(icon)
   column.add_child(icon)
-  var description: Label=UIStyle.label(item.description,22)
+  var description: RichTextLabel=UIStyle.rich_label(item.description,22)
   description.custom_minimum_size=Vector2(244,144)
   description.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
   column.add_child(description)

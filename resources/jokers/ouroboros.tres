@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "ouroboros"
 display_name = "Ouroboros Worm"
-description = "Last move: x1 Mult for every 10 candies on the board (not blockers)."
+description = "Last move: X1 Mult per 10 candies on the board"
 category = "Chaos"
 price = 12
 strength = 0.1

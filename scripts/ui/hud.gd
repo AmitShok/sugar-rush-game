@@ -32,7 +32,8 @@ func refresh() -> void:
  $Layout/Moves.text = "%02d   %s LEFT" % [gm.moves,"MOVE" if gm.moves==1 else "MOVES"]
  $Layout/Wallet.text = UIStyle.money(gm.gummies)
  $Layout/Route.hide()
- var rule: String = boss_rule() if gm.curse() != "none" else gm.round_description(gm.round_index)
+ # Normal rounds need no rule text; bosses show their short live rule (v0.29).
+ var rule: String = boss_rule() if gm.curse() != "none" else ""
  $Layout/Curse.text = rule
  $Layout/Curse.add_theme_font_size_override("font_size",20 if gm.poison >= 0 else 24)
  if gm.poison >= 0:

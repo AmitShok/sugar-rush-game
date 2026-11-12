@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "gravity"
 display_name = "Gravity Well"
-description = "Match 4+: clear up to 4 nearest extra candies of that color."
+description = "Match 4+: also clear the 4 nearest of that color"
 category = "Four"
 price = 10
 strength = 4

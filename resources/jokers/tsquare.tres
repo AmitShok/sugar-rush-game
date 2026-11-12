@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "tsquare"
 display_name = "T-Square"
-description = "Joined L/T matches count as 5: trigger all 4+ and 5+ Jokers."
+description = "L/T matches count as 5 for every Joker"
 category = "Geometry"
 price = 8
 strength = 1

@@ -35,7 +35,8 @@ func _ready() -> void:
  place(panel,subtitle,Rect2(16,68,828,36))
  row=Control.new()
  place(panel,row,Rect2(16,112,828,380))
- var help: Label=UIStyle.label("Win the Small and Big batches to reach the Boss.\nShop between rounds. Defeat %s bosses to win the run." % (GameManager.config.rounds.size()/3),24)
+ # v0.29: no how-to-play footer; the cards explain the route and the rules live in Run info.
+ var help: Label=UIStyle.label("",24)
  place(panel,help,Rect2(16,504,828,64))
  back_button=Button.new()
  back_button.text="Back"
@@ -84,7 +85,7 @@ func show_round(index: int) -> void:
   var reward: Label=UIStyle.label("Score %s\n%s moves   |   $%s reward" % [data.quota,data.moves,[GameManager.config.clear_reward,GameManager.config.big_reward,GameManager.config.boss_reward][stage]],20)
   place(card,reward,Rect2(14,166,240,52))
   var tag: String=tag_for(round_id)
-  var description: Label=UIStyle.label(BossCatalog.ITEMS[boss_id(round_id)].description if stage==2 else ("Skip reward:\n%s\n%s" % [TagCatalog.ITEMS[tag].name.to_upper(),TagCatalog.ITEMS[tag].description] if round_id>=index else "No special rule."),22 if stage==2 else 20)
+  var description: Label=UIStyle.label(BossCatalog.ITEMS[boss_id(round_id)].description if stage==2 else ("Skip for\n%s\n%s" % [TagCatalog.ITEMS[tag].name.to_upper(),TagCatalog.ITEMS[tag].description] if round_id>=index else ""),22 if stage==2 else 20)
   if stage<2 and round_id>=index: description.add_theme_color_override("font_color",Color(TagCatalog.ITEMS[tag].tint))
   description.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
   place(card,description,Rect2(14,224,240,148))

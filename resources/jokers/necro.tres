@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "necro"
 display_name = "Necromancer's Skull"
-description = "Match 5+: replace blockers and destroyed blocker spots with Gold."
+description = "Match 5+: blockers and broken blocker spots turn Gold"
 category = "Five"
 price = 9
 strength = 1

@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "three_scoops"
 display_name = "Three Scoops"
-description = "Match exactly 3: add 30 Candys before Mult."
+description = "Match exactly 3: +30 Candys"
 category = "Three"
 price = 5
 icon = ExtResource("2")

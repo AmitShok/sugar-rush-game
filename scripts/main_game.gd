@@ -25,7 +25,7 @@ func _ready() -> void:
  # A fixed logical canvas keeps drawing and native GUI input in the same space.
  # Physical window dimensions may change freely without changing game geometry.
  var window: Window = get_window()
- window.title = "Sugar Rush | v0.28 - Pack Upgrades"
+ window.title = "Sugar Rush | v0.29 - Less Text"
  window.content_scale_size = DESIGN_SIZE
  window.content_scale_mode = Window.CONTENT_SCALE_MODE_VIEWPORT
  window.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_KEEP
@@ -124,8 +124,6 @@ func _ready() -> void:
   $Pause/Layout/Abandon.text="Save & Return to Title"
   $Pause/Layout/Quit.hide()
   if not OS.is_userfs_persistent(): show_toast("Browser storage unavailable | progress may not survive closing this tab")
- if DisplayServer.is_touchscreen_available():
-  $Play/Instruction.text="Tap two candies\nto swap.\nTap Joker: info"
 func refresh_continue() -> void:
  $Menu/Layout/Continue.disabled=not run_save.has_save()
  $Menu/Layout/Continue.tooltip_text="Resume your saved run, including after Quit to Title."
@@ -175,7 +173,7 @@ func inspect_joker(item: JokerData) -> void:
  var column: VBoxContainer=VBoxContainer.new()
  panel.add_child(column)
  column.add_child(UIStyle.label(GameManager.joker_title(item),32,UIStyle.MINT))
- var description: Label=UIStyle.label(GameManager.joker_text(item),24)
+ var description: RichTextLabel=UIStyle.rich_label(GameManager.joker_text(item),24)
  description.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
  description.custom_minimum_size=Vector2(660,240)
  column.add_child(description)
@@ -246,7 +244,7 @@ func skip_route() -> void:
   route_new_run = false
  var tag: String = GameManager.skip_round()
  if tag.is_empty(): return
- show_toast("SKIPPED | "+TagCatalog.ITEMS[tag].name.to_upper()+": "+TagCatalog.ITEMS[tag].description)
+ show_toast("Skipped: "+TagCatalog.ITEMS[tag].name)
  route.preview_seed = -1
  route.show_round(GameManager.round_index+1)
 func close_route() -> void:
@@ -271,7 +269,7 @@ func round_started() -> void:
  $Play.visible = true
  $Play/RoundLabel.text = "BATCH %02d   /   %s" % [GameManager.round_index+1,GameManager.round_name(GameManager.round_index).to_upper()]
  $Play/Seed.text = "SEED %s" % GameManager.run_seed
- show_toast(GameManager.round_description(GameManager.round_index))
+ if GameManager.curse() != "none": show_toast(GameManager.round_name(GameManager.round_index).to_upper()+": "+GameManager.round_description(GameManager.round_index))
 func open_shop() -> void:
  close_items()
  $Toast.text = ""
@@ -305,7 +303,7 @@ func to_menu() -> void:
  refresh_continue()
  if not $Menu/Layout/Continue.disabled:
   $Menu/Layout/Continue.grab_focus()
-  show_toast("Run saved | choose Continue to resume")
+  show_toast("Run saved")
 func toggle_pause() -> void:
  if GameManager.state not in ["playing","shop"]: return
  set_paused(not $Pause.visible)

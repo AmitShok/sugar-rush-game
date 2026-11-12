@@ -261,3 +261,8 @@ Joker bar slots now share the bar's width (five at 124 px, six at 112 px), so Bi
 
 UpgradeRunner was rewritten (23 checks): view-only tab with no buttons, no purchase method, level stacking and validation, a Candy Pack upgrading its type, persistence, board/coating/tooltip/Candy Guide values, no level cap, six Jokers fitting inside an unchanged 760 px bar, the tab at three window sizes, and new-run reset. RecipeRunner and TagRunner were updated for the removed purchase. Visually inspected the six-Joker bar and the Candies tab (name column widened after review).
 All 27 suites pass (909 checks).
+
+
+## Less text (v0.29, 2026-11-12)
+
+Researched Balatro's approach (numbers-only persistent HUD, rules in hover tooltips, colour-coded Mult/Chips/money keywords, learning through play) and applied it: shortened every Joker, Tag, consumable, rare card and pack text; added `UIStyle.rich()` keyword colouring to tooltips, shop details, pack modal, Collection and item browser; removed always-on explainers and filler; shortened toasts and status lines. Incident: the first version of the keyword regex was written with halved backslashes, which made `ui_style.gd` fail to parse and stopped every screen from loading during testing; fixed before anything was committed. ShopRunner's status-text check now looks for "After:". All 27 suites pass (909 checks); gameplay, shop and route screens inspected.

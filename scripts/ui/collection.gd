@@ -12,6 +12,7 @@ var portrait: TextureRect
 var title: Label
 var category: Label
 var description: Label
+var rich_description: RichTextLabel
 var card_buttons: Array[TextureButton] = []
 func _ready() -> void:
  z_index=180
@@ -64,6 +65,12 @@ func _ready() -> void:
  description.size=Vector2(400,150)
  description.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
  add_child(description)
+ # Coloured-keyword twin drawn over the (invisible) plain label, which tests and layout use.
+ rich_description=UIStyle.rich_label("",24)
+ rich_description.position=description.position
+ rich_description.size=description.size
+ add_child(rich_description)
+ description.self_modulate.a=0.0
  previous=make_button("Previous",Vector2(70,632),Vector2(158,42))
  previous.pressed.connect(turn_page.bind(-1))
  page_label=UIStyle.label("",24)
@@ -132,3 +139,4 @@ func inspect(item: JokerData) -> void:
  var type: String={"Three":"Exactly 3","Four":"4+ match","Five":"5+ match"}.get(item.category,item.category)
  category.text="%s | Shop price %s" % [type,UIStyle.money(item.price)]
  description.text=item.description
+ rich_description.text=UIStyle.rich(item.description)

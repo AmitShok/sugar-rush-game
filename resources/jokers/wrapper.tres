@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "wrapper"
 display_name = "Candy Wrapper"
-description = "L or T match: leave a Wrapped candy. When fired it blasts 3x3, +6 Mult."
+description = "L/T match: make a Wrapped candy (+6 Mult when fired)"
 category = "Special"
 price = 7
 icon = ExtResource("2")

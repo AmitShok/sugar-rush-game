@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "pop_rock"
 display_name = "Pop Rock"
-description = "Match exactly 3: clear a 3x3 area around the middle candy."
+description = "Match exactly 3: blast 3x3 around it"
 category = "Three"
 price = 9
 icon = ExtResource("2")

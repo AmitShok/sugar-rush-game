@@ -243,3 +243,8 @@ A quarter of packs are Jumbo (never Sugar Rush). Rare cards: **Glitter** (random
 - **Candies:** the six candies and the Color Bomb are redrawn with outlines, four-tone shading, a white glint and a soft drop shadow (same shapes, still 24 x 24 at 2x).
 - **Colour-coded buttons:** green = go/play/next, blue = info (guide, run info, items, collection), gold = buy/open/reroll, purple = skip/hint, red = quit, plum = neutral (back, pause, tabs). Code uses `UIStyle.role(button, "go")` etc.
 - **Juice:** outlined score popups with a punch, cleared candies swell with a flash before popping, falling candies land with a small bounce, the board flashes on special effects, and resting candies sparkle now and then. All motion respects the Reduced motion option; the sparkle uses its own randomness and never affects seeded gameplay.
+
+
+### Less text, Balatro style (v0.29)
+
+Persistent screens show numbers and short labels only; rules appear on hover, in short trigger-and-effect form, with Balatro-style keyword colours: Mult red, Candys blue, money gold (write numbers as "+4 Mult", "X1.5 Mult", "+30 Candys", "$10"; `UIStyle.rich()` colours them). Removed: the board's controls reminder, the normal-round quota sentence and round-start pop-up, the shop tabs' explainer boxes, the route's how-to-play footer and filler, and the second title tagline. Full rules stay in Run info.

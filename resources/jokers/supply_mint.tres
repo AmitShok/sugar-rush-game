@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "supply_mint"
 display_name = "Mint Patch"
-description = "More Mint spawns. Stacks with other Supply Jokers. See Candy Guide for odds."
+description = "More Mint Gummies spawn (x2 weight)"
 category = "Supply"
 price = 7
 spawn_color = 2

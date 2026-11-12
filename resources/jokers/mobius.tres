@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "mobius"
 display_name = "Mobius Strip"
-description = "Matches wrap across opposite edges, including diagonals."
+description = "Matches wrap around the board edges"
 category = "Geometry"
 price = 9
 strength = 1

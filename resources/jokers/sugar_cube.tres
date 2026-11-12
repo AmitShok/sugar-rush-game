@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "sugar_cube"
 display_name = "Sugar Cube"
-description = "+1 Mult for every Quint or L/T Shape you score. Grows all run."
+description = "Gains +1 Mult per Quint or L/T Shape scored"
 category = "Scaling"
 price = 7
 icon = ExtResource("2")

@@ -192,7 +192,7 @@ func use_shaker() -> void:
  if GameManager.motion: await get_tree().create_timer(fall_duration,false).timeout
  busy=false
  shaking=false
- GameManager.toast.emit("Bowl rearranged | no move spent")
+ GameManager.toast.emit("Shuffled!")
  shuffle_finished.emit()
 func choose(i: int) -> void:
  if not target_consumable.is_empty():
@@ -200,7 +200,7 @@ func choose(i: int) -> void:
   return
  if busy or paused or GameManager.state != "playing": return
  if not model.playable(i):
-  GameManager.toast.emit("Frame: line up 3 including this candy, or match beside it.")
+  GameManager.toast.emit("Framed: match it or next to it")
   return
  if selection == i:
   selection = -1
@@ -247,7 +247,7 @@ func attempt_swap(a: int,b: int) -> void:
   model.swap(a,b)
   sync_tiles(true)
   juice.popup("No match",Vector2(model.xy(b))*cell_size,UIStyle.PINK)
-  GameManager.toast.emit("No match | move spent | streak reset")
+  GameManager.toast.emit("No match: -1 move")
   if GameManager.motion: await get_tree().create_timer(fall_duration,false).timeout
  else:
   model.cells[a].age = -1
@@ -257,10 +257,10 @@ func attempt_swap(a: int,b: int) -> void:
  if GameManager.curse() == "heatwave": model.age_candies([a,b])
  if GameManager.curse() == "chocolatier" and GameManager.state == "playing":
   var spread: int = model.spread_chocolate()
-  if spread >= 0: GameManager.toast.emit("No chocolate broken | the chocolate spreads")
+  if spread >= 0: GameManager.toast.emit("The chocolate spreads!")
  if model.legal_moves().is_empty():
   model.reshuffle()
-  GameManager.toast.emit("No legal moves | the bowl was reshuffled for free")
+  GameManager.toast.emit("No moves left: reshuffled")
  sync_tiles(true)
  if GameManager.motion: await get_tree().create_timer(fall_duration,false).timeout
  busy = false

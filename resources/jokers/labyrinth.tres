@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "labyrinth"
 display_name = "Labyrinth Wire"
-description = "Require 4+ in a line to match. All matches gain x3 Mult."
+description = "Lines need 4+ to match. X3 Mult"
 category = "Geometry"
 price = 8
 strength = 3

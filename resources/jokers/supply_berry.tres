@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "supply_berry"
 display_name = "Berry Basket"
-description = "More Berry spawns. Stacks with other Supply Jokers. See Candy Guide for odds."
+description = "More Berry Bonbons spawn (x2 weight)"
 category = "Supply"
 price = 5
 spawn_color = 0

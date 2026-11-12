@@ -91,7 +91,7 @@ func refresh_upgrades() -> void:
   source.mouse_filter=Control.MOUSE_FILTER_STOP
   row.add_child(source)
   candy_rows.append(row)
- $Details.show()
+ $Details.hide() # v0.29: rows explain themselves; no always-on explainer
  $Details/Name.text="Candy values | This run only"
  $Details/Description.add_theme_font_size_override("font_size",22)
  $Details/Description.text="Current > next Candys; gold and caramel get it too.\nUpgrade candies with Candy Packs (Packs tab)."
@@ -120,7 +120,7 @@ func refresh_recipes() -> void:
   source.mouse_filter=Control.MOUSE_FILTER_STOP
   row.add_child(source)
   recipe_rows[id]=row
- $Details.show()
+ $Details.hide() # v0.29: rows explain themselves; no always-on explainer
  $Details/Name.text="Recipes | This run only"
  $Details/Description.add_theme_font_size_override("font_size",22)
  $Details/Description.text="Each match type adds its own Candys and Mult.\nRows show Candys x Mult: now > next level."
@@ -176,7 +176,7 @@ func refresh_packs() -> void:
   open.pressed.connect(func() -> void: GameManager.open_pack(slot))
   column.add_child(open)
   pack_buttons.append(open)
- $Details.show()
+ $Details.hide() # v0.29: rows explain themselves; no always-on explainer
  $Details/Name.text="Booster packs"
  $Details/Description.add_theme_font_size_override("font_size",22)
  $Details/Description.text="Open a pack and keep the cards you want.\nNew packs each shop; rerolls keep them."
@@ -248,8 +248,8 @@ func _ready() -> void:
 func reason(item: JokerData) -> String:
  if GameManager.jokers.has(item.id): return "Already owned"
  if GameManager.jokers.equipped.size() >= GameManager.jokers.capacity: return "No Joker slots left. Select an owned card above to sell it."
- if GameManager.gummies < GameManager.offer_price(item): return "Need %s more cash." % UIStyle.money(GameManager.offer_price(item)-GameManager.gummies)
- return ("FREE with Handout Tag. " if GameManager.offer_price(item)==0 else "")+"Cash after purchase: %s" % UIStyle.money(GameManager.gummies-GameManager.offer_price(item))
+ if GameManager.gummies < GameManager.offer_price(item): return "Need %s more" % UIStyle.money(GameManager.offer_price(item)-GameManager.gummies)
+ return ("FREE  |  " if GameManager.offer_price(item)==0 else "")+"After: %s" % UIStyle.money(GameManager.gummies-GameManager.offer_price(item))
 func inspect(item: JokerData, owned: bool = false) -> void:
  if page != "jokers": show_page("jokers")
  selected = item
@@ -268,14 +268,14 @@ func update_details() -> void:
   move_right.hide()
   return
  $Details/Name.text = GameManager.joker_title(selected,not selected_owned)
- $Details/Description.text = selected.description
+ describe(selected.description)
  # Edition effect and live growth go on the status line so the description keeps its two lines.
  var edition: String = GameManager.jokers.edition(selected.id) if selected_owned else String(GameManager.offer_editions.get(selected.id,""))
  var extras: PackedStringArray = []
  if not edition.is_empty(): extras.append(EditionCatalog.ITEMS[edition].effect)
  if selected_owned and not GameManager.scaling_status(selected.id).is_empty(): extras.append(GameManager.scaling_status(selected.id))
  var prefix: String = " | ".join(extras)+"  |  " if not extras.is_empty() else ""
- $Details/Status.text = prefix+("Sell %s  |  Cash after: %s" % [UIStyle.money(GameManager.sell_value(selected)),UIStyle.money(GameManager.gummies+GameManager.sell_value(selected))] if selected_owned else reason(selected))
+ $Details/Status.text = prefix+("Sell %s  |  After: %s" % [UIStyle.money(GameManager.sell_value(selected)),UIStyle.money(GameManager.gummies+GameManager.sell_value(selected))] if selected_owned else reason(selected))
  $Details/Action.visible = true
  $Details/Action.text = "Sell +%s" % UIStyle.money(GameManager.sell_value(selected)) if selected_owned else ("Take free" if GameManager.offer_price(selected)==0 else "Buy %s" % UIStyle.money(GameManager.offer_price(selected)))
  $Details/Action.disabled = not (selected in GameManager.jokers.equipped) if selected_owned else not can_buy(selected)
@@ -313,7 +313,7 @@ func refresh() -> void:
  var closed: bool = GameManager.shop_closed
  if closed: page = "jokers"
  for control: Control in [shaker_buy,joker_tab,pack_tab,upgrade_tab,recipe_tab]: control.visible = not closed
- shaker_buy.text="Consumables   |   Held %s / 2   |   Browse" % GameManager.consumables.size()
+ shaker_buy.text="Items  %s / 2" % GameManager.consumables.size()
  shaker_buy.disabled=false
  shaker_buy.tooltip_text="Two random cards per shop refresh. Each offer can be bought once; hold up to two."
  $Actions/Continue.text = "Next:\n"+("Boss" if (GameManager.round_index+1)%3==2 else ("Small" if (GameManager.round_index+1)%3==0 else "Big"))
@@ -374,9 +374,23 @@ func refresh() -> void:
   $Actions/Reroll.visible = false
   $Details.show()
   $Details/Name.text = "Shop skipped"
-  $Details/Description.text = "Skipped for a Tag: no shop this time.\nPress Next to pick your next batch."
+  describe("Skipped for a Tag: no shop this time.")
   $Details/Status.text = ""
   $Details/Action.hide()
 func move_selected(delta: int) -> void:
  if selected != null and selected_owned and GameManager.move_joker(selected,delta):
   $Receipt.text = "Moved %s %s" % [selected.display_name,"left" if delta < 0 else "right"]
+# Joker effect text with Balatro-style coloured keywords (v0.29). The plain Label stays in place
+# (invisible) for layout and tests; a rich-text twin draws the coloured version on top.
+var rich_description: RichTextLabel
+func describe(text: String) -> void:
+ $Details/Description.text = text
+ if rich_description == null:
+  rich_description = UIStyle.rich_label("",24)
+  rich_description.name = "RichDescription"
+  rich_description.position = $Details/Description.position
+  rich_description.size = $Details/Description.size
+  $Details.add_child(rich_description)
+  $Details/Description.self_modulate.a = 0.0
+ rich_description.add_theme_font_size_override("normal_font_size",$Details/Description.get_theme_font_size("font_size"))
+ rich_description.text = UIStyle.rich(text)

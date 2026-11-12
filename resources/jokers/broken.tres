@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "broken"
 display_name = "Broken Scale"
-description = "Swap the displayed Candys and Mult. Score is unchanged."
+description = "Swaps the Candys and Mult displays. Score unchanged"
 category = "Chaos"
 price = 1
 strength = 1

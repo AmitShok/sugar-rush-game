@@ -46,7 +46,7 @@ func refresh() -> void:
  var pack: Dictionary = GameManager.opened_pack
  heading.text = PackCatalog.kind_name(pack).to_upper()
  var picks: int = int(pack.picks)
- summary.text = "Keep %s more %s. Cash: %s" % [picks,"card" if picks == 1 else "cards",UIStyle.money(GameManager.gummies)]
+ summary.text = "Choose %s" % picks
  skip_button.text = "Skip the rest" if picks < PackCatalog.picks(pack) else "Skip pack"
  for child: Node in cards.get_children():
   cards.remove_child(child)
@@ -74,7 +74,7 @@ func refresh() -> void:
   CardTilt.attach(art)
   column.add_child(art)
   if choice.type == "joker": UIStyle.add_edition_overlay(art,String(choice.get("edition","")))
-  var text: Label = UIStyle.label(info.text,20)
+  var text: RichTextLabel = UIStyle.rich_label(info.text,20)
   text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
   text.custom_minimum_size = Vector2(width,150)
   column.add_child(text)

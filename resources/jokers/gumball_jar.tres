@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "gumball_jar"
 display_name = "Gumball Jar"
-description = "+8 Candys for every round you clear, added to every match."
+description = "Gains +8 Candys per round cleared"
 category = "Scaling"
 price = 6
 icon = ExtResource("2")

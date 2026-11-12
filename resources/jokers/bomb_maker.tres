@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "bomb_maker"
 display_name = "Bomb Maker"
-description = "Line of 5: leave a Color Bomb. Swap it to clear a candy type; fired, +10 Mult."
+description = "Match 5 in a line: make a Color Bomb (+10 Mult when fired)"
 category = "Special"
 price = 9
 icon = ExtResource("2")

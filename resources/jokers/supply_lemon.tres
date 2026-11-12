@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "supply_lemon"
 display_name = "Lemon Press"
-description = "More Lemon spawns. Stacks with other Supply Jokers. See Candy Guide for odds."
+description = "More Lemon Drops spawn (x2 weight)"
 category = "Supply"
 price = 6
 spawn_color = 1

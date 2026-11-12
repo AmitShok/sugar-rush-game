@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "candy_cane"
 display_name = "Candy Cane"
-description = "x0.1 Mult for every special candy fired. Starts at x1, grows all run."
+description = "Gains X0.1 Mult per special candy fired"
 category = "Scaling"
 price = 8
 icon = ExtResource("2")

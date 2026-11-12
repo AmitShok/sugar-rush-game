@@ -138,3 +138,35 @@ static func add_edition_overlay(card: Control, edition: String) -> void:
  overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
  overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
  card.add_child(overlay)
+# Balatro-style keyword colours (v0.29): Mult red, Candys blue, money gold. Write numbers as
+# "+4 Mult", "X1.5 Mult", "+30 Candys" or "$10" so the number takes the keyword's colour too.
+const MULT_COLOR: String = "ff6a5a"
+const CANDY_COLOR: String = "4cb4ff"
+const MONEY_COLOR: String = "f5c045"
+static var keyword_re: RegEx
+static func rich(text: String) -> String:
+ if keyword_re == null:
+  keyword_re = RegEx.new()
+  keyword_re.compile("([+\\-]?X?\\d+(?:\\.\\d+)?\\+? )?(Mult|Candys)|[+\\-]?\\$\\d+")
+ var out: String = ""
+ var last: int = 0
+ for found: RegExMatch in keyword_re.search_all(text):
+  out += text.substr(last,found.get_start()-last)
+  var word: String = found.get_string()
+  var color: String = MONEY_COLOR if word.contains("$") else (MULT_COLOR if word.ends_with("Mult") else CANDY_COLOR)
+  out += "[color=#%s]%s[/color]" % [color,word]
+  last = found.get_end()
+ return out+text.substr(last)
+# A wrapping rich-text label that shows coloured keywords.
+static func rich_label(text: String, size: int = 22, color: Color = CREAM) -> RichTextLabel:
+ var node: RichTextLabel = RichTextLabel.new()
+ node.bbcode_enabled = true
+ node.fit_content = true
+ node.scroll_active = false
+ node.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+ node.mouse_filter = Control.MOUSE_FILTER_IGNORE
+ node.add_theme_font_override("normal_font",BODY_FONT)
+ node.add_theme_font_size_override("normal_font_size",size)
+ node.add_theme_color_override("default_color",color)
+ node.text = rich(text)
+ return node

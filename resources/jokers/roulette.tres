@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "roulette"
 display_name = "Roulette Licorice"
-description = "Chosen color: x2 Mult. Match it this round or halve your round score."
+description = "One type each round: X2 Mult. Never matched: half score"
 category = "Chaos"
 price = 6
 strength = 2

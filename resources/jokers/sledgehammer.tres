@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "sledgehammer"
 display_name = "Sledgehammer Mint"
-description = "Match 4+: break the strongest blocker, or add 30 Candys."
+description = "Match 4+: break the toughest blocker, or +30 Candys"
 category = "Four"
 price = 7
 strength = 30

@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "sweet_tooth"
 display_name = "Sweet Tooth"
-description = "Match exactly 3: clear 2 extra candies of that color."
+description = "Match exactly 3: clear 2 more of that color"
 category = "Three"
 price = 7
 icon = ExtResource("2")

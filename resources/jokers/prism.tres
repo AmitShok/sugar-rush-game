@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "prism"
 display_name = "Prism Shard"
-description = "Match 5+: leave a Wild. Swap it to clear up to 3 of each color."
+description = "Match 5+: leave a Wild (swap it to clear 3 of each type)"
 category = "Five"
 price = 12
 strength = 3

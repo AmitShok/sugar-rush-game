@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "supply_caramel"
 display_name = "Caramel Vault"
-description = "More Caramel spawns. Stacks with other Supply Jokers. See Candy Guide for odds."
+description = "More Caramel Squares spawn (x2 weight)"
 category = "Supply"
 price = 10
 spawn_color = 5

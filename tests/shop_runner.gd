@@ -98,7 +98,7 @@ func run_tests() -> void:
  GameManager.changed.emit()
  await frames()
  shop.inspect(GameManager.offers[0])
- check(not shop.offer_buttons["paintball"].disabled and shop.get_node("Details/Status").text.contains("Cash after"),"A second 4-match Joker can be bought without selling the first")
+ check(not shop.offer_buttons["paintball"].disabled and shop.get_node("Details/Status").text.contains("After:"),"A second 4-match Joker can be bought without selling the first")
  for dimensions: Vector2i in [Vector2i(800,500),Vector2i(1280,720),Vector2i(720,960)]:
   get_window().size = dimensions
   await frames()

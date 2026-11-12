@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "supply_plum"
 display_name = "Plum Crate"
-description = "More Plum spawns. Stacks with other Supply Jokers. See Candy Guide for odds."
+description = "More Plum Jellybeans spawn (x2 weight)"
 category = "Supply"
 price = 9
 spawn_color = 4

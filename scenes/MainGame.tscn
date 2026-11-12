@@ -79,7 +79,7 @@ offset_left = 940
 offset_top = 450
 offset_right = 1114
 offset_bottom = 625
-text = "Swap neighbors.\nH: Hint\nESC: Pause"
+text = ""
 autowrap_mode = 2
 theme_override_font_sizes/font_size = 24
 [node name="Hint" type="Button" parent="Play"]
@@ -137,11 +137,11 @@ theme_override_font_sizes/font_size = 64
 text = "SUGAR\nRUSH"
 [node name="Subtitle" type="Label" parent="Menu/Layout"]
 layout_mode = 2
-text = "A dangerous little sweet tooth."
+text = "Match candy. Bend the rules."
 theme_override_font_sizes/font_size = 24
 [node name="Description" type="Label" parent="Menu/Layout"]
 layout_mode = 2
-text = "Match candy. Bend the rules.\nBuild a recipe that breaks the bowl."
+text = ""
 theme_override_font_sizes/font_size = 24
 [node name="Seed" type="LineEdit" parent="Menu/Layout"]
 layout_mode = 2
@@ -170,7 +170,7 @@ text = "Quit"
 custom_minimum_size = Vector2(0,42)
 [node name="Footer" type="Label" parent="Menu/Layout"]
 layout_mode = 2
-text = "v0.28 | Sugar Rush"
+text = "v0.29 | Sugar Rush"
 theme_override_font_sizes/font_size = 24
 [node name="PauseShade" type="TextureRect" parent="."]
 z_index = 199

@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "nuclear"
 display_name = "Nuclear Core"
-description = "Match 5+: blast 3x3. Mark its origin: later clears there gain x4 Mult."
+description = "Match 5+: blast 3x3. That spot gives X4 Mult later"
 category = "Five"
 price = 13
 strength = 4

@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "addict"
 display_name = "Sugar Addict"
-description = "Gain +1 Mult per successful swap in a row. Failed swaps reset it."
+description = "+1 Mult per swap streak. A failed swap resets it"
 category = "Chaos"
 price = 10
 strength = 1
