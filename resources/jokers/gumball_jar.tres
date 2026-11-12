@@ -8,4 +8,5 @@ display_name = "Gumball Jar"
 description = "Gains +8 Candys per round cleared"
 category = "Scaling"
 price = 6
+rarity = "Common"
 icon = ExtResource("2")

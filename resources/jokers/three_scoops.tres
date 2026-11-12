@@ -8,4 +8,5 @@ display_name = "Three Scoops"
 description = "Match exactly 3: +30 Candys"
 category = "Three"
 price = 5
+rarity = "Common"
 icon = ExtResource("2")

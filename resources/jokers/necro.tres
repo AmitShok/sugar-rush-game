@@ -8,5 +8,6 @@ display_name = "Necromancer's Skull"
 description = "Match 5+: blockers and broken blocker spots turn Gold"
 category = "Five"
 price = 9
+rarity = "Uncommon"
 strength = 1
 icon = ExtResource("2")

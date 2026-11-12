@@ -181,7 +181,9 @@ func pack_choices(pack: Dictionary, pack_random: RandomNumberGenerator) -> Array
     pool.append(id)
  var choices: Array = []
  for i: int in range(mini(PackCatalog.size(pack),pool.size())):
-  var value: Variant = pool.pop_at(pack_random.randi_range(0,pool.size()-1))
+  # Joker packs follow rarity odds (JokerRarity); other packs pick evenly.
+  var index: int = JokerRarity.pick_index(pool,pack_random,joker_by_id) if pack.kind == "joker" else pack_random.randi_range(0,pool.size()-1)
+  var value: Variant = pool.pop_at(index)
   var choice: Dictionary = {"type":pack.kind,"id":value}
   if pack.kind == "joker": choice["edition"] = EditionCatalog.roll([run_seed,offer_rolls,"pack",value])
   choices.append(choice)
@@ -439,7 +441,8 @@ func roll_offers() -> void:
  for item: JokerData in config.jokers:
   if not jokers.has(item.id): pool.append(item)
  while offers.size() < 4 and not pool.is_empty():
-  var i: int = rng.randi_range(0,pool.size()-1)
+  # Rarer, stronger Jokers show up less often (JokerRarity.WEIGHTS).
+  var i: int = JokerRarity.pick_index(pool,rng)
   offers.append(pool[i])
   pool.remove_at(i)
  free_offer_id = ""

@@ -5,6 +5,7 @@ extends Resource
 @export_multiline var description: String = ""
 @export_enum("Geometry", "Three", "Four", "Five", "Chaos", "Supply", "Special", "Scaling") var category: String = "Geometry"
 @export var price: int = 80
+@export_enum("Common", "Uncommon", "Rare", "Legendary") var rarity: String = "Common"
 @export var strength: float = 1.0
 @export var accent: Color = Color("cdb6ff")
 @export var icon: Texture2D

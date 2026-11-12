@@ -252,3 +252,16 @@ Persistent screens show numbers and short labels only; rules appear on hover, in
 ### Music and reactive sounds (v0.31)
 
 Three looping tracks crossfade by context: a laid-back jazzy track on the title screen and in the shop, an upbeat track during normal rounds and a driving minor-key track on boss rounds. Music ducks while paused and has its own **Music** toggle in Options (sound effects keep theirs). Sound effects react to play: swaps, failed swaps, big matches (4+), new special candies, specials firing, special combos, cracked obstacles, chocolate spreading, a rising tick while the score counts up, card hovers, every button press, coins on buying, selling, rerolling, pack opening and taking a card, using items, boss reveals, round wins, skips, victory and defeat. All audio is synthesised by `tools/generate_audio.gd` (no third-party files); `autoload/sound_board.gd` plays it.
+
+### Joker rarity and the new title screen (v0.33)
+
+Every Joker has a rarity. Each shop or Joker-pack roll first picks a tier, then a Joker within it: **Common 62%**, **Uncommon 27%**, **Rare 9%**, **Legendary 2%**. Rarity shows as a coloured pill (blue, green, red, purple) in the shop details, tooltips, pack cards, owned-Joker details and the Collection. Tiers come from measured solo power (`tools/balance_sim.gd -- --test solo=1`) plus judgement for scaling and 5-match Jokers:
+
+- **Legendary:** Paintball Splatter (~94x a Jokerless round), Kaleidoscope Prism (~7.7x), Sugar Addict (~4.3x)
+- **Rare:** Pop Rock, Sweet Tooth, Labyrinth Wire, Ribbon Striper, Golden Trio, Midas Touch, Nuclear Core
+- **Uncommon:** Ricochet Pop, Candy Wrapper, Mobius Strip, Gravity Well, Ouroboros Worm, Prism Shard, Candy Cane, Sugar Cube, Bomb Maker, Necromancer's Skull, T-Square
+- **Common:** Three Scoops, Gumball Jar, Roulette Licorice, Broken Scale, Sledgehammer Mint and the six candy Supply Jokers
+
+Legendaries now cost $14-15 and Rares $9-13.
+
+The title screen no longer sits in a panel. The SUGAR RUSH logo waves and shimmers (tap a letter to make it jump and play a note), candies drift down behind everything (tap to pop them; quick pops build a streak), six Joker cards fan out on both sides (hover to tilt, tap to flip to a new Joker rolled with the shop's rarity odds and see its rarity), and the buttons cascade in and swell on hover. The scene leans gently away from the pointer. Reduced motion turns the animation off.

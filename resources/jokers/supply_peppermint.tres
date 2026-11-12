@@ -8,6 +8,7 @@ display_name = "Peppermint Tin"
 description = "More Peppermints spawn (x2 weight)"
 category = "Supply"
 price = 8
+rarity = "Common"
 spawn_color = 3
 spawn_multiplier = 2.0
 icon = ExtResource("2")

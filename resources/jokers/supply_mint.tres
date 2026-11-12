@@ -8,6 +8,7 @@ display_name = "Mint Patch"
 description = "More Mint Gummies spawn (x2 weight)"
 category = "Supply"
 price = 7
+rarity = "Common"
 spawn_color = 2
 spawn_multiplier = 2.0
 icon = ExtResource("2")

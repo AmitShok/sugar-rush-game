@@ -8,5 +8,6 @@ display_name = "Roulette Licorice"
 description = "One type each round: X2 Mult. Never matched: half score"
 category = "Chaos"
 price = 6
+rarity = "Common"
 strength = 2
 icon = ExtResource("2")

@@ -8,6 +8,7 @@ display_name = "Plum Crate"
 description = "More Plum Jellybeans spawn (x2 weight)"
 category = "Supply"
 price = 9
+rarity = "Common"
 spawn_color = 4
 spawn_multiplier = 2.0
 icon = ExtResource("2")

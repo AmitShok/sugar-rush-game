@@ -8,4 +8,5 @@ display_name = "Candy Wrapper"
 description = "L/T match: make a Wrapped candy (+6 Mult when fired)"
 category = "Special"
 price = 7
+rarity = "Uncommon"
 icon = ExtResource("2")

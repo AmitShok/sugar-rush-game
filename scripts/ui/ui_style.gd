@@ -163,3 +163,22 @@ static func rich_label(text: String, size: int = 22, color: Color = CREAM) -> Ri
  node.add_theme_color_override("default_color",color)
  node.text = rich(text)
  return node
+# Balatro-style rarity pill: a small coloured tag with the tier name (Common/Uncommon/Rare/Legendary).
+static func rarity_pill(tier: String) -> PanelContainer:
+ var pill: PanelContainer = PanelContainer.new()
+ pill.name = "RarityPill"
+ var style: StyleBoxFlat = StyleBoxFlat.new()
+ style.bg_color = JokerRarity.color(tier)
+ style.set_corner_radius_all(6)
+ style.content_margin_left = 10
+ style.content_margin_right = 10
+ style.content_margin_top = 1
+ style.content_margin_bottom = 1
+ pill.add_theme_stylebox_override("panel",style)
+ pill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+ pill.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+ var text: Label = label(tier,24,CREAM)
+ text.add_theme_color_override("font_shadow_color",Color(0,0,0,0.35))
+ text.add_theme_constant_override("shadow_offset_y",2)
+ pill.add_child(text)
+ return pill

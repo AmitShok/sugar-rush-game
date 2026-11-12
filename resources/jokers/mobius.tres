@@ -8,5 +8,6 @@ display_name = "Mobius Strip"
 description = "Matches wrap around the board edges"
 category = "Geometry"
 price = 9
+rarity = "Uncommon"
 strength = 1
 icon = ExtResource("2")

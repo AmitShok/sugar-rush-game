@@ -137,6 +137,7 @@ func inspect(item: JokerData) -> void:
  portrait.texture=item.icon
  title.text=item.display_name
  var type: String={"Three":"Exactly 3","Four":"4+ match","Five":"5+ match"}.get(item.category,item.category)
- category.text="%s | Shop price %s" % [type,UIStyle.money(item.price)]
+ category.text="%s | %s | Shop price %s" % [item.rarity,type,UIStyle.money(item.price)]
+ category.add_theme_color_override("font_color",JokerRarity.color(item.rarity))
  description.text=item.description
  rich_description.text=UIStyle.rich(item.description)

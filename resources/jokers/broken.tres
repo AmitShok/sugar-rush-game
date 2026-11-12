@@ -8,5 +8,6 @@ display_name = "Broken Scale"
 description = "Swaps the Candys and Mult displays. Score unchanged"
 category = "Chaos"
 price = 1
+rarity = "Common"
 strength = 1
 icon = ExtResource("2")

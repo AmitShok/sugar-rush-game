@@ -8,4 +8,5 @@ display_name = "Golden Trio"
 description = "Match exactly 3: they turn Gold (80+ Candys each)"
 category = "Three"
 price = 11
+rarity = "Rare"
 icon = ExtResource("2")

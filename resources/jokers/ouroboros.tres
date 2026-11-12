@@ -8,5 +8,6 @@ display_name = "Ouroboros Worm"
 description = "Last move: X1 Mult per 10 candies on the board"
 category = "Chaos"
 price = 12
+rarity = "Uncommon"
 strength = 0.1
 icon = ExtResource("2")

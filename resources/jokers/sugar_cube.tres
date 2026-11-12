@@ -8,4 +8,5 @@ display_name = "Sugar Cube"
 description = "Gains +1 Mult per Quint or L/T Shape scored"
 category = "Scaling"
 price = 7
+rarity = "Uncommon"
 icon = ExtResource("2")

@@ -105,6 +105,8 @@ func run_tests() -> void:
  GameManager.settle_round()
  GameManager.gummies=20
  GameManager.offers.assign([supplies[0],supplies[3],supplies[4],supplies[5]])
+ GameManager.offer_editions.clear() # Fixture: plain cards so prices are exact.
+ GameManager.free_offer_id = ""
  GameManager.changed.emit()
  await frames()
  var shop: Control=main.get_node("Shop")

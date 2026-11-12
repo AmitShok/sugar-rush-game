@@ -8,6 +8,7 @@ display_name = "Caramel Vault"
 description = "More Caramel Squares spawn (x2 weight)"
 category = "Supply"
 price = 10
+rarity = "Common"
 spawn_color = 5
 spawn_multiplier = 2.0
 icon = ExtResource("2")

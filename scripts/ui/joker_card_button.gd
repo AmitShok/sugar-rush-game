@@ -15,4 +15,5 @@ func _make_custom_tooltip(_text: String) -> Object:
  description.custom_minimum_size.x = 320
  description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
  column.add_child(description)
+ column.add_child(UIStyle.rarity_pill(item.rarity))
  return panel

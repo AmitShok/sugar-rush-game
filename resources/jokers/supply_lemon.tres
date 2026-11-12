@@ -8,6 +8,7 @@ display_name = "Lemon Press"
 description = "More Lemon Drops spawn (x2 weight)"
 category = "Supply"
 price = 6
+rarity = "Common"
 spawn_color = 1
 spawn_multiplier = 2.0
 icon = ExtResource("2")

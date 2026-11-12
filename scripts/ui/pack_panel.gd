@@ -73,6 +73,9 @@ func refresh() -> void:
   art.mouse_filter = Control.MOUSE_FILTER_PASS
   CardTilt.attach(art)
   column.add_child(art)
+  if String(choice.type) == "joker":
+   var joker: JokerData = GameManager.joker_by_id(String(choice.id))
+   if joker: column.add_child(UIStyle.rarity_pill(joker.rarity))
   if choice.type == "joker": UIStyle.add_edition_overlay(art,String(choice.get("edition","")))
   var text: RichTextLabel = UIStyle.rich_label(info.text,20)
   text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART

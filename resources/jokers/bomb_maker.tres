@@ -8,4 +8,5 @@ display_name = "Bomb Maker"
 description = "Match 5 in a line: make a Color Bomb (+10 Mult when fired)"
 category = "Special"
 price = 9
+rarity = "Uncommon"
 icon = ExtResource("2")

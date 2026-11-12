@@ -145,7 +145,7 @@ text = ""
 theme_override_font_sizes/font_size = 24
 [node name="Seed" type="LineEdit" parent="Menu/Layout"]
 layout_mode = 2
-placeholder_text = "Optional numeric seed"
+placeholder_text = "Seed (optional)"
 max_length = 12
 [node name="Continue" type="Button" parent="Menu/Layout"]
 layout_mode = 2
@@ -170,7 +170,7 @@ text = "Quit"
 custom_minimum_size = Vector2(0,42)
 [node name="Footer" type="Label" parent="Menu/Layout"]
 layout_mode = 2
-text = "v0.32 | Sugar Rush"
+text = "v0.33 | Sugar Rush"
 theme_override_font_sizes/font_size = 24
 [node name="PauseShade" type="TextureRect" parent="."]
 z_index = 199

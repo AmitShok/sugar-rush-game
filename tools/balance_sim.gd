@@ -35,6 +35,11 @@ func _init() -> void:
 		if a.begins_with("lv="): for id: String in RecipeCatalog.ORDER: levels[id] = int(a.substr(3))
 		if a.begins_with("boss="): boss = a.substr(5)
 	ScoreEngine.configure(config)
+	# solo=1: score every Joker on its own (plus a Three Scoops partner, since most builds have one),
+	# so rarity tiers can be set from measured power.
+	if "solo=1" in OS.get_cmdline_user_args():
+		all_builds = {"none": []}
+		for j: JokerData in config.jokers: all_builds["solo " + j.id] = [j.id]
 	for build_name: String in all_builds:
 		if not filter.is_empty() and not build_name.begins_with(filter): continue
 		var jm: JokerManager = JokerManager.new()

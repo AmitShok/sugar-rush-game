@@ -8,5 +8,6 @@ display_name = "Sledgehammer Mint"
 description = "Match 4+: break the toughest blocker, or +30 Candys"
 category = "Four"
 price = 7
+rarity = "Common"
 strength = 30
 icon = ExtResource("2")

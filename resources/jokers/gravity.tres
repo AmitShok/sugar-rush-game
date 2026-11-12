@@ -8,5 +8,6 @@ display_name = "Gravity Well"
 description = "Match 4+: also clear the 4 nearest of that color"
 category = "Four"
 price = 10
+rarity = "Uncommon"
 strength = 4
 icon = ExtResource("2")

@@ -260,6 +260,7 @@ func inspect_owned(item: JokerData) -> void:
 func update_details() -> void:
  $Details.visible = selected != null
  if selected == null:
+  show_rarity(null)
   $Details/Name.text = "Choose a Joker"
   $Details/Description.text = "Select a shop card to read its effect. Select an owned Joker above to sell it."
   $Details/Status.text = "Cash stays with you between rounds."
@@ -268,6 +269,7 @@ func update_details() -> void:
   move_right.hide()
   return
  $Details/Name.text = GameManager.joker_title(selected,not selected_owned)
+ show_rarity(selected)
  describe(selected.description)
  # Edition effect and live growth go on the status line so the description keeps its two lines.
  var edition: String = GameManager.jokers.edition(selected.id) if selected_owned else String(GameManager.offer_editions.get(selected.id,""))
@@ -394,3 +396,16 @@ func describe(text: String) -> void:
   $Details/Description.self_modulate.a = 0.0
  rich_description.add_theme_font_size_override("normal_font_size",$Details/Description.get_theme_font_size("font_size"))
  rich_description.text = UIStyle.rich(text)
+# Rarity pill placed right after the selected Joker's name.
+func show_rarity(item: JokerData) -> void:
+ var old: Node = $Details.get_node_or_null("RarityPill")
+ if old:
+  $Details.remove_child(old)
+  old.queue_free()
+ if item == null: return
+ var pill: Control = UIStyle.rarity_pill(item.rarity)
+ var name_label: Label = $Details/Name
+ var font: Font = name_label.get_theme_font("font")
+ var width: float = font.get_string_size(name_label.text,HORIZONTAL_ALIGNMENT_LEFT,-1,name_label.get_theme_font_size("font_size")).x
+ pill.position = Vector2(name_label.position.x+minf(width,440.0)+12.0,6.0)
+ $Details.add_child(pill)

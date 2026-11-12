@@ -8,6 +8,7 @@ display_name = "Berry Basket"
 description = "More Berry Bonbons spawn (x2 weight)"
 category = "Supply"
 price = 5
+rarity = "Common"
 spawn_color = 0
 spawn_multiplier = 2.0
 icon = ExtResource("2")

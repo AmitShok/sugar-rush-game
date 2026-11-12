@@ -8,5 +8,6 @@ display_name = "Midas Touch"
 description = "Match 5+: that whole color turns Gold"
 category = "Five"
 price = 12
+rarity = "Rare"
 strength = 1
 icon = ExtResource("2")

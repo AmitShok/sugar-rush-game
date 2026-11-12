@@ -8,4 +8,5 @@ display_name = "Candy Cane"
 description = "Gains X0.1 Mult per special candy fired"
 category = "Scaling"
 price = 8
+rarity = "Uncommon"
 icon = ExtResource("2")

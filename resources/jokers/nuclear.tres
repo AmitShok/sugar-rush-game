@@ -8,5 +8,6 @@ display_name = "Nuclear Core"
 description = "Match 5+: blast 3x3. That spot gives X4 Mult later"
 category = "Five"
 price = 13
+rarity = "Rare"
 strength = 4
 icon = ExtResource("2")

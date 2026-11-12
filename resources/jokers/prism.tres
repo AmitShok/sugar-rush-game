@@ -8,5 +8,6 @@ display_name = "Prism Shard"
 description = "Match 5+: leave a Wild (swap it to clear 3 of each type)"
 category = "Five"
 price = 12
+rarity = "Uncommon"
 strength = 3
 icon = ExtResource("2")

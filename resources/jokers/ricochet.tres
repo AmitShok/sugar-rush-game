@@ -8,5 +8,6 @@ display_name = "Ricochet Pop"
 description = "Match 4+: clear the whole line; extras return as Caramel"
 category = "Four"
 price = 10
+rarity = "Uncommon"
 strength = 1
 icon = ExtResource("2")

@@ -284,3 +284,8 @@ All 27 suites pass (910 checks). ResizeRunner, SaveRunner and SettingsRunner wer
 ## Drag-to-swap and touch play (v0.32, 2026-11-12)
 
 Candies can now be dragged onto a neighbour with a mouse or a finger (touch arrives as emulated mouse input). The candy leans toward the drag, and once the pointer travels 40% of a cell the swap fires in the dominant direction. Tap-then-tap and the keyboard still work. TouchRunner adds real `InputEventScreenTouch`/`InputEventScreenDrag` swipes at 1152x720, 844x390 and 720x960 (a short wiggle must not swap; a full drag spends exactly one move), plus a mouse drag.
+
+
+## Joker rarity and interactive title (v0.33, 2026-11-12)
+
+Added `JokerRarity` (Common 62 / Uncommon 27 / Rare 9 / Legendary 2 tier weights, split evenly within a tier) used by shop offers, Joker packs and the title cards; a `rarity` field on all 32 Jokers set from `balance_sim.gd solo=1` (Paintball Splatter measured ~94x a Jokerless round, by far the strongest, so it is Legendary); rarity pills in shop, tooltip, pack, details and Collection. Rewrote `scripts/ui/menu_backdrop.gd` as an interactive title with no panel. New TitleRunner (20 checks): no panel style, logo letters jump, candies pop, cards flip and show rarity, 20,000-roll tier odds within 1.5% of target, shop shows Legendaries least often, shop rarity pill clears the Buy button.

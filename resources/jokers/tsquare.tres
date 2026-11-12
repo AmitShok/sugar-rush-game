@@ -8,5 +8,6 @@ display_name = "T-Square"
 description = "L/T matches count as 5 for every Joker"
 category = "Geometry"
 price = 8
+rarity = "Uncommon"
 strength = 1
 icon = ExtResource("2")
