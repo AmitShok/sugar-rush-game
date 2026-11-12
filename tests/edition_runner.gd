@@ -74,7 +74,9 @@ func run_tests() -> void:
  GameManager.changed.emit()
  await frames()
  check(GameManager.offer_price(joker("midas"))==joker("midas").price+5 and GameManager.offer_price(joker("addict"))==joker("addict").price,"Editions raise the offer price")
- check(shop.card_buttons["midas"].has_node("Edition") and not shop.card_buttons["addict"].has_node("Edition"),"Shop cards show the edition overlay")
+ check(shop.card_buttons["midas"].get_node("CardTilt").edition=="poly" and shop.card_buttons["addict"].get_node("CardTilt").edition=="" and not shop.card_buttons["midas"].has_node("Edition"),"Shop cards draw their edition in the card shader, not a static overlay")
+ await frames()
+ check((shop.card_buttons["midas"].material as ShaderMaterial).get_shader_parameter("edition")==3 and (shop.card_buttons["addict"].material as ShaderMaterial).get_shader_parameter("edition")==0,"Edition reaches the tilting card shader")
  await click(shop.card_buttons["midas"])
  check(shop.get_node("Details/Name").text=="Midas Touch (Polychrome)" and shop.get_node("Details/Status").text.begins_with("x1.5 Mult"),"Details name the edition and its effect")
  await click(shop.offer_buttons["midas"])
@@ -84,7 +86,7 @@ func run_tests() -> void:
  await click(shop.offer_buttons["addict"])
  var slots: Node=main.get_node("Play/JokerInventory/Layout/Slots")
  await frames()
- check(slots.get_child(0).get_child(0).has_node("Edition") and not slots.get_child(2).get_child(0).has_node("Edition"),"Owned cards show their edition overlay")
+ check(slots.get_child(0).get_child(0).get_node("CardTilt").edition=="poly" and slots.get_child(2).get_child(0).get_node("CardTilt").edition=="","Owned cards draw their edition in the card shader")
  await click(slots.get_child(2).get_child(0))
  check(shop.selected_owned and shop.move_left.visible and shop.move_right.visible and shop.move_right.disabled,"Owned Joker shows move buttons; rightmost cannot move right")
  await click(shop.move_left)
@@ -92,6 +94,17 @@ func run_tests() -> void:
  await click(shop.move_left)
  check(GameManager.jokers.equipped[0].id=="addict" and shop.move_left.disabled,"Leftmost Joker cannot move further left")
  await capture("editions_shop")
+ # Visual capture of all three editions next to a plain card, at two moments of sway and shimmer.
+ GameManager.offers.assign([joker("midas"),joker("mobius"),joker("labyrinth"),joker("three_scoops")])
+ GameManager.offer_editions={"midas":"foil","mobius":"holo","labyrinth":"poly"}
+ GameManager.motion=true
+ shop.show_page("jokers")
+ GameManager.changed.emit()
+ for i: int in range(30): await get_tree().process_frame
+ await capture("editions_live_a")
+ for i: int in range(55): await get_tree().process_frame
+ await capture("editions_live_b")
+ GameManager.motion=false
  # Saves.
  GameManager.jokers.grow("addict",0.0)
  GameManager.jokers.add(joker("candy_cane"))

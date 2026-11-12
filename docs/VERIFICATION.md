@@ -266,3 +266,9 @@ All 27 suites pass (909 checks).
 ## Less text (v0.29, 2026-11-12)
 
 Researched Balatro's approach (numbers-only persistent HUD, rules in hover tooltips, colour-coded Mult/Chips/money keywords, learning through play) and applied it: shortened every Joker, Tag, consumable, rare card and pack text; added `UIStyle.rich()` keyword colouring to tooltips, shop details, pack modal, Collection and item browser; removed always-on explainers and filler; shortened toasts and status lines. Incident: the first version of the keyword regex was written with halved backslashes, which made `ui_style.gd` fail to parse and stopped every screen from loading during testing; fixed before anything was committed. ShopRunner's status-text check now looks for "After:". All 27 suites pass (909 checks); gameplay, shop and route screens inspected.
+
+
+## Living editions (v0.30, 2026-11-12)
+
+Editions were static overlay pictures stacked over cards, so they never moved with the card tilt and were hard to notice. They are now drawn inside `shaders/card_tilt.gdshader`: Foil (blue chrome: blue-tinted greyscale with high-contrast dark and bright metal bands sweeping with the tilt), Holographic (hot magenta-pink tint that keeps the art in colour, twinkling sparkle dots, hologram lines and a pink rim) and Polychrome (whole card recoloured through a flowing rainbow), each with a glowing animated rim, stronger while hovered. `UIStyle.add_edition_overlay` now sets `CardTilt.edition`; the old `edition_*` overlay PNGs are unused. EditionRunner checks the edition reaches each card's shader (28 checks) and captures two live frames; After review, Holographic was separated from Polychrome (no rainbow) and then from Foil (pink full-colour vs blue chrome), so all three read differently at a glance.
+All 27 suites pass (910 checks).

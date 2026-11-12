@@ -9,6 +9,10 @@ var hovering: bool = false
 var current: Vector2 = Vector2.ZERO
 var lift: float = 0.0
 var phase: float = 0.0
+# Joker edition drawn by the card shader (v0.30): "", "foil", "holo" or "poly".
+var edition: String = ""
+var clock: float = 0.0
+const EDITION_IDS: Dictionary = {"foil":1,"holo":2,"poly":3}
 static func attach(target: Control) -> CardTilt:
  var existing: Node = target.get_node_or_null("CardTilt")
  if existing: return existing as CardTilt
@@ -28,6 +32,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
  if not is_instance_valid(card) or not card.is_visible_in_tree(): return
  var target: Vector2 = Vector2.ZERO
+ if GameManager.motion: clock += delta
  if GameManager.motion:
   phase += delta
   if hovering and card.size.x > 0.0:
@@ -43,3 +48,5 @@ func _process(delta: float) -> void:
  if material:
   material.set_shader_parameter("tilt",current)
   material.set_shader_parameter("sheen",lift)
+  material.set_shader_parameter("edition",int(EDITION_IDS.get(edition,0)))
+  material.set_shader_parameter("clock",clock)

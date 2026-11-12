@@ -127,17 +127,10 @@ static func button_color(button: Button, color: Color) -> void:
  elif hue >= 250.0 and hue < 320.0: role(button,"skip")
  elif hue >= 30.0 and hue < 70.0: role(button,"buy")
  else: role(button,"danger")
-# Edition shimmer drawn over a Joker card (Aseprite overlays at the card's 70x94 size).
+# Joker editions are drawn by the card's tilt shader (v0.30), so foil, holographic and polychrome
+# move with the card and react to the pointer. (The old static edition_* overlays are no longer used.)
 static func add_edition_overlay(card: Control, edition: String) -> void:
- if edition.is_empty(): return
- var overlay: TextureRect = TextureRect.new()
- overlay.name = "Edition"
- overlay.texture = texture("edition_"+edition)
- overlay.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
- overlay.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
- overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
- overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
- card.add_child(overlay)
+ CardTilt.attach(card).edition = edition
 # Balatro-style keyword colours (v0.29): Mult red, Candys blue, money gold. Write numbers as
 # "+4 Mult", "X1.5 Mult", "+30 Candys" or "$10" so the number takes the keyword's colour too.
 const MULT_COLOR: String = "ff6a5a"
