@@ -160,3 +160,9 @@ Four exact-three Joker cards are drawn and exported by `tools/create_three_art.l
 - HD cards: every 70 x 94 card, pack and edition PNG is upscaled with Scale2x to 140 x 188, given rounded corners and paper grain, and re-saved as a layered master. Already-HD images are skipped, so the script is safe to re-run.
 
 Shaders (owner-approved): `shaders/candy_swirl.gdshader` (pixelated, posterised swirling background on the `CandySwirl` layer above the painted `table_felt`) and `shaders/card_tilt.gdshader` with `scripts/ui/card_tilt.gd` (cards tilt toward the pointer, lift and shine on hover, sway at rest). Both pause with Reduced motion.
+
+## Native HD Joker cards (v0.26)
+
+`tools/create_joker_hd.lua` redraws all 32 Joker cards natively at 140 x 188 (run it after `create_hd_art.lua`; pass `--script-param only=<card>` to redraw one). Each master has three layers: card stock and frame (rounded cream stock, ink outline, art window, category gem), illustration (per-pixel shaded shapes over a category-tinted patterned background, with drop shadows, glints and sparkles; Supply cards stamp the HD candies), and lettering (m6x11 at 2x, proportional). Category tints: Geometry blue, 4+ green, 5+ purple, Chaos red, Supply caramel, Three pink, Special teal, Scaling gold.
+
+Regeneration order for all art: the original `create_*.lua` scripts, then `create_hd_art.lua`, then `create_joker_hd.lua`.

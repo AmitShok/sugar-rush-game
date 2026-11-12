@@ -241,3 +241,9 @@ All 27 suites pass (907 checks), including ResizeRunner's 496 cell hitboxes and 
 Generated with `tools/create_hd_art.lua` and reviewed on contact sheets and rendered screens (gameplay, shop with editions, route preview). Review fixes: candies first rendered black (colour ramp returned hex strings, not colours); then washed out (lighting mapped most pixels to the lightest tones; contrast curve added); cards rendered dark because the tilt shader multiplied by `COLOR`, which in Godot 4 already contains the texture (now multiplies by the vertex tint only).
 
 All 27 suites pass (907 checks) apart from ShakerRunner's known timing-sensitive pair of checks, which failed once in the full sequential run and then passed 3/3 alone and on 10 fixed seeds. ShakerRunner now uses a fixed seed (override with `SUGAR_TEST_SEED`); the remaining flake comes from real-time animation waits in its motion-enabled section. RouteRunner now checks that the painted table stays shader-free and that the swirl is its own shader layer. Not verified: the swirl and card tilt in motion and on web/mobile GPUs (still screenshots only).
+
+
+## Native HD Joker cards (v0.26, 2026-11-12)
+
+All 32 cards reviewed on contact sheets and in the Collection, shop, Joker bar and title screen. Review fixes: the Cube card's background filled with outline ink (its shape returned a small "outside" distance everywhere; replaced with a hexagon distance and face edges), and the Bomb was enlarged with chunkier sprinkles. Collection (78) and shop (30) suites pass with the new art; full results below the commit.
+All 27 suites pass (907 checks).
