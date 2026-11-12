@@ -55,6 +55,7 @@ func run_tests() -> void:
  for card: JokerData in GameManager.config.jokers:
   shop.inspect(card)
   await frames()
+  if shop.get_node("Details/Description").get_line_count() > 2: print("TOO LONG: "+card.id)
   descriptions_fit = descriptions_fit and shop.get_node("Details/Description").get_line_count() <= 2
  check(descriptions_fit,"All Joker descriptions fit the two-line detail area")
  check(main.get_node("Play/UI_Hud").is_visible_in_tree(),"Cash sidebar remains visible in the shop")

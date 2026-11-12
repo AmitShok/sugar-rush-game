@@ -9,10 +9,14 @@ extends Resource
 @export var moves_per_bonus: int = 3
 @export var base_reroll_cost: int = 3
 @export var reroll_increment: int = 2
+@export var interest_per: int = 5 # $1 interest for every this many dollars held
+@export var interest_cap: int = 5
 @export var gold_chips: int = 80
 @export var caramel_chips: int = 30
 @export var heatwave_turns: int = 4
 @export var cascade_limit: int = 40
+@export var cascade_mult_step: float = 0.5
+@export var cascade_mult_cap: float = 2.0
 @export var rounds: Array[RoundData] = []
 @export var candies: Array[CandyData] = []
 @export var jokers: Array[JokerData] = []

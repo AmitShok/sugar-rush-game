@@ -106,3 +106,47 @@ Four exact-three Joker cards are drawn and exported by `tools/create_three_art.l
 ### Consumable cards (v0.15)
 
 `tools/create_consumable_art.lua` draws and exports four layered 70 x 94 cards in Aseprite: `sugar_shaker_card`, `extra_serving`, `golden_glaze`, and `candy_hammer`. Editable masters are in `assets/source/aseprite/`; runtime PNGs are in `assets/exported/`. They share a cream card frame, pixel lettering and the existing game palette; the Shaker card incorporates the original Aseprite jar artwork.
+
+## Special candies (v0.19)
+
+`tools/create_special_art.lua` draws these with Aseprite (layered masters kept):
+
+- `assets/source/aseprite/ui_striped_h.aseprite` → `assets/exported/ui_striped_h.png` (56 x 56 row-stripe overlay)
+- `assets/source/aseprite/ui_striped_v.aseprite` → `assets/exported/ui_striped_v.png` (56 x 56 column-stripe overlay)
+- `assets/source/aseprite/ui_wrapped.aseprite` → `assets/exported/ui_wrapped.png` (56 x 56 wrapper overlay)
+- `assets/source/aseprite/candy_bomb.aseprite` → `assets/exported/candy_bomb.png` (24 x 24 Color Bomb, shown at 2x)
+- `assets/source/aseprite/striper.aseprite` → `assets/exported/striper.png` (70 x 94 card)
+- `assets/source/aseprite/wrapper.aseprite` → `assets/exported/wrapper.png` (70 x 94 card)
+- `assets/source/aseprite/bomb_maker.aseprite` → `assets/exported/bomb_maker.png` (70 x 94 card)
+
+## Joker editions and scaling Jokers (v0.21)
+
+`tools/create_edition_art.lua` draws these with Aseprite (layered masters kept):
+
+- `assets/source/aseprite/edition_foil.aseprite` → `assets/exported/edition_foil.png` (70 x 94 overlay)
+- `assets/source/aseprite/edition_holo.aseprite` → `assets/exported/edition_holo.png` (70 x 94 overlay)
+- `assets/source/aseprite/edition_poly.aseprite` → `assets/exported/edition_poly.png` (70 x 94 overlay)
+- `assets/source/aseprite/sugar_cube.aseprite` → `assets/exported/sugar_cube.png` (70 x 94 card)
+- `assets/source/aseprite/gumball_jar.aseprite` → `assets/exported/gumball_jar.png` (70 x 94 card)
+- `assets/source/aseprite/candy_cane.aseprite` → `assets/exported/candy_cane.png` (70 x 94 card)
+
+## Bosses and obstacles (v0.22)
+
+`tools/create_boss_art.lua` draws these with Aseprite (layered masters kept):
+
+- Boss icons (32 x 32): `ui_chocolatier`, `ui_frost`, `ui_sour`, `ui_spoon`, `ui_jelly`, `ui_tax`, `ui_hurry` (`assets/source/aseprite/<name>.aseprite` → `assets/exported/<name>.png`)
+- Tile overlays (56 x 56): `ui_chocolate`, `ui_frost_1`, `ui_frost_2`, `ui_mark_jelly`, `ui_mark_sour`
+
+## Booster packs (v0.23)
+
+`tools/create_pack_art.lua` draws these with Aseprite (layered masters kept), 70 x 94 each:
+`pack_joker`, `pack_recipe`, `pack_candy`, `pack_treat`, `pack_rush`, and the `pack_jumbo` banner overlay (`assets/source/aseprite/<name>.aseprite` → `assets/exported/<name>.png`).
+
+## Candy-shop revision (v0.24)
+
+`tools/create_v2_art.lua` (Aseprite, layered masters kept) **supersedes** the candy drawings in `create_art.lua` and the panels, board tiles, particle and table in `create_ui_art.lua`. If you regenerate everything, run it after those two scripts. It writes:
+
+- Candies `candy_0`–`candy_5` and `candy_bomb` (24 x 24): soft shadow, body/shading and glint layers.
+- Board tiles `ui_tile_a`, `ui_tile_b` (56 x 56) and the idle `ui_glint` (16 x 16); sparkle `ui_particle` (32 x 32).
+- Nine-slice skins (24 x 24): `ui_panel`, `ui_inset`, `ui_disabled`, `ui_boss`, `ui_progress_gold`, `ui_green`, `ui_blue`, `ui_button` (+ `_hover`, `_pressed`) and role buttons `ui_btn_{go,info,buy,skip,danger,neutral}` (+ `_hover`, `_pressed`).
+- Backdrop: `table_felt` (576 x 360 painted base with vignette) and `backdrop_tile` (96 x 96 seamless stripe-and-sprinkle layer that drifts at runtime).

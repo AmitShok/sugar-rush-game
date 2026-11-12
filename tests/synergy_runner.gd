@@ -80,9 +80,9 @@ func run_tests() -> void:
   GameManager.moves=100
   GameManager.score=1000000
   GameManager.settle_round()
-  bounded = bounded and GameManager.last_award==[8,10,13][round_id%3]
-  total += GameManager.last_award
- check(bounded and total==186,"Eighteen-round cash is bounded at $186 plus $4 starting cash")
+  bounded = bounded and GameManager.last_award==[8,10,13][round_id%3]+GameManager.last_interest and GameManager.last_interest<=5
+  total += GameManager.last_award-GameManager.last_interest
+ check(bounded and total==186,"Eighteen-round cash is bounded at $186 plus $4 starting cash, plus at most $5 interest per round")
  var main: Control=preload("res://scenes/MainGame.tscn").instantiate()
  add_child(main)
  await get_tree().process_frame

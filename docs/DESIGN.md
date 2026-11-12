@@ -6,7 +6,7 @@ The supplied brief leaves several timing and conflict cases open. These are the 
 
 Each connected match group produces an award. Candies within an overlapping L/T group are counted once. Separate groups in a cascade wave score separately, and a tile hit by multiple blasts contributes Candys only to its first award.
 
-The normal group multiplier is `1 + max(0, effective line length - 3) + 0.5 × cascade index`. Diagonal groups receive Kaleidoscope's ×1.5 Candys factor. Labyrinth triples the multiplier. Addict's +3 per streak turn is then added. Isotope, poison, and final-move factors multiply afterward. The result is rounded to the nearest integer.
+The normal group multiplier is `1 + max(0, effective line length - 3) + min(0.5 × cascade index, 2)` (step and cap are `cascade_mult_step` / `cascade_mult_cap` in RunConfig). Diagonal groups receive Kaleidoscope's ×1.5 Candys factor. Since v0.21, Jokers then apply in their left-to-right order: Kaleidoscope (x1.5 Candys on diagonals), Labyrinth (x3 Mult), Addict (+1 Mult per streak), Nuclear (x4 on isotopes), Roulette (x2 on the chosen type), Ouroboros (x1 per 10 non-blocker candies on the final move), Sugar Cube (+Mult), Gumball Jar (+Candys), Candy Cane (xMult), each followed by its edition (Foil +50 Candys, Holographic +4 Mult, Polychrome x1.5 Mult). The result is rounded to the nearest integer.
 
 Thus an ordinary three-candy match starts at ×1, four at ×2, and five at ×3. The HUD shows the most recent group's operands. The running batch score accumulates every group and cascade.
 
@@ -24,7 +24,7 @@ After all cascades, Heatwave ages surviving candies. Swapped, newly spawned, and
 
 A round settles as soon as its adjusted score reaches the quota, or when moves run out. If Roulette's selected color was never matched, half the score is deducted before checking the quota. Clearing that color in an actual match group satisfies the requirement; merely hitting it as collateral does not.
 
-Score never converts to cash. Start with $4; Small / Big / Boss batches pay $5 / $7 / $10. Add $1 per three unused moves, capped at $3. Across eighteen wins the maximum income is $186 plus starting cash, regardless of score. Every shop offers four distinct unequipped Jokers when available. Prices range from $1 to $13. Selling pays half the purchase price, rounded down. Rerolls cost $3, then $5, $7, etc. within that shop.
+Score never converts to cash. Start with $4; Small / Big / Boss batches pay $5 / $7 / $10. Add $1 per three unused moves, capped at $3. Across eighteen wins the round income is at most $186 plus starting cash and interest ($1 per $5 held, max $5 per round), regardless of score. Skipping a Small or Big batch forgoes its income and shop for a Tag. Every shop offers four distinct unequipped Jokers when available. Prices range from $1 to $13. Selling pays half the purchase price, rounded down. Rerolls cost $3, then $5, $7, etc. within that shop.
 
 ## Effects and board state
 
@@ -57,3 +57,9 @@ The interface says Candys throughout. Internal `chips` field names remain for co
 ## Direct locked matches (v0.6.1)
 
 Matching and movement now use separate predicates. A framed candy cannot move but its color participates in three-, four- and five-candy lines. Inspector-marked candies also match directly and may be swapped; their gravity anchoring remains the boss constraint. Existing adjacency breaking is retained. The per-tile reward logic applies identically to direct and collateral clears.
+
+## Recipes (v0.18)
+
+`RecipeCatalog.classify` assigns each group one recipe: merged L/T shapes are Shape, otherwise diagonal groups are Diagonal, otherwise effective length picks Quint (5+), Quad (4) or Trio. Shape takes priority, so a T-Square-promoted shape still uses Shape while triggering 4+/5+ Jokers. Synthetic Wild groups score as Trio. Candy Hammer direct hits bypass recipes.
+
+Score = (candy Candys + recipe Candys) x (recipe Mult + extra length + capped cascade bonus), then Joker factors in the existing order. Quint and Diagonal add +1 Mult per candy beyond their base length. Levels start at 1 and are stored per run in `GameManager.recipe_levels`; saves without recipe data load at level 1.

@@ -3,7 +3,7 @@
 [resource]
 script = ExtResource("1")
 display_name = "Big Batch"
-quota = 37000
+quota = 120000
 moves = 8
 curse = "none"
 description = "Meet the quota before your moves run out."

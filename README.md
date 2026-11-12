@@ -76,13 +76,16 @@ Gold applies before destruction. Each cleared candy scores once, even where effe
 
 ### Extended campaign
 
-The run now has six antes (18 rounds). Antes 1–3 retain their original targets and moves. Later antes require stronger Joker combinations; cash rewards still use the same fixed payouts.
+The run has six antes (18 rounds). Quotas grow about 2.2x per ante (rebalanced 2026-11-11 from bot simulations: no-Joker play clears ante 1 only; ante 6 needs a five-Joker engine). Cash rewards still use the same fixed payouts.
 
 | Ante | Small / Big / Boss targets | Small / Big / Boss moves | Boss |
 | --- | --- | --- | --- |
-| 4 | 12,000 / 16,000 / 21,000 | 9 / 9 / 11 | Heatwave |
-| 5 | 28,000 / 37,000 / 48,000 | 8 / 8 / 10 | Inspector |
-| 6 | 62,000 / 80,000 / 105,000 | 7 / 7 / 9 | Heatwave |
+| 1 | 1,200 / 2,000 / 3,000 | 10 / 10 / 12 | Drawn per run |
+| 2 | 6,000 / 9,000 / 13,000 | 10 / 10 / 12 | Drawn per run |
+| 3 | 18,000 / 25,000 / 33,000 | 10 / 10 / 12 | Drawn per run |
+| 4 | 40,000 / 55,000 / 70,000 | 9 / 9 / 11 | Drawn per run |
+| 5 | 90,000 / 120,000 / 160,000 | 8 / 8 / 10 | Drawn per run |
+| 6 | 200,000 / 260,000 / 350,000 | 7 / 7 / 9 | Drawn per run |
 
 Victory follows the sixth boss. Shops remain available between rounds, including after the first five bosses.
 
@@ -129,3 +132,114 @@ Saves use a versioned, validated ConfigFile with temporary-file replacement. Aut
 ## Windows and web exports (v0.17)
 
 Run **Export Builds.cmd** with `GODOT_EXE` set, or use `tools/export.ps1 -GodotExe "C:/path/to/Godot.exe"`. Portable Windows and upload-ready web ZIPs are generated in `builds/`. Both support mouse and touch; owned Jokers can be tapped for details. See [export and testing instructions](docs/EXPORTING.md) for hosting, local saves and device coverage.
+
+
+### Recipes (v0.18)
+
+Every scored match is a **recipe**, Sugar Rush's version of a poker hand. Its Candys are added before Mult and its Mult is the starting multiplier:
+
+| Recipe | Match | Level 1 | Per level |
+| --- | --- | --- | --- |
+| Trio | Line of 3 | 0 x1 | +10 Candys, +1 Mult |
+| Quad | Line of 4 | 10 x2 | +15, +1 |
+| Quint | Line of 5+ (+1 Mult per extra candy) | 30 x3 | +20, +2 |
+| L / T Shape | Two lines joined | 20 x3 | +20, +2 |
+| Diagonal | Diagonal line (Kaleidoscope) | 10 x2 | +15, +1 |
+
+Since v0.23, level recipes with Recipe Packs (Packs tab), the Cookbook Tag or the Cookbook Blast rare card; the Recipes tab shows your levels. Levels last for the run and are saved with it. The in-round sidebar lists your recipe levels and marks the last recipe scored; score popups name the recipe.
+
+
+### Special candies (v0.19)
+
+Matches of 4 and 5 no longer blast for free. Special candies come from three Special Jokers:
+
+- **Ribbon Striper ($6):** a line of 4 (or 5 without Bomb Maker) leaves a **Striped** candy where you swapped. Matched or blasted, it clears its row or column.
+- **Candy Wrapper ($7):** an L/T match leaves a **Wrapped** candy that blasts a 3x3 area.
+- **Bomb Maker ($9):** a line of 5 leaves a **Color Bomb**. Swap it with any candy to clear that type.
+
+Each special that fires adds Mult to its match: Striped +4, Wrapped +6, Color Bomb +10. Specials chain: a blast that hits another special fires it too. Swapping two specials is always legal and makes a combo: Striped+Striped clears a cross, Striped+Wrapped three rows and three columns, Wrapped+Wrapped a 5x5 area, Color Bomb+Striped/Wrapped turns that type into the special and fires them all, and two Color Bombs clear the board. Combos score as a Quint recipe with x3 Mult (x6 for two Color Bombs) and do not trigger 4+/5+ Jokers. Specials are saved with the run.
+
+
+### Interest and skip Tags (v0.20)
+
+**Interest:** when you clear a round you earn $1 for every $5 you were holding (before the payout), up to $5. The shop receipt shows it.
+
+**Skipping:** the route preview shows a Tag on every Small and Big batch. Press **Skip** to give up that batch's cash and its shop and claim the Tag instead; Bosses cannot be skipped. A new run can skip its opening batch too. Tags are fixed by the run seed.
+
+| Tag | Effect |
+| --- | --- |
+| Piggy | Double your cash (max +$15) |
+| Handout | One Joker in the next shop is free until you reroll (it sells for $0) |
+| Cookbook | +1 level to two random recipes (not Diagonal) |
+| Reroll | Your next two rerolls are free |
+| Sweets | A random consumable, or $4 if your items are full |
+| Extra Moves | +3 moves in your next round (kept if that round is skipped) |
+
+After a skip the shop is closed; press Next to pick your next batch. Tag effects and interest are saved with the run.
+
+
+### Joker editions, order and scaling Jokers (v0.21)
+
+**Order matters.** Jokers add their score bonuses from left to right, so a +Mult Joker placed before a xMult Joker gets multiplied. In the shop, select an owned Joker and use **< Move / Move >** to rearrange them.
+
+**Editions.** Each shop Joker can roll an edition, shown as an overlay on the card. It applies to every match you score, in that Joker's position:
+
+| Edition | Effect | Extra price | Chance |
+| --- | --- | --- | --- |
+| Foil | +50 Candys | +$2 | 8% |
+| Holographic | +4 Mult | +$3 | 5% |
+| Polychrome | x1.5 Mult | +$5 | 3% |
+
+Selling refunds half of the full price, including the edition.
+
+**Scaling Jokers** grow for the rest of the run. Their current bonus is shown on the card and in the shop:
+
+- **Sugar Cube ($7):** +1 Mult for every Quint or L/T Shape you score.
+- **Gumball Jar ($6):** +8 Candys for every round you clear.
+- **Candy Cane ($8):** x0.1 Mult for every special candy fired (starts at x1).
+
+Selling a scaling Joker loses its growth. Order, editions and growth are saved with the run.
+
+
+### Bosses and obstacles (v0.22)
+
+Each run draws one boss per ante from nine, never repeating, fixed by the run seed. The route preview shows the upcoming boss with its icon and rule; the sidebar shows the live rule during the round.
+
+| Boss | Rule |
+| --- | --- |
+| The Inspector | One candy type stays put in falls. Match 3 with it to break it. |
+| The Heatwave | Candies untouched for 4 moves become sticky blockers. |
+| The Chocolatier | Chocolate tiles spread onto a neighbor after any move that breaks none. |
+| The Frost | Two-layer frosting blocks the middle; each nearby match or blast removes a layer. |
+| The Sour Patch | One candy type is sour and scores 0 Candys. |
+| The Tiny Spoon | All Mult is halved. |
+| The Jelly Mould | Half the cells are jelly; a match that clears no jelly scores half. |
+| The Sugar Tax | Every move costs $1 while you have cash. |
+| The Rush Hour | 3 fewer moves. |
+
+Chocolate and frosting fill a cell: they cannot be swapped or matched, anchor gravity, and break from adjacent matches or any blast (specials, line clears, Pop Rock, Nuclear) for the usual breaking bonus. Color Bombs and Joker attraction/gilding ignore them. Jelly stays on its cell while candies fall over it. Obstacles, jelly and the sour type are saved with the run.
+
+
+### Booster packs (v0.23)
+
+The shop's **Packs** tab sells two packs per shop; rerolls do not replace them. Opening a pack shows its cards; keep the number shown or skip the rest. Jumbo packs show more cards.
+
+| Pack | Price (Jumbo) | Cards (Jumbo) | Keep (Jumbo) | Odds |
+| --- | --- | --- | --- | --- |
+| Joker | $4 ($6) | 2 (4), editions can roll | 1 (1) | 30% |
+| Recipe | $4 ($6) | 3 (5) recipes, +1 level | 1 (2) | 30% |
+| Candy | $3 ($5) | 3 (5) candy types, +1 upgrade | 1 (2) | 20% |
+| Treat | $4 ($6) | 3 (4) consumables | 1 (1) | 10% |
+| Sugar Rush | $6 | 2 rare cards | 1 | 10% |
+
+A quarter of packs are Jumbo (never Sugar Rush). Rare cards: **Glitter** (random owned Joker gets an edition), **Cookbook Blast** (+1 level to every recipe), **Big Spoon** (+1 Joker slot up to 6, lose $10), **Meltdown** (destroy a random Joker, another turns Polychrome), **Golden Batch** (+$20, interest cap halved for the run). Cards that could not work are not offered.
+
+**Recipe levels now come from packs.** The Recipes tab shows your levels but no longer sells them; level recipes with Recipe Packs, the Cookbook Tag and Cookbook Blast. A new **Pack Tag** skip reward makes the next shop's first pack a free Jumbo. Packs, an open pack, extra Joker slots and Golden Batch are saved with the run.
+
+
+### Candy-shop art and UI (v0.24)
+
+- **Palette:** berry-chocolate backdrop with a slowly drifting stripe-and-sprinkle layer, plum panels with pink edges, and mid-plum board tiles so candies stand out.
+- **Candies:** the six candies and the Color Bomb are redrawn with outlines, four-tone shading, a white glint and a soft drop shadow (same shapes, still 24 x 24 at 2x).
+- **Colour-coded buttons:** green = go/play/next, blue = info (guide, run info, items, collection), gold = buy/open/reroll, purple = skip/hint, red = quit, plum = neutral (back, pause, tabs). Code uses `UIStyle.role(button, "go")` etc.
+- **Juice:** outlined score popups with a punch, cleared candies swell with a flash before popping, falling candies land with a small bounce, the board flashes on special effects, and resting candies sparkle now and then. All motion respects the Reduced motion option; the sparkle uses its own randomness and never affects seeded gameplay.

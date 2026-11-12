@@ -41,6 +41,8 @@ func run_checks() -> void:
   if i<8: cell.blocker=0
   board.model.cells.append(cell)
  board.sync_tiles(false)
+ # A row-striped candy in the first match blasts the whole row, overlapping the second match.
+ board.model.cells[1].special=CandyState.STRIPE_H
  var overlap: Array[Dictionary]=[
   {"cells":[0,1,2,3],"color":0,"length":4,"diagonal":false,"shape":false,"axis":Vector2i.RIGHT},
   {"cells":[4,5,6,7],"color":0,"length":4,"diagonal":false,"shape":false,"axis":Vector2i.RIGHT}]
@@ -49,7 +51,7 @@ func run_checks() -> void:
  board.matches_resolved.connect(capture_award)
  await board.resolve(overlap)
  board.matches_resolved.disconnect(capture_award)
- check(awards.size()>=2 and awards[0]==440 and awards[1]==280,"Overlapping blasts score each candy and its break bonus once")
+ check(awards.size()>=2 and awards[0]==1380 and awards[1]==300,"Overlapping blasts score each candy and its break bonus once (Quad 10 x2, Striped +4 Mult)")
  # Animated input paths and actual signal wiring, not only pure resolver calls.
  GameManager.start_run(42)
  GameManager.motion=true

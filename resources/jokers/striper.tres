@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="JokerData" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/data/joker_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/exported/striper.png" id="2"]
+[resource]
+script = ExtResource("1")
+id = "striper"
+display_name = "Ribbon Striper"
+description = "Line of 4: leave a Striped candy. When fired it clears its row or column, +4 Mult."
+category = "Special"
+price = 6
+icon = ExtResource("2")

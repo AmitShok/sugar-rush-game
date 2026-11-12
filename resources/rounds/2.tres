@@ -3,7 +3,7 @@
 [resource]
 script = ExtResource("1")
 display_name = "The Diabetic Inspector"
-quota = 1100
+quota = 3000
 moves = 12
 curse = "inspector"
 description = "One color stays fixed during falls. Match 3 including it to break locks for extra Candys."

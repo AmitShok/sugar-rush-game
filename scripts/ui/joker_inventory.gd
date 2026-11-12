@@ -14,7 +14,7 @@ func refresh() -> void:
   slot.custom_minimum_size = Vector2(124,104)
   $Layout/Slots.add_child(slot)
   if i >= GameManager.jokers.equipped.size():
-   var empty: Label = UIStyle.label("Empty",24,Color("98b2a8"))
+   var empty: Label = UIStyle.label("Empty",24,Color("a48fb0"))
    empty.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
    empty.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
    empty.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -24,10 +24,11 @@ func refresh() -> void:
   var card: JokerCardButton = JokerCardButton.new()
   card.item = item
   card.texture_normal = item.icon
+  UIStyle.add_edition_overlay(card,GameManager.jokers.edition(item.id))
   card.ignore_texture_size = true
   card.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
   card.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-  card.tooltip_text = item.display_name+"\n"+GameManager.joker_description(item)
+  card.tooltip_text = GameManager.joker_title(item)+"\n"+GameManager.joker_text(item)
   card.pressed.connect(func() -> void: inspect_requested.emit(item))
   card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
   slot.add_child(card)

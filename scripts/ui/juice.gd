@@ -4,6 +4,9 @@ extends Node2D
 @export var particle_count: int = 14
 func popup(text: String, point: Vector2, color: Color = UIStyle.CREAM) -> void:
  var label: Label = UIStyle.label(text,22,color)
+ # Outlined so popups read over any candy; a quick punch when motion is on.
+ label.add_theme_constant_override("outline_size",6)
+ label.add_theme_color_override("font_outline_color",UIStyle.INK)
  label.position = point-Vector2(30,15)
  label.mouse_filter = Control.MOUSE_FILTER_IGNORE
  add_child(label)
@@ -11,6 +14,12 @@ func popup(text: String, point: Vector2, color: Color = UIStyle.CREAM) -> void:
  tween.tween_property(label,"position:y",point.y-(58 if GameManager.motion else 20),float_duration)
  tween.tween_property(label,"modulate:a",0.0,float_duration).set_delay(0.2)
  tween.chain().tween_callback(label.queue_free)
+ if GameManager.motion:
+  label.pivot_offset = Vector2(30,15)
+  label.scale = Vector2(0.6,0.6)
+  var punch: Tween = label.create_tween()
+  punch.tween_property(label,"scale",Vector2(1.18,1.18),0.08).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+  punch.tween_property(label,"scale",Vector2.ONE,0.1)
 func burst(point: Vector2, color: Color) -> void:
  if not GameManager.motion: return
  var particles: CPUParticles2D = CPUParticles2D.new()

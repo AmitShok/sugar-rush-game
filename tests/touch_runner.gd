@@ -24,6 +24,10 @@ func run_tests() -> void:
  check(GameManager.state=="playing","Touch starts a round")
  GameManager.motion=false
  var board: GameBoard=main.board
+ # Use a late high-quota round (not the last) so test swaps never finish the round early.
+ GameManager.round_index=16
+ GameManager.start_round()
+ await frames()
  for size: Vector2i in [Vector2i(1152,720),Vector2i(844,390),Vector2i(720,960)]:
   get_window().size=size
   await frames()

@@ -100,7 +100,7 @@ func run_tests() -> void:
  GameManager.changed.emit()
  await settle_frames()
  await capture("redesigned_gameplay")
- GameManager.score=1000
+ GameManager.score=GameManager.current_round().quota
  GameManager.settle_round()
  await settle_frames()
  await capture("redesigned_shop")

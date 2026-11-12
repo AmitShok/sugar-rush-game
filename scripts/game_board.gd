@@ -47,12 +47,13 @@ func start_round() -> void:
  model.width = columns
  model.height = rows
  model.setup(GameManager.config,GameManager.jokers,GameManager.run_seed+GameManager.round_index*7919)
- model.locked_color = model.rng.randi_range(0,GameManager.config.candies.size()-1) if GameManager.current_round().curse == "inspector" else -1
+ model.locked_color = model.rng.randi_range(0,GameManager.config.candies.size()-1) if GameManager.curse() == "inspector" else -1
  model.candy_bonuses = GameManager.candy_bonuses
  model.fill_fresh()
  # Persistent obstacles give destruction/revival builds targets in every round.
  for i: int in starting_blockers:
   if i >= 0 and i < model.cells.size(): model.cells[i].blocker = 2
+ model.setup_boss(GameManager.curse())
  if model.legal_moves().is_empty(): model.reshuffle()
  sync_tiles(false)
 func sync_tiles(falling: bool) -> void:
@@ -74,7 +75,11 @@ func sync_tiles(falling: bool) -> void:
    $Tiles.add_child(tile)
    tile.mouse_filter = Control.MOUSE_FILTER_IGNORE
    tile.position = Vector2(model.xy(i))*cell_size-Vector2(0,cell_size*2)
-  tile.configure(i,state,GameManager.config,i in model.isotopes,state.color==model.locked_color,model.candy_bonus(state.color),GameManager.jokers.has("roulette") and state.color==GameManager.poison)
+  tile.configure(i,state,GameManager.config,i in model.isotopes,state.color==model.locked_color,model.candy_bonus(state.color),GameManager.jokers.has("roulette") and state.color==GameManager.poison and not state.obstacle())
+  tile.jelly = i in model.jelly
+  tile.sour = state.color == model.sour_color
+  if tile.jelly: tile.tooltip_text += " | Jelly: clear it to keep full score"
+  if tile.sour and not state.obstacle(): tile.tooltip_text += " | SOUR: scores 0 Candys"
   tile.selected = i == selection
   tile.hinted = false
   tile.scale = Vector2.ONE
@@ -82,7 +87,8 @@ func sync_tiles(falling: bool) -> void:
   var target: Vector2 = Vector2(model.xy(i))*cell_size
   if falling and GameManager.motion:
    var movement: Tween = tile.create_tween()
-   movement.tween_property(tile,"position",target,fall_duration).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+   # Falling candies land with a small bounce.
+   movement.tween_property(tile,"position",target,fall_duration).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
    movement_tweens.append(movement)
   else: tile.position = target
   tiles.append(tile)
@@ -223,9 +229,19 @@ func attempt_swap(a: int,b: int) -> void:
  for cell: CandyState in model.cells:
   if cell.blocker == 0: population += 1
  var wild: bool = model.cells[a].coating == 3 or model.cells[b].coating == 3
+ var special_swap: bool = model.is_special_swap(a,b)
+ model.chocolate_broken = 0
  await animate_swap(a,b)
  model.swap(a,b)
- var groups: Array[Dictionary] = model.wild_groups(a,b) if wild else model.matches()
+ var groups: Array[Dictionary] = []
+ if special_swap: groups = model.special_swap_groups(a,b)
+ elif wild: groups = model.wild_groups(a,b)
+ else:
+  groups = model.matches()
+  # New specials appear where the player moved a candy.
+  for group: Dictionary in groups:
+   if b in group.cells: group["pivot"] = b
+   elif a in group.cells: group["pivot"] = a
  move_made.emit(not groups.is_empty())
  if groups.is_empty():
   model.swap(a,b)
@@ -238,7 +254,10 @@ func attempt_swap(a: int,b: int) -> void:
   model.cells[b].age = -1
   sync_tiles(false)
   await resolve(groups)
- if GameManager.current_round().curse == "heatwave": model.age_candies([a,b])
+ if GameManager.curse() == "heatwave": model.age_candies([a,b])
+ if GameManager.curse() == "chocolatier" and GameManager.state == "playing":
+  var spread: int = model.spread_chocolate()
+  if spread >= 0: GameManager.toast.emit("No chocolate broken | the chocolate spreads")
  if model.legal_moves().is_empty():
   model.reshuffle()
   GameManager.toast.emit("No legal moves | the bowl was reshuffled for free")
@@ -252,6 +271,7 @@ func resolve(initial: Array[Dictionary]) -> void:
  while not groups.is_empty() and cascade < GameManager.config.cascade_limit:
   var removed: Array[int] = []
   var wilds: Array[int] = []
+  var spawns: Array[Dictionary] = []
   for group: Dictionary in groups:
    var effect: Dictionary = model.expand(group)
    # Effects may overlap. Award each candy at most once in this cascade wave.
@@ -261,32 +281,46 @@ func resolve(initial: Array[Dictionary]) -> void:
     if i not in removed and i in effect.broken: fresh_breaks += 1
     if i in removed and model.cells[i] != null: chips -= int(effect.contributions[i])
     elif i not in removed: removed.append(i)
-   var result: Dictionary = ScoreEngine.calculate(maxi(0,chips),group,effect.isotope,GameManager.jokers,GameManager.streak,group.color==GameManager.poison,final_move,population,cascade)
+   var result: Dictionary = ScoreEngine.calculate(maxi(0,chips),group,effect.isotope,GameManager.jokers,GameManager.streak,group.color==GameManager.poison,final_move,population,cascade,GameManager.recipe_levels)
    if group.get("direct",false): result={"chips":chips,"mult":1.0,"total":chips}
+   result["fired"] = effect.fired.size()
    matches_resolved.emit(result,-1 if group.get("direct",false) else group.color)
    if fresh_breaks > 0:
     juice.popup("BREAK +%s" % (fresh_breaks*effect.break_bonus),Vector2(model.xy(effect.origin))*cell_size+Vector2(0,40),UIStyle.MINT)
    var point: Vector2 = Vector2(model.xy(effect.origin))*cell_size+Vector2.ONE*28
-   juice.popup("+%s" % result.total,point,GameManager.config.candies[group.color].tint)
+   var recipe_tag: String = (RecipeCatalog.ITEMS[result.recipe].short.to_upper()+" ") if result.has("recipe") else ""
+   juice.popup(recipe_tag+"+%s" % result.total,point,GameManager.config.candies[group.color].tint)
    juice.burst(point,GameManager.config.candies[group.color].tint)
    if effect.wild >= 0: wilds.append(effect.wild)
+   if not effect.spawn.is_empty(): spawns.append(effect.spawn)
+   if group.get("special_swap",false) or not effect.fired.is_empty():
+    special_triggered.emit("special combo" if group.get("special_swap",false) else "special candy",point)
    if "gravity" in effect.effects and GameManager.motion:
     for i: int in effect.cells:
      if i not in group.cells:
       create_tween().tween_property(tiles[i],"position",point-Vector2.ONE*28,0.15).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_IN)
-   if group.length >= 4 or not effect.effects.is_empty():
+   if not effect.effects.is_empty():
     special_triggered.emit(effect.effect if not effect.effect.is_empty() else "sugar blast",point)
    if GameManager.sound and not "--test" in OS.get_cmdline_user_args():
     audio.pitch_scale = GameManager.next_sound_pitch(cascade)
     audio.play()
   if GameManager.motion:
+   # Cleared candies swell with a bright flash, then pop away.
    var tween: Tween = create_tween().set_parallel()
    for i: int in removed:
     tiles[i].pivot_offset = Vector2.ONE*28
-    tween.tween_property(tiles[i],"scale",Vector2.ONE*0.15,0.15)
-    tween.tween_property(tiles[i],"modulate:a",0.0,0.15)
+    tween.tween_property(tiles[i],"scale",Vector2.ONE*1.22,0.06).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+    tween.tween_property(tiles[i],"modulate",Color(1.7,1.7,1.7,1.0),0.06)
+   tween.chain()
+   for i: int in removed:
+    tween.tween_property(tiles[i],"scale",Vector2.ONE*0.1,0.12).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+    tween.tween_property(tiles[i],"modulate",Color(1.7,1.7,1.7,0.0),0.12)
    await tween.finished
   model.remove(removed)
+  for spawn: Dictionary in spawns:
+   if int(spawn.index) in wilds: continue
+   model.place_spawn(spawn)
+   juice.popup(CandyState.special_name(int(spawn.special)).get_slice(" (",0).to_upper()+"!",Vector2(model.xy(int(spawn.index)))*cell_size,UIStyle.CREAM)
   for i: int in wilds:
    model.cells[i] = CandyState.new(model.roll_color())
    model.cells[i].coating = 3

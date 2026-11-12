@@ -42,12 +42,14 @@ func _ready() -> void:
  back.size=Vector2(276,44)
  back.add_theme_font_size_override("font_size",24)
  back.pressed.connect(func() -> void: closed.emit())
+ UIStyle.role(back,"neutral")
  add_child(back)
  refresh_button=Button.new()
  refresh_button.position=Vector2(64,624)
  refresh_button.size=Vector2(450,44)
  refresh_button.add_theme_font_size_override("font_size",24)
  refresh_button.pressed.connect(GameManager.reroll)
+ UIStyle.role(refresh_button,"buy")
  add_child(refresh_button)
  GameManager.changed.connect(refresh)
  hide()
@@ -92,6 +94,7 @@ func refresh() -> void:
   button.text=("Buy "+UIStyle.money(item.price)) if shop_mode else "Use"
   button.custom_minimum_size=Vector2(244,42)
   button.add_theme_font_size_override("font_size",24)
+  UIStyle.role(button,"buy" if shop_mode else "go")
   if shop_mode:
    button.disabled=GameManager.consumables.size()>=2 or GameManager.gummies<item.price
    button.tooltip_text="Inventory full. Use or discard a held card." if GameManager.consumables.size()>=2 else ("Need %s more cash." % UIStyle.money(item.price-GameManager.gummies) if GameManager.gummies<item.price else "Cash after purchase: "+UIStyle.money(GameManager.gummies-item.price))

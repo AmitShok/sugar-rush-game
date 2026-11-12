@@ -78,9 +78,10 @@ func run_tests() -> void:
   var effect: Dictionary=model.expand(group(length))
   check(17 in effect.cells and 33 in effect.cells and 63 not in effect.cells,"Match %s breaks adjacent locked color and blocker, without spreading" % length)
   check(effect.broken.size()==2 and effect.break_bonus==[10,25,50][length-3],"Match %s awards the correct per-tile breaking bonus" % length)
-  var total: int=[140,260,240][length-3]
+  var total: int=[140,180,240][length-3]
   check(effect.chips==total,"Match %s includes hidden candy values plus each bonus exactly once" % length)
-  check(ScoreEngine.calculate(effect.chips,group(length),false,rules,0,false,false,64,0).total==total*(length-2),"Break rewards enter Candys before Mult")
+  var recipe: String=RecipeCatalog.classify(group(length))
+  check(ScoreEngine.calculate(effect.chips,group(length),false,rules,0,false,false,64,0).total==(total+RecipeCatalog.candys(recipe,1))*RecipeCatalog.mult(recipe,1),"Break rewards enter Candys before Mult")
   model.remove(effect.cells)
   check(33 in model.graves,"Destroyed blockers remain available for Necromancer")
  var blocker_image: Image=UIStyle.texture("ui_blocker").get_image()

@@ -52,7 +52,7 @@ func _ready() -> void:
   var ids: Array[int]=[]
   ids.assign(raw_ids)
   effect=model.expand(group(ids))
-  check(effect.effects==(["line"] if ids.size()==4 else ["color"]),"Larger matches retain their default special")
+  check(effect.effects.is_empty() and effect.cells.size()==ids.size(),"Larger matches without special Jokers clear only themselves")
  fixture(["pop_rock"])
  model.cells[18].blocker=1
  effect=model.expand(group([26,27,28]))

@@ -1,8 +1,8 @@
 class_name UIStyle
 extends RefCounted
-const INK: Color = Color("17262b")
+const INK: Color = Color("1c1022")
 const CREAM: Color = Color("fff8e7")
-const MUTED: Color = Color("c4d0cc")
+const MUTED: Color = Color("c9b6d4")
 const PINK: Color = Color("ef6355")
 const MINT: Color = Color("f5b957")
 const BODY_FONT: Font = preload("res://assets/exported/readable_font.fnt")
@@ -37,7 +37,7 @@ static func apply(root: Control) -> void:
  theme.default_font = BODY_FONT
  theme.default_font_size = 32
  theme.set_color("font_color","Label",CREAM)
- theme.set_color("font_shadow_color","Label",Color("132326"))
+ theme.set_color("font_shadow_color","Label",Color("1c1022"))
  theme.set_constant("shadow_offset_x","Label",0)
  theme.set_constant("shadow_offset_y","Label",0)
  theme.set_color("font_color","Button",CREAM)
@@ -51,7 +51,7 @@ static func apply(root: Control) -> void:
  var focus: StyleBoxTexture = box(Color(0,0,0,0),MINT,2)
  theme.set_stylebox("focus","Button",focus)
  theme.set_stylebox("disabled","Button",skin("ui_disabled"))
- theme.set_color("font_disabled_color","Button",Color("9caea5"))
+ theme.set_color("font_disabled_color","Button",Color("a898b2"))
  for state: String in ["normal","hover","pressed","focus","disabled"]:
   var button_style: StyleBoxTexture = theme.get_stylebox(state,"Button") as StyleBoxTexture
   button_style.content_margin_top = 5
@@ -96,7 +96,36 @@ static func money(value: int) -> String:
   if i > 0 and (digits.length()-i)%3 == 0: grouped += ","
   grouped += digits[i]
  return ("-$" if value < 0 else "$")+grouped
+# Button roles (v0.24 candy-shop art): go, info, buy, skip, danger, neutral. Default buttons are berry pink.
+const ROLES: Array[String] = ["go","info","buy","skip","danger","neutral"]
+static func role(button: Button, kind: String) -> void:
+ if kind not in ROLES: return
+ for state: String in ["normal","focus"]: button.add_theme_stylebox_override(state,skin("ui_btn_"+kind) if state == "normal" else box(Color(0,0,0,0)))
+ button.add_theme_stylebox_override("hover",skin("ui_btn_"+kind+"_hover"))
+ button.add_theme_stylebox_override("pressed",skin("ui_btn_"+kind+"_pressed"))
+ for state: String in ["normal","hover","pressed"]:
+  var style: StyleBoxTexture = button.get_theme_stylebox(state) as StyleBoxTexture
+  style.content_margin_top = 5
+  style.content_margin_bottom = 5
+ if kind == "buy":
+  for color_name: String in ["font_color","font_hover_color","font_pressed_color","font_focus_color"]: button.add_theme_color_override(color_name,Color("2a1606"))
+# Older callers pass a color; map it to the closest role.
 static func button_color(button: Button, color: Color) -> void:
- button.add_theme_stylebox_override("normal",box(color,color.lightened(0.2),2))
- button.add_theme_stylebox_override("hover",box(color.lightened(0.15),CREAM,2))
- button.add_theme_stylebox_override("pressed",box(color.darkened(0.2),CREAM,2))
+ var hue: float = color.h*360.0
+ if color.s < 0.25: role(button,"neutral")
+ elif hue >= 90.0 and hue < 170.0: role(button,"go")
+ elif hue >= 170.0 and hue < 250.0: role(button,"info")
+ elif hue >= 250.0 and hue < 320.0: role(button,"skip")
+ elif hue >= 30.0 and hue < 70.0: role(button,"buy")
+ else: role(button,"danger")
+# Edition shimmer drawn over a Joker card (Aseprite overlays at the card's 70x94 size).
+static func add_edition_overlay(card: Control, edition: String) -> void:
+ if edition.is_empty(): return
+ var overlay: TextureRect = TextureRect.new()
+ overlay.name = "Edition"
+ overlay.texture = texture("edition_"+edition)
+ overlay.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+ overlay.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+ overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+ overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+ card.add_child(overlay)

@@ -15,10 +15,15 @@ func run_tests() -> void:
  var main: Control=preload("res://scenes/MainGame.tscn").instantiate()
  add_child(main)
  await frames()
+ main.get_node("Menu/Layout/Seed").text="616"
+ # Bosses are drawn per run from the seed (v0.22).
+ var bosses: Array[String]=BossCatalog.for_run(616)
+ var expected_bosses: Array[String]=[]
+ for id: String in bosses: expected_bosses.append(BossCatalog.ITEMS[id].short)
  main.get_node("Menu/Layout/Play").pressed.emit()
  var route: Control=main.get_node("RoundMap")
  check(route.visible and GameManager.state=="menu" and route.target_index==0,"Starting a run previews the ante before gameplay")
- check(route.cards.size()==3 and route.subtitle.text.contains("2 rounds") and route.subtitle.text.contains("INSPECTOR"),"Preview shows Small, Big and Inspector two clears ahead")
+ check(route.cards.size()==3 and route.subtitle.text.contains("2 rounds") and route.subtitle.text.contains(expected_bosses[0]),"Preview shows Small, Big and this run's first boss two clears ahead")
  var content: Control=route.get_node("Content")
  check(content.size==Vector2(860,648) and content.z_index>0,"Modal content has explicit first-frame bounds above its dimming layer")
  await frames()
@@ -27,9 +32,12 @@ func run_tests() -> void:
  route.enter_button.pressed.emit()
  GameManager.motion=false
  check(GameManager.state=="playing" and GameManager.round_index==0 and not route.visible,"Confirming starts exactly the first round")
+ check(GameManager.run_seed==616 and BossCatalog.for_run(616)==bosses,"The run uses the bosses its preview showed")
+ var distinct: Dictionary={}
+ for id: String in bosses: distinct[id]=true
+ check(distinct.size()==6,"A run never repeats a boss")
  await frames()
  await capture("v5_gameplay")
- var expected_bosses: Array[String]=["INSPECTOR","HEATWAVE","INSPECTOR","HEATWAVE","INSPECTOR","HEATWAVE"]
  for index: int in range(GameManager.config.rounds.size()-1):
   GameManager.score=GameManager.current_round().quota
   GameManager.settle_round()

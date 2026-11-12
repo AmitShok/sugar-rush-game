@@ -177,3 +177,60 @@ The user screenshot revealed right-aligned English title/seed text. Setting the 
 
 LocaleRunner failed before the fix and now passes 24 checks across Hebrew, Arabic and English system locales, including route bounds, visible Collection cards/details, physical Back/Play clicks and entering gameplay. Inspected Hebrew Collection and route captures. Added Hebrew/Arabic browser contexts to the actual exported web smoke test. Rebuilt both releases.
 Actual Chrome web export passes all six profiles (English desktop/phone/tablet, Hebrew phone, Arabic phone), including New Run, swaps, saves, title/Continue, reload/Continue and no browser errors.
+
+
+## Difficulty rebalance and Recipes (v0.18, 2026-11-11)
+
+Balance: `tools/balance_sim.gd` (greedy bot over the real BoardModel/ScoreEngine, no curses) measured no-Joker play at ~4,000 per 10-move round and 4-5 Joker engines at 350k-520k after capping cascade Mult (+2), Addict (+1/streak) and Ouroboros (x1 per 10 candies). Quotas were rescaled to 1,500 → 350,000. Recipes at level 1 raise baseline scoring ~10%; all recipes at level 3 roughly double Joker-build scores. These are bot measurements, not player playtests.
+
+Godot 4.7.2, rendered, Dummy audio, `--test`: all 22 suites pass (707 checks), including the new RecipeRunner (24: classification, level scoring, physical shop purchases, price steps, tab switching, sidebar table/last-recipe marker, save/Continue, run reset). Updated expectations: Diagonal/Quad recipe values in TestRunner and EffectsRunner, rarity break scoring, and ResizeRunner's forced score now uses the round quota. Visually inspected the Recipes shop tab and the in-round recipe sidebar.
+
+
+## Special candies (v0.19, 2026-11-12)
+
+New SpecialRunner (36 checks): Striper/Wrapper/Bomb Maker creation rules and placement at the swapped cell, Striped fallback for lines of 5, no specials from synthetic clears, row/column/3x3 detonation, chains, Color Bomb non-matching and legal swaps, all six swap combos, Bomb+Striped conversion, combos skipping 4+/5+ Jokers, special Mult (+4/+6/+10) and combo multipliers (x3, x6), save round-trip with older four-field rows, bomb/wrapped tiles and the live resolver announcing a new Striped candy. Art generated with Aseprite (`tools/create_special_art.lua`) and inspected on a contact sheet and the rendered board.
+
+Removing the free 4/5 blasts changed fixtures: ThreeRunner, RarityRunner (Match 4 = 180) and EffectsRunner (overlap now made by a Striped candy) were updated; TouchRunner now plays in round 16 so its swaps do not clear the lower ante 1 quota. All 23 suites pass (749 checks). ShakerRunner failed once while sharing CPU with other runs and passed 3/3 alone; it uses real animation timing.
+
+Balance (greedy bot, 12 trials): no Jokers ~2.5k per 10 moves (ante 1 quotas lowered to 1,200 / 2,000 / 3,000); Striper alone ~6k; three special Jokers ~11k; five special-synergy Jokers ~30k. The bot never sets up combos deliberately, so these understate specials. Kaleidoscope/Mobius/Labyrinth builds lost the most from removing free blasts (4-Joker Geometry ~55k, was ~370k); the 4+/5+ pile (~318k) is now the strongest measured build.
+
+
+## Interest and skip Tags (v0.20, 2026-11-12)
+
+New TagRunner (39 checks): interest ($1 per $5 before payout, $5 cap, shown in the summary), deterministic per-seed Tags with all six reachable, Small/Big-only skipping from the shop and from an untouched opening round, no skip after a move, closed shop refusing Joker/consumable/recipe/candy purchases and rerolls, the following round reopening a normal shop, every Tag effect (Piggy cap, Handout free offer bought with $0 and selling for $0, Cookbook two distinct non-Diagonal levels, Sweets item or $4, two free rerolls without raising the price, Extra Moves for one round and carried over when that round is skipped), save/Continue of all Tag state, and the physical route flow: new-run Tag preview from the seed box, Skip on Small then Big, no Skip on the Boss, closed shop UI, then Boss play. Visually inspected the route with Tags and the closed shop.
+
+SynergyRunner's income bound now allows interest on top of the $186 score-independent round income. All 24 suites pass (788 checks). ShakerRunner failed twice while sharing CPU with other runs and passed every time alone (real animation timing).
+
+Not simulated: the balance bot does not model shopping, so the extra cash from interest and the Skip/Tag trade-off are untested against the quota curve. Expect players to afford Jokers and recipe levels a little earlier than before.
+
+
+## Joker editions, order and scaling Jokers (v0.21, 2026-11-12)
+
+New EditionRunner (27 checks): edition roll rates over 20,000 seeded rolls (8% / 5% / 3% within 1 point) and determinism, Foil/Holo/Polychrome scoring, left-to-right order (Addict before Labyrinth vs after; editions following their Joker), bounded moves, edition removal on sale, Sugar Cube / Candy Cane / Gumball Jar growth and their ordered scoring, live growth text, edition prices and overlays on shop and owned cards, buying keeps the edition, sell value includes it, physical < Move / Move > reordering with bound states, reordering only in the shop, save/Continue of order + editions + growth, and new-run reset. Art from `tools/create_edition_art.lua` was inspected on a contact sheet and in the rendered shop.
+
+ShopRunner now names any Joker whose description overflows; it caught the shop showing Roulette's live (three-line) text, so the shop detail panel keeps base descriptions while tooltips and the in-round popup show live details. All 25 suites pass (821 checks).
+
+Balance: with Addict placed before Labyrinth, the Kaleidoscope/Mobius/Addict/Labyrinth build rises from ~55k to ~97k per 10 moves (five-Joker version ~152k). Editions are shop-only, so the bot does not measure them.
+
+
+## Bosses and obstacles (v0.22, 2026-11-12)
+
+New BossRunner (50 checks): nine-boss pool, six distinct seeded draws per run with all nine reachable across 60 seeds, chocolate placement/blocking/breaking/bonus/gravity anchoring and spreading only after moves that break none, two-layer frosting losing one layer per hit, Sour Patch zero Candys, Tiny Spoon half Mult, Jelly Mould checkerboard with half score when no jelly is cleared, Rush Hour moves, Sugar Tax never going below $0, HUD rule text and bounds plus route icon and a playable starting board for every boss, the route preview naming the drawn boss, and save/Continue of obstacles, jelly and the sour type (older five-field rows load without obstacles). RouteRunner now uses a seeded run and checks that the previewed bosses are the ones played and never repeat. Art from `tools/create_boss_art.lua` was inspected in rendered boss boards (Frost, Jelly, Chocolatier, Sour); the jelly frame was brightened after review, and the tile marks were renamed `ui_mark_*` after the first export collided with the boss icon names.
+
+All 26 suites pass (873 checks).
+
+Balance (bot with a three-Joker Pop Rock/Sweet Tooth/Three Scoops build, 10 trials, median per 10 moves; no boss = 36k): Inspector 42k, Sugar Tax 36k (costs cash only), Heatwave 32k, Rush Hour 29k (it removes moves), Sour 28k, Chocolatier 26k, Frost 22k after trimming it from 12 to 8 frosted cells (was 14k), Jelly 20k, Tiny Spoon 18k. Boss rounds keep 12 moves, which offsets part of the halving bosses.
+
+
+## Booster packs (v0.23, 2026-11-12)
+
+New PackRunner (37 checks): pack odds over 5,000 seeded rolls (Joker ~30%, Sugar Rush ~10%, never Jumbo), determinism and prices, two packs per shop that survive rerolls, opening (pay, slot used), every pack kind (Recipe including Diagonal only with Kaleidoscope, Jumbo two picks, Candy, Joker with editions, Treat), blocked takes with full Joker slots or items, skipping, all five rare cards (Glitter, Cookbook Blast, Big Spoon with the 6-slot cap, Meltdown, Golden Batch halving interest) and hiding cards that could not work, the Pack Tag's free Jumbo, the physical Packs tab and pack modal (Take, closing on the last pick, Skip), and save/Continue of an open pack, Joker slots, Golden Batch and pending Pack Tags, plus new-run reset. RecipeRunner now checks the view-only Recipes tab; TagRunner checks that a skipped shop has no packs.
+
+All 27 suites pass (907 checks). Visually inspected the Packs tab and the pack modal (cards centered and shop text shortened after review). Not visually inspected: the Joker bar with a sixth slot from Big Spoon. Pack prices and odds are untested against the quota curve because the balance bot does not shop.
+
+
+## Candy-shop art and UI (v0.24, 2026-11-12)
+
+Generated with Aseprite by `tools/create_v2_art.lua` (previous PNGs backed up before overwriting) and reviewed on contact sheets and rendered screens: title, gameplay, shop with editions, route preview, Frost boss board and the pack modal. Review changes: softened the drifting backdrop stripes. A light-looking Reroll label was confirmed dark at full zoom (CRT fringing). Root cause of the all-red buttons: `UIStyle.box()` mapped most colours, including purple, to the red skin; buttons now use explicit role skins via `UIStyle.role()`.
+
+All 27 suites pass (907 checks), including ResizeRunner's 496 cell hitboxes and RouteRunner's art-source checks (the Background node keeps no material; the drifting layer is a separate Aseprite tile). Removal, fall and popup animations keep their previous wait durations so input locking is unchanged; the idle sparkle is the only user of the global random generator. Not verified: real-time feel of the new animations at full frame rate and the drifting backdrop in motion (screenshots are still frames).
