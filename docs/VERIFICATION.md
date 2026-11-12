@@ -253,3 +253,11 @@ All 27 suites pass (907 checks).
 
 Reviewed on a contact sheet and in game (board with specials, boss boards, pack shop, route preview). Review fixes: the Heatwave icon was reshaped from a bottle into a flame, and the striped-candy bands were thinned and made slightly translucent so the candy shows through.
 All 27 suites pass (907 checks).
+
+
+## Six-slot Joker bar and pack-only candy upgrades (v0.28, 2026-11-12)
+
+Joker bar slots now share the bar's width (five at 124 px, six at 112 px), so Big Spoon's sixth slot no longer pushes the bar past its 760 px panel. Candy upgrades can no longer be bought: `buy_candy_upgrade`/`upgrade_cost` were removed, Candy Pack cards call `GameManager.level_candy`, and the Candies tab lists level and current > next value with "From packs" instead of buy buttons. Candy Pack odds rose from 20% to 25% (Joker 30% to 28%, Recipe 30% to 27%) because packs are now the only source of candy upgrades.
+
+UpgradeRunner was rewritten (23 checks): view-only tab with no buttons, no purchase method, level stacking and validation, a Candy Pack upgrading its type, persistence, board/coating/tooltip/Candy Guide values, no level cap, six Jokers fitting inside an unchanged 760 px bar, the tab at three window sizes, and new-run reset. RecipeRunner and TagRunner were updated for the removed purchase. Visually inspected the six-Joker bar and the Candies tab (name column widened after review).
+All 27 suites pass (909 checks).

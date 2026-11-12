@@ -40,7 +40,7 @@ func run_tests() -> void:
  check(GameManager.tags_claimed==[tag],"Claimed Tags are recorded")
  if tag != "piggy" and tag != "sweets": check(GameManager.gummies==cash,"Skipping itself costs nothing")
  GameManager.gummies=50
- check(not GameManager.can_open_pack(0) and GameManager.pack_offers.is_empty() and not GameManager.buy_candy_upgrade(0),"Closed shop has no packs and refuses candy purchases")
+ check(not GameManager.can_open_pack(0) and GameManager.pack_offers.is_empty(),"Closed shop has no packs to open")
  var before_offers: int=GameManager.offers.size()
  GameManager.reroll()
  check(GameManager.gummies==50 and GameManager.offers.size()==before_offers,"Closed shop refuses rerolls")

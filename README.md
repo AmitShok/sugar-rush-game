@@ -91,9 +91,9 @@ Victory follows the sixth boss. Shops remain available between rounds, including
 
 ### Candy upgrades (this run only)
 
-In the shop, switch from **Jokers** to **Candy Upgrades**. All six types are always available. Each row shows the current value, next value and buy price; hovering shows its level and the cash remaining after purchase. A purchase receipt confirms the new level. Your cash stays visible in the sidebar.
+Since v0.28, candy upgrades come only from **Candy Packs** on the Packs tab. The shop's **Candies** tab lists every type with its level and current > next value, but has no buy buttons.
 
-Upgrades have no slot or purchase-count limit. Each purchase adds half that type's original value, rounded up: +5 / +7 / +10 / +15 / +23 / +35 Candys. Prices start at $4 per type and rise by $2 for each purchase of that type. Different types have independent prices. Bonuses also add to gold and caramel coating values and apply to locked candies when broken, before Mult. Upgrades do not change spawn odds.
+Each Candy Pack card adds half that type's original value, rounded up: +5 / +7 / +10 / +15 / +23 / +35 Candys, with no level cap. Bonuses also add to gold and caramel coating values and apply to locked candies when broken, before Mult. Upgrades do not change spawn odds.
 
 Values persist through shops, rerolls and rounds, then reset with a new run. The Candy Guide and board hover text show the current values. No permanent resource data or preferences are changed.
 
@@ -226,9 +226,9 @@ The shop's **Packs** tab sells two packs per shop; rerolls do not replace them. 
 
 | Pack | Price (Jumbo) | Cards (Jumbo) | Keep (Jumbo) | Odds |
 | --- | --- | --- | --- | --- |
-| Joker | $4 ($6) | 2 (4), editions can roll | 1 (1) | 30% |
-| Recipe | $4 ($6) | 3 (5) recipes, +1 level | 1 (2) | 30% |
-| Candy | $3 ($5) | 3 (5) candy types, +1 upgrade | 1 (2) | 20% |
+| Joker | $4 ($6) | 2 (4), editions can roll | 1 (1) | 28% |
+| Recipe | $4 ($6) | 3 (5) recipes, +1 level | 1 (2) | 27% |
+| Candy | $3 ($5) | 3 (5) candy types, +1 upgrade (the only source of candy upgrades) | 1 (2) | 25% |
 | Treat | $4 ($6) | 3 (4) consumables | 1 (1) | 10% |
 | Sugar Rush | $6 | 2 rare cards | 1 | 10% |
 

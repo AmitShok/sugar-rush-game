@@ -120,16 +120,11 @@ func candy_value(color: int) -> int:
  return config.candies[color].base_chips+candy_bonus(color)
 func upgrade_gain(color: int) -> int:
  return ceili(config.candies[color].base_chips*0.5)
-func upgrade_cost(color: int) -> int:
- return 4+candy_level(color)*2
-func buy_candy_upgrade(color: int) -> bool:
- if state != "shop" or shop_closed or color < 0 or color >= config.candies.size(): return false
- var cost: int=upgrade_cost(color)
- if gummies < cost: return false
- gummies -= cost
+# Candy upgrades come only from Candy Packs (v0.28); there is no direct purchase.
+func level_candy(color: int) -> bool:
+ if color < 0 or color >= config.candies.size(): return false
  candy_levels[color] += 1
  candy_bonuses[color] += upgrade_gain(color)
- changed.emit()
  return true
 func recipe_level(id: String) -> int:
  return RecipeCatalog.level(recipe_levels,id)
@@ -208,10 +203,7 @@ func take_pack_card(index: int) -> bool:
  match String(choice.type):
   "joker": jokers.add(joker_by_id(String(choice.id)),String(choice.get("edition","")))
   "recipe": level_recipe(String(choice.id))
-  "candy":
-   var color: int = int(choice.id)
-   candy_levels[color] += 1
-   candy_bonuses[color] += upgrade_gain(color)
+  "candy": level_candy(int(choice.id))
   "treat": consumables.append(String(choice.id))
   "rush": apply_rush(String(choice.id))
  opened_pack.choices.remove_at(index)

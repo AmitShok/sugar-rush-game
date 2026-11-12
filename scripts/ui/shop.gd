@@ -10,7 +10,7 @@ var page: String = "jokers"
 var upgrades_open: bool:
  get: return page == "candies"
 var upgrade_rows: VBoxContainer
-var upgrade_buttons: Array[Button] = []
+var candy_rows: Array[HBoxContainer] = []
 var recipe_rows: Dictionary = {}
 var pack_row: HBoxContainer
 var pack_buttons: Array[Button] = []
@@ -38,18 +38,8 @@ func clear_rows() -> void:
  for child: Node in upgrade_rows.get_children():
   upgrade_rows.remove_child(child)
   child.queue_free()
- upgrade_buttons.clear()
+ candy_rows.clear()
  recipe_rows.clear()
-func row_button(cost: int) -> Button:
- var buy: Button=Button.new()
- buy.text="Buy %s" % UIStyle.money(cost)
- buy.custom_minimum_size=Vector2(150,40)
- buy.add_theme_font_size_override("font_size",24)
- buy.disabled=GameManager.gummies<cost
- UIStyle.role(buy,"buy")
- return buy
-func cash_note(cost: int, disabled: bool) -> String:
- return "Need %s more cash" % UIStyle.money(cost-GameManager.gummies) if disabled else "Cash after purchase: "+UIStyle.money(GameManager.gummies-cost)
 func refresh_upgrades() -> void:
  var on_jokers: bool=page=="jokers"
  $Offers.visible=on_jokers
@@ -86,24 +76,26 @@ func refresh_upgrades() -> void:
   icon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
   icon.custom_minimum_size=Vector2(36,36)
   row.add_child(icon)
-  var label: Label=UIStyle.label(candy.display_name,24)
-  label.custom_minimum_size.x=220
+  var label: Label=UIStyle.label("%s  Lv %s" % [candy.display_name,GameManager.candy_level(color)],24)
+  label.custom_minimum_size.x=262
   label.tooltip_text="Level %s | +%s Candys from upgrades" % [GameManager.candy_level(color),GameManager.candy_bonus(color)]
+  label.mouse_filter=Control.MOUSE_FILTER_STOP
   row.add_child(label)
   var value: Label=UIStyle.label("%s > %s" % [GameManager.candy_value(color),GameManager.candy_value(color)+GameManager.upgrade_gain(color)],24,UIStyle.MINT)
-  value.custom_minimum_size.x=142
+  value.custom_minimum_size.x=136
   row.add_child(value)
-  var cost: int=GameManager.upgrade_cost(color)
-  var buy: Button=row_button(cost)
-  buy.tooltip_text="+%s Candys each | Level %s > %s\n%s" % [GameManager.upgrade_gain(color),GameManager.candy_level(color),GameManager.candy_level(color)+1,cash_note(cost,buy.disabled)]
-  buy.pressed.connect(purchase_upgrade.bind(color))
-  row.add_child(buy)
-  upgrade_buttons.append(buy)
+  # Since v0.28 candy upgrades come only from Candy Packs; this page shows values.
+  var source: Label=UIStyle.label("From packs",20,UIStyle.MUTED)
+  source.custom_minimum_size.x=140
+  source.tooltip_text="Next level: +%s Candys each. Find Candy Packs on the Packs tab." % GameManager.upgrade_gain(color)
+  source.mouse_filter=Control.MOUSE_FILTER_STOP
+  row.add_child(source)
+  candy_rows.append(row)
  $Details.show()
  $Details/Name.text="Candy values | This run only"
  $Details/Description.add_theme_font_size_override("font_size",22)
- $Details/Description.text="Current > next Candys. Buys stack; no slots.\nGold and caramel get the bonus too."
- $Details/Status.text="Each type starts at $4; its next price rises by $2 per buy."
+ $Details/Description.text="Current > next Candys; gold and caramel get it too.\nUpgrade candies with Candy Packs (Packs tab)."
+ $Details/Status.text="Each Candy Pack card adds half the type's base value."
  $Details/Status.position.y=80
  $Details/Action.hide()
 func refresh_recipes() -> void:
@@ -191,10 +183,6 @@ func refresh_packs() -> void:
  $Details/Status.text="Joker, Recipe, Candy, Treat and rare Sugar Rush packs."
  $Details/Status.position.y=80
  $Details/Action.hide()
-func purchase_upgrade(color: int) -> void:
- var cost: int=GameManager.upgrade_cost(color)
- if GameManager.buy_candy_upgrade(color):
-  $Receipt.text="%s: +%s Candys | Level %s | -%s" % [GameManager.config.candies[color].display_name,GameManager.upgrade_gain(color),GameManager.candy_level(color),UIStyle.money(cost)]
 
 func _ready() -> void:
  shaker_buy=Button.new()

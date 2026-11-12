@@ -31,6 +31,7 @@ func click(control: Control) -> void:
   get_window().push_input(event,false)
  await frames()
 func run_tests() -> void:
+ # Since v0.28 candy upgrades come only from Candy Packs; the Candies tab only shows values.
  main=preload("res://scenes/MainGame.tscn").instantiate()
  add_child(main)
  await frames()
@@ -42,31 +43,40 @@ func run_tests() -> void:
  GameManager.gummies=40
  GameManager.changed.emit()
  await click(shop.upgrade_tab)
- check(shop.upgrades_open and shop.upgrade_buttons.size()==6 and not shop.get_node("Offers").visible,"Upgrade tab shows six types separately from Jokers")
+ check(shop.upgrades_open and shop.candy_rows.size()==6 and not shop.get_node("Offers").visible,"Candies tab lists six types separately from Jokers")
+ var has_buy: bool=false
+ for row: HBoxContainer in shop.candy_rows:
+  for child: Node in row.get_children(): has_buy=has_buy or child is Button
+ check(not has_buy and shop.candy_rows[0].get_child(3).text=="From packs","Candies tab has no buy buttons and points to packs")
+ check(not GameManager.has_method("buy_candy_upgrade"),"There is no direct candy purchase")
  var base: int=GameManager.config.candies[0].base_chips
- await click(shop.upgrade_buttons[0])
- check(GameManager.gummies==36 and GameManager.candy_value(0)==15 and GameManager.upgrade_cost(0)==6,"First physical purchase charges $4 and adds five Candys")
- await click(shop.upgrade_buttons[0])
- check(GameManager.gummies==30 and GameManager.candy_value(0)==20 and GameManager.candy_value(1)==14,"Repeat purchases stack only on their type and cost $6 next")
- check(GameManager.config.candies[0].base_chips==base,"Purchases never mutate shared candy resources")
- for i: int in range(5): GameManager.jokers.add(GameManager.config.jokers[i])
- check(GameManager.buy_candy_upgrade(1) and GameManager.jokers.equipped.size()==5,"Full Joker inventory does not block upgrades")
- await frames()
- check(shop.get_node("Details/Description").get_minimum_size().y<=shop.get_node("Details/Status").position.y-shop.get_node("Details/Description").position.y,"Upgrade explanation fits the detail panel")
- await capture("candy_upgrades")
- GameManager.gummies=0
+ check(GameManager.level_candy(0) and GameManager.candy_value(0)==15 and GameManager.gummies==40,"A level adds half the base value and costs nothing by itself")
+ GameManager.level_candy(0)
+ check(GameManager.candy_value(0)==20 and GameManager.candy_value(1)==14,"Levels stack only on their type")
+ check(GameManager.config.candies[0].base_chips==base,"Upgrades never mutate shared candy resources")
+ check(not GameManager.level_candy(-1) and not GameManager.level_candy(6),"Invalid candy types are rejected")
  GameManager.changed.emit()
- check(shop.upgrade_buttons[0].disabled and not GameManager.buy_candy_upgrade(0),"Unaffordable upgrade is disabled and cannot be bought")
- check(not GameManager.buy_candy_upgrade(-1) and not GameManager.buy_candy_upgrade(6),"Invalid candy types are rejected")
+ await frames()
+ check(shop.candy_rows[0].get_child(1).text.contains("Lv 2") and shop.candy_rows[0].get_child(2).text=="20 > 25","Candies tab shows level and current > next value")
+ check(shop.get_node("Details/Description").get_minimum_size().y<=shop.get_node("Details/Status").position.y-shop.get_node("Details/Description").position.y,"Candy explanation fits the detail panel")
+ await capture("candy_values")
+ # Candy Packs are the source of upgrades.
+ GameManager.opened_pack={}
+ GameManager.pack_offers.assign([{"kind":"candy","jumbo":false,"free":false}])
+ check(GameManager.open_pack(0) and GameManager.gummies==37,"Candy Pack opens for $3")
+ var color: int=int(GameManager.opened_pack.choices[0].id)
+ var before: int=GameManager.candy_value(color)
+ GameManager.take_pack_card(0)
+ check(GameManager.candy_value(color)==before+GameManager.upgrade_gain(color),"Taking a Candy Pack card upgrades that type")
  GameManager.next_round()
- check(GameManager.candy_value(0)==20 and not GameManager.buy_candy_upgrade(0),"Values persist into rounds and purchases are shop-only")
+ check(GameManager.candy_value(0)==20,"Values persist into rounds")
  var board: GameBoard=main.get_node("Play/GameBoard")
  board.model.cells.clear()
  for i: int in range(64): board.model.cells.append(CandyState.new(1))
  for i: int in [0,1,2]: board.model.cells[i].color=0
  board.model.cells[1].blocker=1
  var group: Dictionary={"cells":[0,1,2],"color":0,"length":3,"shape":false,"diagonal":false,"axis":Vector2i.RIGHT}
- GameManager.jokers.equipped.clear()
+ GameManager.jokers.clear_all()
  var effect: Dictionary=board.model.expand(group)
  check(effect.chips==70,"Live board scores upgraded values plus locked-tile bonus")
  board.model.cells[0].coating=2
@@ -78,23 +88,33 @@ func run_tests() -> void:
  guide.show_candies()
  check(guide.rows.get_child(0).get_child(2).text=="20","Candy Guide reports current run values")
  guide.hide()
+ for i: int in range(100): GameManager.level_candy(0)
+ check(GameManager.candy_level(0)==102,"Upgrades have no level cap")
+ # A sixth Joker slot (Big Spoon) must fit inside the Joker bar.
  GameManager.score=GameManager.current_round().quota
  GameManager.settle_round()
- GameManager.gummies=100000
- for i: int in range(100): GameManager.buy_candy_upgrade(0)
- check(GameManager.candy_level(0)==102,"Upgrades have no purchase-count or slot cap")
+ GameManager.jokers.capacity=6
+ for item: JokerData in GameManager.config.jokers:
+  if GameManager.jokers.can_add(item): GameManager.jokers.add(item)
  GameManager.changed.emit()
+ await frames()
+ await frames()
+ var bar: Control=main.get_node("Play/JokerInventory")
+ var slots: Control=bar.get_node("Layout/Slots")
+ var inside: bool=slots.get_global_rect().end.x<=bar.get_global_rect().end.x+0.5 and bar.get_global_rect().end.x<=1152
+ for slot: Control in slots.get_children(): inside=inside and slot.get_global_rect().end.x<=bar.get_global_rect().end.x+0.5
+ check(GameManager.jokers.equipped.size()==6 and slots.get_child_count()==6 and inside,"Six Joker slots fit inside the Joker bar")
+ check(is_equal_approx(bar.get_global_rect().size.x,760.0),"The Joker bar keeps its width with six slots")
+ await capture("six_jokers")
+ GameManager.jokers.capacity=5
  for dimensions: Vector2i in [Vector2i(800,500),Vector2i(720,960),Vector2i(1600,700)]:
   get_window().size=dimensions
   await frames()
   await click(shop.joker_tab)
   await click(shop.upgrade_tab)
-  var before: int=GameManager.candy_level(2)
-  await click(shop.upgrade_buttons[2])
-  check(GameManager.candy_level(2)==before+1,"Physical upgrade purchase stays aligned at "+str(dimensions))
-  check(shop.upgrade_rows.get_global_rect().end.x<=1152 and shop.get_node("Details").get_global_rect().end.y<=720,"Upgrade UI fits resized viewport")
+  check(shop.upgrades_open and shop.upgrade_rows.get_global_rect().end.x<=1152 and shop.get_node("Details").get_global_rect().end.y<=720,"Candies tab opens and fits at "+str(dimensions))
  GameManager.start_run(413)
- check(GameManager.candy_value(0)==10 and GameManager.candy_level(1)==0 and GameManager.upgrade_cost(0)==4,"New run resets values, levels and prices")
+ check(GameManager.candy_value(0)==10 and GameManager.candy_level(1)==0,"New run resets values and levels")
  print("RESULT: %s upgrade checks, %s failures" % [checks,failures])
  get_tree().quit(0 if failures==0 else 1)
 func capture(name: String) -> void:

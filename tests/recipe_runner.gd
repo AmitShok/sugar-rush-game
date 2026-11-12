@@ -43,7 +43,7 @@ func run_tests() -> void:
  GameManager.level_recipe("poker")
  check(not GameManager.recipe_levels.has("poker"),"Unknown recipes are ignored")
  await click(shop.upgrade_tab)
- check(shop.upgrades_open and shop.upgrade_buttons.size()==6,"Candies tab still lists six candy upgrades")
+ check(shop.upgrades_open and shop.candy_rows.size()==6,"Candies tab still lists six candy types")
  await click(shop.joker_tab)
  check(shop.get_node("Offers").visible,"Jokers tab returns to offers")
  var saver: Node=main.run_save

@@ -11,7 +11,8 @@ func refresh() -> void:
  for i: int in range(GameManager.jokers.capacity):
   var slot: Control = Control.new()
   slot.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-  slot.custom_minimum_size = Vector2(124,104)
+  # Slots share the bar: five at 124 px, six (Big Spoon) narrower so the bar never overflows.
+  slot.custom_minimum_size = Vector2(slot_width(),104)
   $Layout/Slots.add_child(slot)
   if i >= GameManager.jokers.equipped.size():
    var empty: Label = UIStyle.label("Empty",24,Color("a48fb0"))
@@ -34,3 +35,9 @@ func refresh() -> void:
   card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
   slot.add_child(card)
  $Layout/Streak.text = "Streak %s" % GameManager.streak
+# Inner width of the 760 px bar minus panel padding, split across all slots and gaps.
+const INNER_WIDTH: float = 732.0
+func slot_width() -> float:
+ var count: int = maxi(1,GameManager.jokers.capacity)
+ var gap: float = float($Layout/Slots.get_theme_constant("separation"))
+ return minf(124.0,floorf((INNER_WIDTH-gap*(count-1))/count))
