@@ -25,7 +25,7 @@ func _ready() -> void:
  # A fixed logical canvas keeps drawing and native GUI input in the same space.
  # Physical window dimensions may change freely without changing game geometry.
  var window: Window = get_window()
- window.title = "Sugar Rush | v0.26 - HD Jokers"
+ window.title = "Sugar Rush | v0.27 - HD Everything"
  window.content_scale_size = DESIGN_SIZE
  window.content_scale_mode = Window.CONTENT_SCALE_MODE_VIEWPORT
  window.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_KEEP

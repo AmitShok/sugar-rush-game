@@ -247,3 +247,9 @@ All 27 suites pass (907 checks) apart from ShakerRunner's known timing-sensitive
 
 All 32 cards reviewed on contact sheets and in the Collection, shop, Joker bar and title screen. Review fixes: the Cube card's background filled with outline ink (its shape returned a small "outside" distance everywhere; replaced with a hexagon distance and face edges), and the Bomb was enlarged with chunkier sprinkles. Collection (78) and shop (30) suites pass with the new art; full results below the commit.
 All 27 suites pass (907 checks).
+
+
+## The rest of the art in HD (v0.27, 2026-11-12)
+
+Reviewed on a contact sheet and in game (board with specials, boss boards, pack shop, route preview). Review fixes: the Heatwave icon was reshaped from a bottle into a flame, and the striped-candy bands were thinned and made slightly translucent so the candy shows through.
+All 27 suites pass (907 checks).

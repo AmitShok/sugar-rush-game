@@ -14,8 +14,9 @@ end
 local function clamp(v,a,b) if v<a then return a elseif v>b then return b end return v end
 local function len(x,y) return math.sqrt(x*x+y*y) end
 local W,H=140,188
-local AX,AY,AW,AH=10,34,120,124 -- art window
+local AX,AY,AW,AH=10,34,120,124 -- art window (changed by set_canvas for packs, icons and overlays)
 local CX,CY=AX+AW/2,AY+AH/2
+local WR=6 -- window corner radius
 
 -- Colour ramps, dark to light.
 local R={
@@ -78,7 +79,8 @@ local function in_round(x,y,x0,y0,w,h,r)
  local dx=x-cx;local dy=y-cy
  return dx*dx+dy*dy<=r*r+r*0.8
 end
-local function in_window(x,y) return in_round(x,y,AX,AY,AW,AH,6) end
+local function in_window(x,y) return in_round(x,y,AX,AY,AW,AH,WR) end
+local function set_canvas(x,y,w,h,r) AX,AY,AW,AH,WR=x,y,w,h,r;CX,CY=AX+AW/2,AY+AH/2 end
 
 local LX,LY,LZ=-0.55,-0.65,0.75
 do local l=math.sqrt(LX*LX+LY*LY+LZ*LZ);LX,LY,LZ=LX/l,LY/l,LZ/l end
@@ -192,7 +194,7 @@ local function glyph_width(code)
  for y=0,11 do for x=0,10 do if app.pixelColor.rgbaA(atlas:getPixel(ax+x,ay+y))>0 and x+1>w then w=x+1 end end end
  return w
 end
-local function title(im,text,col)
+local function title(im,text,col,top,width)
  local widths={};local total=0
  for i=1,#text do
   local code=string.byte(text,i)-32
@@ -200,7 +202,7 @@ local function title(im,text,col)
   widths[i]=w;total=total+(w+1)*2
  end
  total=total-2
- local x0=math.floor((W-total)/2);local y0=9
+ local x0=math.floor(((width or W)-total)/2);local y0=top or 9
  for i=1,#text do
   local code=string.byte(text,i)-32
   local ax=(code%16)*16;local ay=math.floor(code/16)*20
@@ -214,7 +216,7 @@ local function title(im,text,col)
 end
 
 -- Card frame.
-local CATEGORY={Geometry={"blue","5cc0f0"},Four={"green","6fcf6a"},Five={"purple","b07ee0"},Chaos={"red","ef5a4f"},
+local CATEGORY={Treat={"orange","ff9e3a"},Geometry={"blue","5cc0f0"},Four={"green","6fcf6a"},Five={"purple","b07ee0"},Chaos={"red","ef5a4f"},
  Supply={"caramel","e0a05a"},Three={"pink","ff8ac0"},Special={"teal","4ccac0"},Scaling={"gold","f4c84a"}}
 local function frame(im,category)
  for y=0,H-1 do for x=0,W-1 do
@@ -607,6 +609,48 @@ ART.candy_cane=function(im)
  sparkle(im,104,60,3);sparkle(im,30,124,2)
 end
 
+-- Consumable cards (v0.27).
+ART.sugar_shaker_card=function(im)
+ background(im,R.orange,"dots")
+ shape(im,function(x,y) return sd_box(x,y,CX,108,30,36,10) end,{thick=8,shadow=true,ramp=R.blue,colour=function(x,y,shade)
+  return pick(R.blue,0.62+shade*0.3,x,y)
+ end})
+ for i,p in ipairs({{58,124},{80,118},{68,104},{60,94}}) do stamp(im,"candy_"..(i%6),p[1]-12,p[2]-12,0.5) end
+ shape(im,function(x,y) return sd_box(x,y,CX,66,26,10,4) end,{thick=6,shadow=true,ramp=R.steel})
+ for k=-2,2 do shape(im,function(x,y) return sd_circle(x,y,CX+k*9,64,1.6) end,{flat=0.1,ramp=R.ink,outline=false}) end
+ for _,p in ipairs({{60,50},{72,44},{84,52},{66,38},{80,36}}) do sparkle(im,p[1],p[2],1,hex("ffffff")) end
+ glint(im,{{46,82},{46,83},{46,84},{46,85},{47,81}})
+end
+ART.extra_serving=function(im)
+ background(im,R.orange,"rays")
+ shape(im,function(x,y) return sd_ellipse(x,y,CX,118,48,16) end,{thick=8,shadow=true,ramp=R.white})
+ shape(im,function(x,y) return math.abs(sd_ellipse(x,y,CX,116,34,10))-1.2 end,{flat=0.45,ramp=R.white,outline=false})
+ stamp(im,"candy_4",36,82,1);stamp(im,"candy_0",56,74,1)
+ shape(im,function(x,y) return math.min(sd_box(x,y,104,54,14,4,2),sd_box(x,y,104,54,4,14,2)) end,{thick=4,shadow=true,ramp=R.green})
+ sparkle(im,30,56,2)
+end
+ART.golden_glaze=function(im)
+ background(im,R.orange,"stripes")
+ stamp(im,"candy_3",CX-24,92,1)
+ shape(im,function(x,y) return sd_circle(x,y,CX,56,22) end,{thick=12,shadow=true,ramp=R.caramel})
+ shape(im,function(x,y) return sd_box(x,y,CX,40,24,6,3) end,{thick=4,ramp=R.wood})
+ for i,dx in ipairs({-12,-2,10}) do
+  local bottom=88+i*6
+  shape(im,function(x,y) return smin(sd_capsule(x,y,CX+dx,70,CX+dx,bottom,3.5),sd_circle(x,y,CX+dx,bottom+2,5),3) end,{thick=4,ramp=R.gold})
+ end
+ sparkle(im,104,104,3);sparkle(im,30,120,2)
+ glint(im,{{56,46},{57,45},{58,45}})
+end
+ART.candy_hammer=function(im)
+ background(im,R.orange,"rays")
+ stamp(im,"candy_5",CX-26,98,1)
+ local crack={{CX-4,100},{CX+2,110},{CX-6,118},{CX+4,128}}
+ for i=1,#crack-1 do local p,q=crack[i],crack[i+1] shape(im,function(x,y) return sd_capsule(x,y,p[1],p[2],q[1],q[2],1.2) end,{flat=0.05,ramp=R.ink,outline=false}) end
+ local a=0.7
+ shape(im,function(x,y) return sd_capsule(x,y,96,40,58,86,4) end,{thick=4,shadow=true,ramp=R.wood})
+ shape(im,function(x,y) local rx,ry=rot(x,y,98,46,a) return sd_box(rx,ry,98,46,18,11,5) end,{thick=8,shadow=true,ramp=R.pink})
+ for _,p in ipairs({{34,96},{108,112},{40,136},{100,136}}) do sparkle(im,p[1],p[2],2,hex("ffffff")) end
+end
 local CARDS={
  {"joker_0","kaleidoscope","PRISM","Geometry"},{"joker_1","mobius","MOBIUS","Geometry"},{"joker_2","labyrinth","MAZE","Geometry"},
  {"joker_3","tsquare","T-SQUARE","Geometry"},{"joker_4","gravity","GRAVITY","Four"},{"joker_5","paintball","SPLATTER","Four"},
@@ -620,10 +664,13 @@ local CARDS={
  {"three_scoops","three_scoops","3 SCOOPS","Three"},{"striper","striper","STRIPER","Special"},{"wrapper","wrapper","WRAPPER","Special"},
  {"bomb_maker","bomb_maker","BOMB","Special"},{"sugar_cube","sugar_cube","CUBE","Scaling"},{"gumball_jar","gumball_jar","GUMBALL","Scaling"},
  {"candy_cane","candy_cane","CANE","Scaling"},
+ {"sugar_shaker_card","sugar_shaker_card","SHAKER","Treat"},{"extra_serving","extra_serving","SERVING","Treat"},
+ {"golden_glaze","golden_glaze","GLAZE","Treat"},{"candy_hammer","candy_hammer","SMASH","Treat"},
 }
 local only=app.params["only"]
 for _,c in ipairs(CARDS) do
  if not only or only==c[1] then
+  set_canvas(10,34,120,124,6)
   local s=Sprite(W,H,ColorMode.RGB);s.layers[1].name="Card stock and frame"
   local stock=s.cels[1].image
   frame(stock,c[4])
@@ -635,5 +682,278 @@ for _,c in ipairs(CARDS) do
   title(s.cels[#s.cels].image,c[3],INK)
   save=function(sp,name) sp:saveAs(SRC..name..".aseprite");sp:saveCopyAs(OUT..name..".png");sp:close() end
   save(s,c[1])
+ end
+end
+
+-- Packs, edition overlays, icons and tile overlays (v0.27) ----------------------------------
+-- Run alone with --script-param only=extras.
+local function new_sprite(w,h,name)
+ local s=Sprite(w,h,ColorMode.RGB);s.layers[1].name=name
+ return s,s.cels[1].image
+end
+local function save_sprite(s,name) s:saveAs(SRC..name..".aseprite");s:saveCopyAs(OUT..name..".png");s:close() end
+local function blend(im,x,y,col,a)
+ if x<0 or y<0 or x>=im.width or y>=im.height then return end
+ local c=im:getPixel(x,y);local ca=app.pixelColor.rgbaA(c)
+ if ca==0 then im:drawPixel(x,y,rgba(app.pixelColor.rgbaR(col),app.pixelColor.rgbaG(col),app.pixelColor.rgbaB(col),a)) return end
+ local t=a/255
+ im:drawPixel(x,y,rgba(app.pixelColor.rgbaR(c)*(1-t)+app.pixelColor.rgbaR(col)*t,app.pixelColor.rgbaG(c)*(1-t)+app.pixelColor.rgbaG(col)*t,app.pixelColor.rgbaB(c)*(1-t)+app.pixelColor.rgbaB(col)*t,math.max(ca,a)))
+end
+if not only or only=="extras" then
+ -- Booster packs: crimped foil bags with a label and an emblem.
+ local PACKS={
+  {"pack_joker","JOKERS",R.red},{"pack_recipe","RECIPES",R.green},{"pack_candy","CANDY",R.blue},
+  {"pack_treat","TREATS",R.purple},{"pack_rush","RUSH!",R.night},
+ }
+ for _,p in ipairs(PACKS) do
+  local s,im=new_sprite(W,H,"Foil bag")
+  set_canvas(0,0,W,H,0)
+  local ramp=p[3]
+  local function seal(x,y,cy,top)
+   local d=sd_box(x,y,CX,cy,62,8,1)
+   local wave=3*math.abs(((x%8)/4)-1)
+   if top then return math.max(d,(cy-8+wave)-y) end
+   return math.max(d,y-(cy+8-wave))
+  end
+  shape(im,function(x,y) return sd_box(x,y,CX,94,58,76,10) end,{thick=22,ramp=ramp,outline=INK,colour=function(x,y,shade)
+   local foil=(math.floor((x+y*0.4)/12)%2==0) and 0.05 or 0
+   return pick(ramp,shade+foil,x,y)
+  end})
+  for _,cy in ipairs({14,174}) do shape(im,function(x,y) return seal(x,y,cy,cy<94) end,{thick=4,ramp=ramp,outline=INK,colour=function(x,y,shade)
+   return pick(ramp,(x%6<3) and 0.55 or 0.35,x,y)
+  end}) end
+  -- Diagonal sheen.
+  for y=24,164 do for x=14,126 do
+   local lane=math.abs((x-30)-(y-24)*0.35)
+   if lane<3 and app.pixelColor.rgbaA(im:getPixel(x,y))>0 then blend(im,x,y,hex("ffffff"),90) end
+  end end
+  -- Label plate with the pack name.
+  shape(im,function(x,y) return sd_box(x,y,CX,44,48,13,5) end,{flat=0.85,ramp=R.bone,outline=INK})
+  title(im,p[2],INK,33)
+  -- Emblem.
+  set_canvas(12,62,116,96,8)
+  if p[1]=="pack_joker" then
+   shape(im,function(x,y) return sd_circle(x,y,CX,112,24) end,{thick=12,ramp=R.white})
+   shape(im,function(x,y) return sd_capsule(x,y,CX,92,48,74,7) end,{thick=6,ramp=R.yellow})
+   shape(im,function(x,y) return sd_capsule(x,y,CX,92,92,74,7) end,{thick=6,ramp=R.blue})
+   for _,e in ipairs({{60,108},{80,108}}) do shape(im,function(x,y) return sd_ellipse(x,y,e[1],e[2],3,5) end,{flat=0.1,ramp=R.ink,outline=false}) end
+   shape(im,function(x,y) return sd_circle(x,y,CX,116,4) end,{thick=4,ramp=R.red})
+  elseif p[1]=="pack_recipe" then
+   shape(im,function(x,y) return sd_box(x,y,CX,112,34,26,4) end,{thick=6,ramp=R.wood})
+   shape(im,function(x,y) return sd_box(x,y,CX,108,28,22,2) end,{flat=0.85,ramp=R.bone,outline=false})
+   for k=0,3 do shape(im,function(x,y) return sd_box(x,y,CX+4,96+k*8,18,1,0) end,{flat=0.3,ramp=R.bone,outline=false}) end
+   for k,r in ipairs({R.red,R.yellow,R.blue,R.purple}) do shape(im,function(x,y) return sd_circle(x,y,50,96+(k-1)*8,2.5) end,{flat=0.6,ramp=r,outline=false}) end
+  elseif p[1]=="pack_candy" then
+   stamp(im,"candy_0",22,92,1);stamp(im,"candy_3",70,92,1);stamp(im,"candy_2",46,74,1)
+  elseif p[1]=="pack_treat" then
+   shape(im,function(x,y) return sd_box(x,y,CX,118,30,22,4) end,{thick=6,ramp=R.pink})
+   shape(im,function(x,y) return sd_box(x,y,CX,94,34,6,3) end,{thick=4,ramp=R.pink})
+   shape(im,function(x,y) return sd_box(x,y,CX,110,4,30,1) end,{thick=3,ramp=R.gold,outline=false})
+   shape(im,function(x,y) return math.min(sd_ellipse(x,y,CX-10,82,10,6),sd_ellipse(x,y,CX+10,82,10,6)) end,{thick=5,ramp=R.gold})
+  else
+   for k=0,7 do local a=k*math.pi/4 shape(im,function(x,y) return sd_capsule(x,y,CX,110,CX+math.cos(a)*40,110+math.sin(a)*34,2) end,{flat=0.7,ramp=R.gold,outline=false}) end
+   shape(im,function(x,y) return sd_diamond(x,y,CX,110,20,24) end,{thick=6,ramp=R.gold,colour=function(x,y,shade)
+    local dx,dy=x+0.5-CX,y+0.5-110
+    return pick(R.gold,(dx<0 and dy<0) and 0.92 or (dx>=0 and dy<0) and 0.66 or (dx<0) and 0.46 or 0.26,x,y)
+   end})
+  end
+  save_sprite(s,p[1])
+ end
+ -- Jumbo banner across the bottom of a pack.
+ do
+  local s,im=new_sprite(W,H,"Jumbo ribbon")
+  set_canvas(0,0,W,H,0)
+  shape(im,function(x,y) return sd_box(x,y,CX,150,66,12,3) end,{thick=6,ramp=R.gold,outline=INK})
+  for _,side in ipairs({-1,1}) do shape(im,function(x,y) return sd_diamond(x,y,CX+side*66,150,8,12) end,{thick=4,ramp=R.orange,outline=INK}) end
+  title(im,"JUMBO",INK,139)
+  save_sprite(s,"pack_jumbo")
+ end
+ -- Edition overlays: drawn over a 140 x 188 card with a 10 px corner radius.
+ local function on_card(x,y) return in_round(x,y,0,0,W,H,10) end
+ local function rim(x,y) return on_card(x,y) and not in_round(x,y,4,4,W-8,H-8,7) and in_round(x,y,2,2,W-4,H-4,9) end
+ do
+  local s,im=new_sprite(W,H,"Foil sheen")
+  for y=0,H-1 do for x=0,W-1 do
+   if on_card(x,y) then
+    local lane=((x+y*0.55)%34)
+    if rim(x,y) then im:drawPixel(x,y,hex("bfe8ff",230))
+    elseif lane<5 then im:drawPixel(x,y,hex("e4f8ff",lane<2 and 95 or 55))
+    elseif (x+y)%9==0 and lane<10 then im:drawPixel(x,y,hex("ffffff",70)) end
+   end
+  end end
+  save_sprite(s,"edition_foil")
+ end
+ do
+  local s,im=new_sprite(W,H,"Holographic dots")
+  local cols={"ff8ac0","96ece2","d8b0ff"}
+  for y=0,H-1 do for x=0,W-1 do
+   if on_card(x,y) then
+    if rim(x,y) then im:drawPixel(x,y,hex(cols[math.floor((x+y)/10)%3+1],235))
+    elseif x%4==0 and y%4==((x/4)%2==0 and 0 or 2) then im:drawPixel(x,y,hex(cols[math.floor((x*0.6+y)/18)%3+1],120)) end
+   end
+  end end
+  save_sprite(s,"edition_holo")
+ end
+ do
+  local s,im=new_sprite(W,H,"Polychrome rainbow")
+  local cols={"ef5a4f","ff9e3a","ffd04a","6fcf6a","5cc0f0","b07ee0"}
+  for y=0,H-1 do for x=0,W-1 do
+   if on_card(x,y) then
+    local band=cols[math.floor((x*0.5+y)/14)%6+1]
+    if rim(x,y) then im:drawPixel(x,y,hex(band,245))
+    else im:drawPixel(x,y,hex(band,30)) end
+   end
+  end end
+  save_sprite(s,"edition_poly")
+ end
+ -- Route and boss icons, 48 x 48.
+ local function icon(name,draw)
+  local s,im=new_sprite(48,48,"Icon")
+  set_canvas(0,0,48,48,0)
+  draw(im)
+  save_sprite(s,"ui_"..name)
+ end
+ icon("small",function(im)
+  shape(im,function(x,y) return sd_circle(x,y,24,24,17) end,{thick=9,ramp=R.blue,outline=INK})
+  shape(im,function(x,y) return sd_diamond(x,y,24,24,8,10) end,{thick=4,ramp=R.white,outline=false})
+ end)
+ icon("big",function(im)
+  shape(im,function(x,y) return sd_circle(x,y,24,24,19) end,{thick=10,ramp=R.gold,outline=INK})
+  shape(im,function(x,y) return math.abs(sd_circle(x,y,24,24,13))-1 end,{flat=0.3,ramp=R.gold,outline=false})
+  shape(im,function(x,y) return sd_diamond(x,y,24,24,8,10) end,{thick=4,ramp=R.white,outline=false})
+ end)
+ icon("done",function(im)
+  shape(im,function(x,y) return sd_circle(x,y,24,24,18) end,{thick=9,ramp=R.green,outline=INK})
+  shape(im,function(x,y) return math.min(sd_capsule(x,y,14,25,21,32,3),sd_capsule(x,y,21,32,34,16,3)) end,{thick=3,ramp=R.white,outline=false})
+ end)
+ icon("inspector",function(im)
+  shape(im,function(x,y) return sd_circle(x,y,24,28,15) end,{thick=8,ramp=R.purple,outline=INK})
+  shape(im,function(x,y) return math.min(sd_box(x,y,24,13,13,8,2),sd_box(x,y,24,19,18,2,1)) end,{thick=4,ramp=R.ink,outline=INK})
+  shape(im,function(x,y) return math.abs(sd_circle(x,y,30,28,5))-1.2 end,{flat=0.8,ramp=R.gold,outline=false})
+  shape(im,function(x,y) return sd_circle(x,y,18,28,2) end,{flat=0.05,ramp=R.ink,outline=false})
+ end)
+ icon("heatwave",function(im)
+  shape(im,function(x,y) return smin(sd_circle(x,y,24,31,13),sd_capsule(x,y,24,31,28,5,1),10) end,{thick=8,ramp=R.orange,outline=INK})
+  shape(im,function(x,y) return smin(sd_circle(x,y,24,34,7),sd_capsule(x,y,24,34,25,20,1),6) end,{thick=4,ramp=R.yellow,outline=false})
+ end)
+ icon("chocolatier",function(im)
+  shape(im,function(x,y) return sd_box(x,y,24,26,17,15,3) end,{thick=5,ramp=R.choc,outline=INK,colour=function(x,y,shade)
+   if x%11==0 or y%10==2 then return pick(R.choc,shade*0.4,x,y) end
+   return pick(R.choc,shade,x,y)
+  end})
+  shape(im,function(x,y) return sd_box(x,y,24,8,8,4,2) end,{thick=3,ramp=R.gold,outline=INK})
+ end)
+ icon("frost",function(im)
+  shape(im,function(x,y) return sd_box(x,y,24,30,18,12,5) end,{thick=6,ramp=R.white,outline=INK})
+  for k=0,3 do shape(im,function(x,y) return sd_circle(x,y,12+k*8,18,4) end,{thick=4,ramp=R.white,outline=INK}) end
+  for k=0,2 do local a=k*math.pi/3 shape(im,function(x,y) return sd_capsule(x,y,24-math.cos(a)*7,31-math.sin(a)*7,24+math.cos(a)*7,31+math.sin(a)*7,1.2) end,{flat=0.6,ramp=R.blue,outline=false}) end
+ end)
+ icon("sour",function(im)
+  shape(im,function(x,y) return smin(sd_circle(x,y,24,29,14),sd_capsule(x,y,24,29,24,8,4),6) end,{thick=8,ramp=R.green,outline=INK})
+  for _,e in ipairs({{19,28},{29,28}}) do shape(im,function(x,y) return sd_circle(x,y,e[1],e[2],2) end,{flat=0.05,ramp=R.ink,outline=false}) end
+  shape(im,function(x,y) return sd_capsule(x,y,19,35,29,35,1.2) end,{flat=0.05,ramp=R.ink,outline=false})
+ end)
+ icon("spoon",function(im)
+  shape(im,function(x,y) return smin(sd_ellipse(x,y,24,15,9,11),sd_capsule(x,y,24,22,24,42,3),3) end,{thick=6,ramp=R.steel,outline=INK})
+  shape(im,function(x,y) return sd_capsule(x,y,36,34,44,34,1.5) end,{flat=0.6,ramp=R.red,outline=false})
+ end)
+ icon("jelly",function(im)
+  shape(im,function(x,y) return sd_box(x,y,24,28,17,14,6) end,{thick=8,ramp=R.pink,outline=INK})
+  shape(im,function(x,y) return sd_ellipse(x,y,24,15,15,5) end,{thick=4,ramp=R.pink,outline=INK})
+ end)
+ icon("tax",function(im)
+  shape(im,function(x,y) return sd_circle(x,y,24,26,17) end,{thick=9,ramp=R.gold,outline=INK})
+  shape(im,function(x,y) return math.min(sd_capsule(x,y,24,15,24,37,1.6),sd_capsule(x,y,18,20,30,20,1.6),sd_capsule(x,y,18,26,30,26,1.6),sd_capsule(x,y,18,32,30,32,1.6)) end,{flat=0.15,ramp=R.gold,outline=false})
+  shape(im,function(x,y) return sd_box(x,y,40,8,6,2,1) end,{flat=0.6,ramp=R.red,outline=INK})
+ end)
+ icon("hurry",function(im)
+  shape(im,function(x,y) return sd_circle(x,y,24,27,17) end,{thick=9,ramp=R.white,outline=INK})
+  shape(im,function(x,y) return sd_box(x,y,24,7,5,3,1) end,{thick=3,ramp=R.steel,outline=INK})
+  shape(im,function(x,y) return math.min(sd_capsule(x,y,24,27,24,15,1.6),sd_capsule(x,y,24,27,32,31,1.6)) end,{flat=0.1,ramp=R.ink,outline=false})
+ end)
+ -- Board tile overlays, 56 x 56 (drawn over a 48 x 48 candy at offset 4,4).
+ local function tile_overlay(name,draw)
+  local s,im=new_sprite(56,56,"Overlay")
+  set_canvas(0,0,56,56,0)
+  draw(im)
+  save_sprite(s,"ui_"..name)
+ end
+ for _,dir in ipairs({"h","v"}) do
+  tile_overlay("striped_"..dir,function(im)
+   for k=-1,1 do
+    local o=28+k*10
+    shape(im,function(x,y) if dir=="h" then return sd_box(x,y,28,o,19,1.2,1) end return sd_box(x,y,o,28,1.2,19,1) end,{flat=0.95,ramp=R.white,outline=hex("1c1022",120),outline_width=1.2,colour=function() return hex("ffffff",215) end})
+   end
+   for _,side in ipairs({-1,1}) do
+    shape(im,function(x,y)
+     if dir=="h" then return sd_diamond(x,y,28+side*25,28,4,6) end
+     return sd_diamond(x,y,28,28+side*25,6,4)
+    end,{thick=3,ramp=R.yellow,outline=INK})
+   end
+  end)
+ end
+ tile_overlay("wrapped",function(im)
+  shape(im,function(x,y) return math.abs(sd_box(x,y,28,28,21,21,8))-1.6 end,{thick=2,ramp=R.pink,outline=INK})
+  for _,side in ipairs({-1,1}) do
+   shape(im,function(x,y) return sd_diamond(x,y,28+side*25,28,5,9) end,{thick=4,ramp=R.pink,outline=INK,colour=function(x,y,shade)
+    return pick(R.pink,shade+((y%4<2) and 0.12 or -0.05),x,y)
+   end})
+  end
+ end)
+ tile_overlay("chocolate",function(im)
+  shape(im,function(x,y) return sd_box(x,y,28,28,23,23,7) end,{thick=6,ramp=R.choc,outline=INK,colour=function(x,y,shade)
+   local cell=((x-5)%15<2 or (y-5)%15<2)
+   return pick(R.choc,cell and shade*0.45 or shade,x,y)
+  end})
+  glint(im,{{11,10},{12,10},{10,11}})
+ end)
+ for layers=1,2 do
+  tile_overlay("frost_"..layers,function(im)
+   shape(im,function(x,y) return sd_box(x,y,28,29,23,22,8) end,{thick=8,ramp=layers==2 and R.pink or R.white,outline=INK})
+   for k=0,4 do shape(im,function(x,y) return sd_circle(x,y,10+k*9,9,4.5) end,{thick=4,ramp=R.white,outline=INK}) end
+   if layers==2 then for k=0,2 do shape(im,function(x,y) return sd_circle(x,y,16+k*12,32,3) end,{thick=3,ramp=R.red,outline=false}) end end
+  end)
+ end
+ tile_overlay("mark_jelly",function(im)
+  for y=0,55 do for x=0,55 do
+   if in_round(x,y,1,1,54,54,8) and not in_round(x,y,5,5,46,46,6) then im:drawPixel(x,y,hex("ff7fc0",y<10 and 210 or 160)) end
+  end end
+  for _,p in ipairs({{5,5},{6,5},{5,6}}) do im:drawPixel(p[1],p[2],hex("ffffff",230)) end
+ end)
+ tile_overlay("mark_sour",function(im)
+  set_canvas(36,34,20,22,0)
+  shape(im,function(x,y) return smin(sd_circle(x,y,46,48,6),sd_capsule(x,y,46,48,46,38,2),3) end,{thick=4,ramp=R.green,outline=INK})
+ end)
+ tile_overlay("blocker",function(im)
+  shape(im,function(x,y) return math.abs(sd_box(x,y,28,28,24,24,8))-2.5 end,{thick=3,ramp=R.choc,outline=INK})
+  for _,p in ipairs({{8,8},{48,8},{8,48},{48,48}}) do shape(im,function(x,y) return sd_circle(x,y,p[1],p[2],3) end,{thick=3,ramp=R.gold,outline=INK}) end
+ end)
+ tile_overlay("lock",function(im)
+  shape(im,function(x,y) return math.abs(sd_ellipse(x,y,44,38,6,7))-1.6 end,{thick=2,ramp=R.steel,outline=INK,colour=function(x,y,shade) if y>40 then return nil end return pick(R.steel,shade,x,y) end})
+  shape(im,function(x,y) return sd_box(x,y,44,46,9,7,2) end,{thick=4,ramp=R.gold,outline=INK})
+  shape(im,function(x,y) return sd_capsule(x,y,44,44,44,48,1) end,{flat=0.05,ramp=R.ink,outline=false})
+ end)
+ tile_overlay("gold",function(im)
+  shape(im,function(x,y) return math.abs(sd_box(x,y,28,28,22,22,8))-1.4 end,{thick=2,ramp=R.gold,outline=false,flat=0.85})
+  sparkle(im,46,10,2,hex("fff8d0"))
+ end)
+ tile_overlay("caramel",function(im)
+  shape(im,function(x,y) return sd_capsule(x,y,12,47,44,47,2.5) end,{thick=3,ramp=R.caramel,outline=INK})
+ end)
+ tile_overlay("wild",function(im)
+  local rb={R.red,R.orange,R.yellow,R.green,R.blue,R.purple}
+  shape(im,function(x,y) return sd_diamond(x,y,28,28,18,22) end,{thick=6,ramp=R.white,outline=INK,colour=function(x,y,shade)
+   local a=math.atan(y+0.5-28,x+0.5-28)
+   return pick(rb[math.floor((a+math.pi)/(2*math.pi)*6)%6+1],shade*0.6+0.3,x,y)
+  end})
+ end)
+ -- Selection and highlight frames that match the rounded tiles.
+ local frames={selected={"fff3e6",2},hint={"ffd04a",2},hover={"c9b0e0",1},focus={"ffd04a",2},isotope={"b0e030",2}}
+ for name,spec in pairs(frames) do
+  tile_overlay(name,function(im)
+   for y=0,55 do for x=0,55 do
+    if in_round(x,y,1,1,54,54,8) and not in_round(x,y,1+spec[2],1+spec[2],54-spec[2]*2,54-spec[2]*2,8-spec[2]) then im:drawPixel(x,y,hex(spec[1])) end
+   end end
+  end)
  end
 end

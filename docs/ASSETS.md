@@ -166,3 +166,13 @@ Shaders (owner-approved): `shaders/candy_swirl.gdshader` (pixelated, posterised 
 `tools/create_joker_hd.lua` redraws all 32 Joker cards natively at 140 x 188 (run it after `create_hd_art.lua`; pass `--script-param only=<card>` to redraw one). Each master has three layers: card stock and frame (rounded cream stock, ink outline, art window, category gem), illustration (per-pixel shaded shapes over a category-tinted patterned background, with drop shadows, glints and sparkles; Supply cards stamp the HD candies), and lettering (m6x11 at 2x, proportional). Category tints: Geometry blue, 4+ green, 5+ purple, Chaos red, Supply caramel, Three pink, Special teal, Scaling gold.
 
 Regeneration order for all art: the original `create_*.lua` scripts, then `create_hd_art.lua`, then `create_joker_hd.lua`.
+
+## The rest of the art in HD (v0.27)
+
+`tools/create_joker_hd.lua` now also draws, with the same shading library (run the extras alone with `--script-param only=extras`):
+
+- Consumable cards `sugar_shaker_card`, `extra_serving`, `golden_glaze`, `candy_hammer` (140 x 188, orange "Treat" frame).
+- Booster packs `pack_joker`, `pack_recipe`, `pack_candy`, `pack_treat`, `pack_rush` (crimped foil bags with label and emblem) and the `pack_jumbo` ribbon.
+- Edition overlays `edition_foil`, `edition_holo`, `edition_poly` matching the 10 px card corners.
+- Route and boss icons at 48 x 48: `ui_small`, `ui_big`, `ui_done` and all nine bosses.
+- 56 x 56 tile overlays: striped (h/v), wrapped, chocolate, frosting (1/2), jelly, sour, blocker, lock, gold, caramel, wild, and rounded selection frames (selected, hint, hover, focus, isotope).
