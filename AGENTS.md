@@ -15,5 +15,7 @@ The project owner explicitly requested automatic commits and pushes after every 
 ## Existing project preferences
 
 - Create or replace visual artwork in Aseprite and retain editable `.aseprite` masters alongside the runtime exports. Reuse existing Aseprite UI skins where suitable.
+- Shaders are allowed for the animated candy-swirl background and the Balatro-style card tilt (owner approved 2026-11-12). Pixel art itself stays in Aseprite.
+- Art direction: Balatro-style high-detail pixel art. Candies are native 48 x 48 and cards native 140 x 188; m6x11 is used for headings, numbers and large buttons, Chakra Petch for small body text.
 - Keep automated Godot runs silent with the Dummy audio driver and `--test` flag.
 - Preserve the fixed logical canvas and verify click alignment when changing layouts.

@@ -25,7 +25,7 @@ func _ready() -> void:
  # A fixed logical canvas keeps drawing and native GUI input in the same space.
  # Physical window dimensions may change freely without changing game geometry.
  var window: Window = get_window()
- window.title = "Sugar Rush | v0.24 - Candy Shop"
+ window.title = "Sugar Rush | v0.25 - HD Art"
  window.content_scale_size = DESIGN_SIZE
  window.content_scale_mode = Window.CONTENT_SCALE_MODE_VIEWPORT
  window.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_KEEP
@@ -394,22 +394,20 @@ func apply_button_roles() -> void:
   for path: String in BUTTON_ROLES[kind]:
    var button: Button = get_node_or_null(path) as Button
    if button: UIStyle.role(button,kind)
-# A seamless sprinkle-and-stripe tile drifting slowly over the painted base (Aseprite art, no shader).
-var backdrop_drift: TextureRect
+# Balatro-style swirling candy paint behind everything (v0.25 shader; the painted table stays underneath).
+var swirl: ColorRect
+var swirl_clock: float = 0.0
 func add_backdrop_drift() -> void:
- backdrop_drift = TextureRect.new()
- backdrop_drift.name = "BackdropDrift"
- backdrop_drift.texture = UIStyle.texture("backdrop_tile")
- backdrop_drift.stretch_mode = TextureRect.STRETCH_TILE
- backdrop_drift.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
- backdrop_drift.mouse_filter = Control.MOUSE_FILTER_IGNORE
- backdrop_drift.scale = Vector2(2,2)
- backdrop_drift.size = Vector2(1152.0/2.0+96.0,720.0/2.0+96.0)
- add_child(backdrop_drift)
- move_child(backdrop_drift,$Background.get_index()+1)
-var drift_time: float = 0.0
+ swirl = ColorRect.new()
+ swirl.name = "CandySwirl"
+ swirl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+ swirl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+ var material: ShaderMaterial = ShaderMaterial.new()
+ material.shader = preload("res://shaders/candy_swirl.gdshader")
+ swirl.material = material
+ add_child(swirl)
+ move_child(swirl,$Background.get_index()+1)
 func _process(delta: float) -> void:
- if backdrop_drift == null: return
- if GameManager.motion: drift_time += delta
- var offset: float = fmod(drift_time*6.0,96.0)
- backdrop_drift.position = Vector2(-offset,-offset)*2.0
+ if swirl == null: return
+ if GameManager.motion: swirl_clock += delta
+ (swirl.material as ShaderMaterial).set_shader_parameter("clock",swirl_clock)

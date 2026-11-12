@@ -48,6 +48,8 @@ func _ready() -> void:
  portrait.size=Vector2(140,188)
  portrait.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
  portrait.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+ portrait.mouse_filter=Control.MOUSE_FILTER_PASS
+ CardTilt.attach(portrait)
  add_child(portrait)
  title=UIStyle.label("",32,UIStyle.MINT)
  title.position=Vector2(660,326)
@@ -105,6 +107,7 @@ func refresh() -> void:
   grid.add_child(column)
   var card: TextureButton=TextureButton.new()
   card.texture_normal=item.icon
+  CardTilt.attach(card)
   card.ignore_texture_size=true
   card.stretch_mode=TextureButton.STRETCH_KEEP_ASPECT_CENTERED
   card.custom_minimum_size=Vector2(172,188)

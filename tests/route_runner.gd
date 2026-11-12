@@ -76,7 +76,7 @@ func run_tests() -> void:
   if file.ends_with(".png"): files_ok=files_ok and FileAccess.file_exists("res://assets/source/aseprite/"+file.get_basename()+".aseprite")
  check(files_ok,"Every exported raster texture has a matching editable Aseprite master")
  check(main.theme.default_font.resource_path.ends_with(".fnt") and main.theme.get_stylebox("normal","Button") is StyleBoxTexture,"Text and UI skins use Aseprite-exported textures")
- check(main.get_node("Background").material==null,"Table uses exported Aseprite art instead of runtime shader")
+ check(main.get_node("Background").material==null and main.get_node("CandySwirl").material is ShaderMaterial,"Painted Aseprite table base stays shader-free; the candy swirl is its own shader layer (v0.25)")
  print("RESULT: %s route/art checks, %s failures" % [checks,failures])
  get_tree().quit(0 if failures==0 else 1)
 func capture(name: String) -> void:

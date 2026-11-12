@@ -161,6 +161,7 @@ func refresh_packs() -> void:
   art.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
   art.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
   art.custom_minimum_size=Vector2(180,150)
+  CardTilt.attach(art)
   art.tooltip_text=PackCatalog.ITEMS[pack.kind].blurb
   art.mouse_filter=Control.MOUSE_FILTER_STOP
   if pack.jumbo:
@@ -356,6 +357,7 @@ func refresh() -> void:
   var item: JokerData = GameManager.offers[slot]
   var card: TextureButton = TextureButton.new()
   card.texture_normal = item.icon
+  CardTilt.attach(card)
   UIStyle.add_edition_overlay(card,String(GameManager.offer_editions.get(item.id,"")))
   card.texture_hover = item.icon
   card.custom_minimum_size = Vector2(140,188)

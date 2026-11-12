@@ -34,6 +34,9 @@ func run_tests() -> void:
  main=preload("res://scenes/MainGame.tscn").instantiate()
  add_child(main)
  await frames()
+ # A fixed seed keeps this timing-sensitive suite reproducible (SUGAR_TEST_SEED overrides it).
+ var seed_text: String = OS.get_environment("SUGAR_TEST_SEED")
+ main.get_node("Menu/Layout/Seed").text = seed_text if not seed_text.is_empty() else "4646"
  main.start()
  GameManager.motion=false
  var board: GameBoard=main.get_node("Play/GameBoard")

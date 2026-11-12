@@ -8,17 +8,21 @@
 script = ExtResource("1")
 [node name="Prism" type="Sprite2D" parent="."]
 position = Vector2(166,204)
-scale = Vector2(3,3)
+scale = Vector2(1.5,1.5)
+texture_filter = 2
 texture = ExtResource("2")
 [node name="Skull" type="Sprite2D" parent="."]
 position = Vector2(176,478)
-scale = Vector2(2,2)
+scale = Vector2(1,1)
+texture_filter = 2
 texture = ExtResource("3")
 [node name="Gravity" type="Sprite2D" parent="."]
 position = Vector2(982,224)
-scale = Vector2(2,2)
+scale = Vector2(1,1)
+texture_filter = 2
 texture = ExtResource("4")
 [node name="Midas" type="Sprite2D" parent="."]
 position = Vector2(986,474)
-scale = Vector2(3,3)
+scale = Vector2(1.5,1.5)
+texture_filter = 2
 texture = ExtResource("5")

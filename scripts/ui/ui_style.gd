@@ -6,7 +6,13 @@ const MUTED: Color = Color("c9b6d4")
 const PINK: Color = Color("ef6355")
 const MINT: Color = Color("f5b957")
 const BODY_FONT: Font = preload("res://assets/exported/readable_font.fnt")
-const FONT: Font = BODY_FONT
+# m6x11 (Daniel Linssen) for headings, numbers and big buttons (v0.25, Balatro look); 16 px base.
+const FONT: Font = preload("res://assets/exported/ui_font.fnt")
+# m6x11 is crisp at multiples of 16 px.
+static func pixel_size(size: int) -> int:
+ if size >= 56: return 64
+ if size >= 40: return 48
+ return 32
 static var textures: Dictionary = {}
 static func texture(name: String) -> Texture2D:
  if not textures.has(name): textures[name] = load("res://assets/exported/"+name+".png")
@@ -14,14 +20,15 @@ static func texture(name: String) -> Texture2D:
 static func skin(name: String) -> StyleBoxTexture:
  var style: StyleBoxTexture = StyleBoxTexture.new()
  style.texture = texture(name)
- style.texture_margin_left = 6
- style.texture_margin_right = 6
- style.texture_margin_top = 6
- style.texture_margin_bottom = 6
+ # v0.25 rounded skins are 32 x 32 with 7 px corners and a 3 px raised lip.
+ style.texture_margin_left = 10
+ style.texture_margin_right = 10
+ style.texture_margin_top = 10
+ style.texture_margin_bottom = 10
  style.content_margin_left = 14
  style.content_margin_right = 14
  style.content_margin_top = 10
- style.content_margin_bottom = 10
+ style.content_margin_bottom = 12
  return style
 static func box(color: Color, _border: Color = Color("677b80"), _width: int = 2) -> StyleBoxTexture:
  var name: String = "ui_panel"
@@ -78,13 +85,15 @@ static func apply(root: Control) -> void:
  root.theme = theme
  preserve_headings(root)
 static func preserve_headings(node: Node) -> void:
- if node is Label and node.get_theme_font_size("font_size") >= 32:
+ if (node is Label or node is Button) and node.get_theme_font_size("font_size") >= 32:
   node.add_theme_font_override("font",FONT)
+  node.add_theme_font_size_override("font_size",pixel_size(node.get_theme_font_size("font_size")))
  for child: Node in node.get_children(): preserve_headings(child)
 static func label(text: String,size: int = 32,color: Color = CREAM) -> Label:
  var node: Label = Label.new()
  node.text = text
  node.add_theme_font_override("font",FONT if size >= 32 else BODY_FONT)
+ if size >= 32: size = pixel_size(size)
  node.add_theme_font_size_override("font_size",size)
  node.add_theme_color_override("font_color",color)
  return node

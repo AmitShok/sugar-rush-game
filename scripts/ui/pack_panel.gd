@@ -70,6 +70,8 @@ func refresh() -> void:
   art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
   art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
   art.custom_minimum_size = Vector2(width,150)
+  art.mouse_filter = Control.MOUSE_FILTER_PASS
+  CardTilt.attach(art)
   column.add_child(art)
   if choice.type == "joker": UIStyle.add_edition_overlay(art,String(choice.get("edition","")))
   var text: Label = UIStyle.label(info.text,20)

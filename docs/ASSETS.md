@@ -150,3 +150,13 @@ Four exact-three Joker cards are drawn and exported by `tools/create_three_art.l
 - Board tiles `ui_tile_a`, `ui_tile_b` (56 x 56) and the idle `ui_glint` (16 x 16); sparkle `ui_particle` (32 x 32).
 - Nine-slice skins (24 x 24): `ui_panel`, `ui_inset`, `ui_disabled`, `ui_boss`, `ui_progress_gold`, `ui_green`, `ui_blue`, `ui_button` (+ `_hover`, `_pressed`) and role buttons `ui_btn_{go,info,buy,skip,danger,neutral}` (+ `_hover`, `_pressed`).
 - Backdrop: `table_felt` (576 x 360 painted base with vignette) and `backdrop_tile` (96 x 96 seamless stripe-and-sprinkle layer that drifts at runtime).
+
+## Balatro-style HD pass (v0.25)
+
+`tools/create_hd_art.lua` runs **after every other art script** and writes layered Aseprite masters plus PNGs:
+
+- Rounded 32 x 32 nine-slice skins with a raised lip for all panels and buttons (`ui_panel`, `ui_inset`, `ui_disabled`, `ui_boss`, `ui_progress_gold`, `ui_green`, `ui_blue`, `ui_button*`, `ui_btn_*`). `UIStyle.skin()` uses 10 px margins.
+- Native 48 x 48 candies `candy_0`–`candy_5` and `candy_bomb`, shaded per pixel from signed-distance shapes (lighting, 4x4 Bayer-dithered colour ramps, coloured outlines, glints, soft shadow), and rounded 56 x 56 `ui_tile_a`/`ui_tile_b`.
+- HD cards: every 70 x 94 card, pack and edition PNG is upscaled with Scale2x to 140 x 188, given rounded corners and paper grain, and re-saved as a layered master. Already-HD images are skipped, so the script is safe to re-run.
+
+Shaders (owner-approved): `shaders/candy_swirl.gdshader` (pixelated, posterised swirling background on the `CandySwirl` layer above the painted `table_felt`) and `shaders/card_tilt.gdshader` with `scripts/ui/card_tilt.gd` (cards tilt toward the pointer, lift and shine on hover, sway at rest). Both pause with Reduced motion.

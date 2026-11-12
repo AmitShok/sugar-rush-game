@@ -24,6 +24,7 @@ func refresh() -> void:
   var card: JokerCardButton = JokerCardButton.new()
   card.item = item
   card.texture_normal = item.icon
+  CardTilt.attach(card)
   UIStyle.add_edition_overlay(card,GameManager.jokers.edition(item.id))
   card.ignore_texture_size = true
   card.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
