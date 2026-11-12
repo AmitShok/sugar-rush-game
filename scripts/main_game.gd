@@ -176,13 +176,13 @@ func inspect_joker(item: JokerData) -> void:
  var column: VBoxContainer=VBoxContainer.new()
  panel.add_child(column)
  column.add_child(UIStyle.label(GameManager.joker_title(item),32,UIStyle.MINT))
- var pill: Control = UIStyle.rarity_pill(item.rarity)
- pill.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
- column.add_child(pill)
  var description: RichTextLabel=UIStyle.rich_label(GameManager.joker_text(item),24)
  description.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
  description.custom_minimum_size=Vector2(660,240)
  column.add_child(description)
+ var pill: Control = UIStyle.rarity_pill(item.rarity)
+ pill.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+ column.add_child(pill)
  var close: Button=Button.new()
  close.name="Close"
  close.text="Back to the round"

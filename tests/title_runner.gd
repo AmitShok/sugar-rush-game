@@ -34,9 +34,48 @@ func run_tests() -> void:
  var play: Control = menu.get_node("Layout/Play")
  check(is_equal_approx(play.modulate.a,1.0),"Intro finishes with buttons fully shown")
  # Tap a letter: it jumps.
+ # Hit areas match the visible glyphs: outline them for the capture, then probe inside and just outside.
+ GameManager.motion = false
+ await frames()
+ var outlines: Array[Control] = []
+ for each: Label in title.letters:
+  if each.text == " ": continue
+  var box: ReferenceRect = ReferenceRect.new()
+  box.editor_only = false
+  box.border_color = Color.WHITE
+  box.border_width = 2.0
+  var r: Rect2 = glyph_global(each)
+  box.position = r.position
+  box.size = r.size
+  box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+  add_child(box)
+  outlines.append(box)
+ await capture("title_hitboxes")
+ for box: Control in outlines: box.queue_free()
  var letter: Label = title.letters[0]
- await click_at(letter.get_global_rect().get_center())
+ var glyph: Rect2 = glyph_global(letter)
+ title.letter_jump[0] = 0.0
+ await click_at(Vector2(glyph.get_center().x,glyph.end.y+12))
+ check(title.letter_jump[0] == 0.0,"Tapping just below a logo letter does nothing")
+ var space_x: float = (glyph_global(title.letters[4]).end.x+glyph_global(title.letters[6]).position.x)*0.5
+ await click_at(Vector2(space_x,glyph.get_center().y))
+ check(title.letter_jump[4] == 0.0 and title.letter_jump[6] == 0.0,"Tapping the space between SUGAR and RUSH does nothing")
+ check(glyph.size.y < 90.0 and glyph.size.y > 50.0,"Letter hit box is about the glyph's height (%s px)" % glyph.size.y)
+ await click_at(glyph.get_center())
  check(title.letter_jump[0] > 0.5,"Tapping a logo letter makes it jump")
+ # Candies only react on the candy itself, not the empty corners of their tile.
+ var probe: Dictionary = title.candies[0]
+ var probe_node: Control = probe.node
+ title.set_process(false)
+ probe_node.rotation = 0.0
+ probe_node.size = Vector2(160,160)
+ probe_node.position = Vector2(960,40)
+ for other: Dictionary in title.candies.slice(1): (other.node as Control).position = Vector2(-200,-200)
+ await frames()
+ await click_at(probe_node.get_global_rect().position+Vector2(6,6))
+ check(title.popped == 0 and probe in title.candies,"Tapping a candy's empty corner does not pop it")
+ title.set_process(true)
+ GameManager.motion = true
  # Tap a falling candy: it pops and the counter rises.
  GameManager.motion = false
  for other: Dictionary in title.candies.slice(1): (other.node as Control).position = Vector2(-200,-200)
@@ -105,3 +144,11 @@ func capture(name: String) -> void:
  await RenderingServer.frame_post_draw
  var folder: String = OS.get_environment("SUGAR_CAPTURE_DIR")
  if not folder.is_empty(): get_viewport().get_texture().get_image().save_png(folder+"/"+name+".png")
+
+# A logo letter's glyph hit box in canvas coordinates (it is scaled about its pivot).
+func glyph_global(letter: Label) -> Rect2:
+ var local: Rect2 = letter.call("glyph_rect")
+ var xf: Transform2D = letter.get_global_transform()
+ var a: Vector2 = xf*local.position
+ var b: Vector2 = xf*local.end
+ return Rect2(a,b-a).abs()

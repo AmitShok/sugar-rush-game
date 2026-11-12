@@ -93,7 +93,7 @@ func build_logo() -> void:
  var advance: float = 62.0
  var start: float = 576.0-advance*LOGO.length()*0.5
  for i: int in range(LOGO.length()):
-  var letter: Label = Label.new()
+  var letter: LogoLetter = LogoLetter.new()
   letter.text = LOGO[i]
   letter.add_theme_font_override("font",UIStyle.FONT)
   letter.add_theme_font_size_override("font_size",font_size)
@@ -205,7 +205,7 @@ func show_card_label(card: Dictionary) -> void:
  tween.tween_property(label,"modulate:a",0.0,0.5)
 
 func spawn_candy(y: float = -60.0) -> void:
- var candy: TextureRect = TextureRect.new()
+ var candy: TextureRect = RoundCandy.new()
  var index: int = random.randi_range(0,GameManager.config.candies.size()-1)
  candy.texture = GameManager.config.candies[index].texture
  var scale_factor: float = random.randf_range(0.8,1.3)
@@ -317,3 +317,23 @@ func _process(delta: float) -> void:
   if candy.position.y > 740.0:
    candies.erase(entry)
    candy.queue_free()
+
+# Logo letters only react inside the visible glyph, not their whole (scaled-up) label box.
+# m6x11 capitals sit between 1/4 and 4/4 of the ascent and are the advance minus 1 px spacing wide.
+class LogoLetter extends Label:
+ const PAD: float = 4.0
+ func glyph_rect() -> Rect2:
+  var font: Font = get_theme_font("font")
+  var font_size: int = get_theme_font_size("font_size")
+  var ascent: float = font.get_ascent(font_size)
+  var advance: float = font.get_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,-1,font_size).x
+  var spacing: float = font_size/16.0
+  var width: float = advance-spacing
+  return Rect2((size.x-advance)*0.5,ascent*0.25,width,ascent*0.75).grow(PAD)
+ func _has_point(point: Vector2) -> bool:
+  return glyph_rect().has_point(point)
+
+# Candies are round: only the disc counts, not the transparent corners of their 48 px tile.
+class RoundCandy extends TextureRect:
+ func _has_point(point: Vector2) -> bool:
+  return point.distance_to(size*0.5) <= size.x*0.42

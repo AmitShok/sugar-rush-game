@@ -289,3 +289,8 @@ Candies can now be dragged onto a neighbour with a mouse or a finger (touch arri
 ## Joker rarity and interactive title (v0.33, 2026-11-12)
 
 Added `JokerRarity` (Common 62 / Uncommon 27 / Rare 9 / Legendary 2 tier weights, split evenly within a tier) used by shop offers, Joker packs and the title cards; a `rarity` field on all 32 Jokers set from `balance_sim.gd solo=1` (Paintball Splatter measured ~94x a Jokerless round, by far the strongest, so it is Legendary); rarity pills in shop, tooltip, pack, details and Collection. Rewrote `scripts/ui/menu_backdrop.gd` as an interactive title with no panel. New TitleRunner (20 checks): no panel style, logo letters jump, candies pop, cards flip and show rarity, 20,000-roll tier odds within 1.5% of target, shop shows Legendaries least often, shop rarity pill clears the Buy button.
+
+
+## Precise title hit areas (v0.33.1, 2026-11-12)
+
+Logo letters were hit-tested on their whole label box, which the 1.7x logo scale stretched about 60 px below each glyph. Letters now use `_has_point` on the visible glyph (m6x11 cap band, 4 px padding) and falling candies on a disc (42% of their tile). TitleRunner adds probes just below a letter, in the word space and on a candy corner (none trigger), plus a hit-box outline capture. Also moved the owned-Joker details rarity pill below the description, which fixes a TouchRunner script error introduced in v0.33. All 28 suites pass (941 checks).
