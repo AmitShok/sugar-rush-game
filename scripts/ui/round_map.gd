@@ -42,15 +42,16 @@ func _ready() -> void:
  back_button.text="Back"
  back_button.pressed.connect(func() -> void: returned.emit())
  UIStyle.role(back_button,"neutral")
- place(panel,back_button,Rect2(16,588,180,48))
+ place(panel,back_button,Rect2(16,588,150,48))
  enter_button=Button.new()
  UIStyle.role(enter_button,"go")
  enter_button.pressed.connect(func() -> void: entered.emit())
- place(panel,enter_button,Rect2(208,588,412,48))
+ place(panel,enter_button,Rect2(178,588,380,48))
  skip_button=Button.new()
  UIStyle.role(skip_button,"skip")
  skip_button.pressed.connect(func() -> void: skipped.emit())
- place(panel,skip_button,Rect2(632,588,212,48))
+ skip_button.add_theme_font_size_override("font_size",24)
+ place(panel,skip_button,Rect2(570,588,276,48))
  visible=false
 func show_round(index: int) -> void:
  target_index=index
@@ -93,7 +94,7 @@ func show_round(index: int) -> void:
  enter_button.text="Face "+boss_name(index) if index%3==2 else "Play "+GameManager.config.rounds[index].display_name
  skip_button.visible=TagCatalog.skippable(index)
  if skip_button.visible: skip_button.text="Skip: "+TagCatalog.ITEMS[tag_for(index)].name.trim_suffix(" Tag")
- enter_button.size.x=412.0 if skip_button.visible else 636.0
+ enter_button.size.x=380.0 if skip_button.visible else 668.0
  skip_button.tooltip_text="Skip this batch: no cash reward and no shop. Claim the Tag instead."
 func boss_name(index: int) -> String:
  return BossCatalog.ITEMS[boss_id(index)].short

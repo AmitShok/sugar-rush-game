@@ -29,6 +29,8 @@ func run_tests() -> void:
  await frames()
  check(route.enter_button.get_global_rect().end.y<=710,"Route confirmation stays on canvas")
  await capture("v5_round_map")
+ var route_panel: Rect2=route.skip_button.get_parent().get_global_rect()
+ check(not route.skip_button.visible or (route.skip_button.get_global_rect().end.x<=route_panel.end.x and route.enter_button.get_global_rect().end.x<=route.skip_button.get_global_rect().position.x),"Route buttons stay inside the panel without overlapping")
  route.enter_button.pressed.emit()
  GameManager.motion=false
  check(GameManager.state=="playing" and GameManager.round_index==0 and not route.visible,"Confirming starts exactly the first round")

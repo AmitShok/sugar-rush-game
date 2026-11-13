@@ -319,3 +319,16 @@ Built `tools/run_sim.gd` / `tools/RunSim.tscn`: complete runs on the real GameMa
 | + Mult from your own match only | 12 | 57 | 47 | 24 | 16 | 3.5x / 27x |
 
 The 420x came from cascade specials adding Mult while cascades also added Candys (quadratic growth). The remaining 27x was one Nuclear + Kaleidoscope + Mobius build with two Polychrome editions.
+
+
+## Web export check (v0.35, 2026-11-13)
+
+Exported with `tools/export.ps1 -Target Web` (no export errors; `builds/SugarRush-Web.zip` 11 MB, `index.pck` 1.6 MB). Served `builds/web` locally with a Node static server (Python is not installed here, so `tests/web_export_smoke.py` was not run) and played it in the desktop app's Chromium browser pane (WebGL 2, Compatibility renderer):
+- Start screen, animated title, route preview, gameplay, shop (2 Jokers + 2 packs), Jumbo Joker Pack with rarity pills, Levels pop-up, buying a Joker from a pack.
+- Move preview by mouse hover (TRIO 90+, SHAPE 300+, QUAD 100+, TRIO 135+) and each scored exactly its preview when nothing cascaded; one cascade scored 106 x 2.5 over a 66 x 2 preview.
+- Mouse drag swaps and real dispatched TouchEvent swipes on the canvas at 844 x 390 (landscape phone) swap and spend one move.
+- 375 x 812 portrait shows the "Turn your phone sideways" prompt with Play in portrait.
+- Reload keeps the run: Continue restored score 258, 7 moves and the same board from IndexedDB.
+- No console errors during the session.
+
+Fixed while checking: the route's Skip button overflowed its panel with long Tag names (buttons rebalanced; RouteRunner now checks they fit and do not overlap), and the web start screen still said tap-only swapping.

@@ -28,7 +28,7 @@ python -m http.server 8765 --bind 127.0.0.1 --directory builds/web
 
 Open `http://127.0.0.1:8765`. The single-threaded Compatibility build uses WebGL 2 and WebAssembly without requiring cross-origin isolation headers. The start screen provides Play and optional fullscreen, which depends on browser support. On narrow portrait touchscreens it recommends landscape and allows continuing in portrait. The game letterboxes rather than stretching its hitboxes. Landscape/fullscreen is recommended for phone readability; the interface has not been redesigned as a portrait-first phone app.
 
-Tap a candy, then its neighbor to swap. Tap owned Jokers to read their current effect, including Roulette's chosen type. Shop cards, consumables, pause and settings are touch accessible. The web pause menu uses Save & Return to Title; it does not exit the engine and leave a dead canvas.
+Drag a candy onto a neighbor to preview the move, then release to swap (or tap one candy, then its neighbor). Tap owned Jokers to read their current effect, including Roulette's chosen type. Shop cards, consumables, pause and settings are touch accessible. The web pause menu uses Save & Return to Title; it does not exit the engine and leave a dead canvas.
 
 The current English-only game explicitly uses English/LTR UI layout, including when the browser/device language is Hebrew or Arabic. This prevents automatic mirroring from placing dynamically built panels off-screen; it does not change the device's language settings. The web smoke test includes Hebrew and Arabic phone contexts in addition to English desktop/tablet/phone contexts.
 
