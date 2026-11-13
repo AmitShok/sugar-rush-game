@@ -17,6 +17,7 @@ var gummies: int = 0
 var streak: int = 0
 var poison: int = -1
 var poison_cleared: bool = false
+var jelly_left: int = 0 # Jelly tiles still on the board (The Jelly Mould must clear them all).
 var state: String = "menu"
 var last_chips: float = 0
 var last_mult: float = 1
@@ -30,6 +31,7 @@ var master_volume: float = 0.8
 var preferences_path: String = "user://preferences.cfg"
 var audio_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 const SHAKER_CAPACITY: int = 2
+const SHOP_JOKERS: int = 2 # Balatro-style: two Joker cards per shop, beside two packs.
 var hints_used: int = 0
 var consumables: Array[String] = []
 # Compatibility for the original Shaker API; all items share the same capacity.
@@ -46,6 +48,7 @@ var candy_bonuses: Array[int] = []
 # Recipe (match type) levels for this run; see RecipeCatalog.
 var recipe_levels: Dictionary = RecipeCatalog.default_levels()
 var last_recipe: String = ""
+var preview: Dictionary = {} # The swap the player is about to make (shown in the HUD).
 # Economy and skip Tags (v0.20).
 var last_interest: int = 0
 var tags_claimed: Array[String] = []
@@ -311,15 +314,28 @@ func start_round() -> void:
  poison = rng.randi_range(0,config.candies.size()-1) if jokers.has("roulette") else -1
  poison_cleared = false
  last_chips = 0
+ preview = {}
  last_mult = 1
  last_recipe = ""
  state = "playing"
  round_started.emit()
  changed.emit()
 func begin_move(valid: bool) -> void:
+ preview = {}
  moves -= 1
  streak = streak+1 if valid else 0
  if curse() == "tax" and gummies > 0: gummies -= BossCatalog.TAX
+ changed.emit()
+# Live hand while a move resolves (v0.34): shows Candys x Mult climbing; the score lands once in award().
+func show_hand(result: Dictionary) -> void:
+ last_chips = float(result.chips)
+ last_mult = float(result.mult)
+ last_recipe = String(result.get("recipe",""))
+ changed.emit()
+# Pre-move preview from the board: {"valid","chips","mult","total","recipe","level"}, or {} to clear.
+func set_preview(info: Dictionary) -> void:
+ if info == preview: return
+ preview = info
  changed.emit()
 func award(result: Dictionary, color: int) -> void:
  score += int(result.total)
@@ -333,13 +349,16 @@ func award(result: Dictionary, color: int) -> void:
  changed.emit()
 func finish_move() -> void:
  var adjusted: int = score/2 if poison >= 0 and not poison_cleared else score
- if adjusted >= current_round().quota or moves <= 0: settle_round()
+ if (adjusted >= current_round().quota and objectives_met()) or moves <= 0: settle_round()
+# Boss objectives on top of the score quota.
+func objectives_met() -> bool:
+ return curse() != "jelly" or jelly_left <= 0
 func settle_round() -> void:
  var penalty: int = 0
  if poison >= 0 and not poison_cleared:
   penalty = score-score/2
   score -= penalty
- if score < current_round().quota:
+ if score < current_round().quota or not objectives_met():
   state = "over"
   run_ended.emit(false)
  else:
@@ -440,7 +459,7 @@ func roll_offers() -> void:
  var pool: Array[JokerData] = []
  for item: JokerData in config.jokers:
   if not jokers.has(item.id): pool.append(item)
- while offers.size() < 4 and not pool.is_empty():
+ while offers.size() < SHOP_JOKERS and not pool.is_empty():
   # Rarer, stronger Jokers show up less often (JokerRarity.WEIGHTS).
   var i: int = JokerRarity.pick_index(pool,rng)
   offers.append(pool[i])

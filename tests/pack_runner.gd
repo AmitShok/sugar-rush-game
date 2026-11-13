@@ -119,9 +119,8 @@ func run_tests() -> void:
  GameManager.jokers.capacity=5
  GameManager.changed.emit()
  await frames()
- await click(shop.pack_tab)
- check(shop.page=="packs" and shop.pack_buttons.size()==2 and shop.pack_row.visible and not shop.get_node("Offers").visible,"Packs tab shows two packs with Open buttons")
- check(shop.pack_row.get_global_rect().end.x<=1152 and shop.pack_row.get_global_rect().end.y<=shop.get_node("Details").get_global_rect().position.y+2,"Pack page fits above the details panel")
+ check(shop.pack_buttons.size()==2 and shop.get_node("Offers").visible and shop.get_node("Offers").get_child_count()==4,"One shop row shows two Jokers and two packs with Open buttons")
+ check(shop.get_node("Offers").get_global_rect().end.x<=1152 and shop.get_node("Offers").get_global_rect().end.y<=shop.get_node("Details").get_global_rect().position.y+2,"Shop row fits above the details panel")
  await capture("packs_shop")
  await click(shop.pack_buttons[0])
  await frames()

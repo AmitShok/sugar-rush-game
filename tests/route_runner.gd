@@ -40,6 +40,7 @@ func run_tests() -> void:
  await capture("v5_gameplay")
  for index: int in range(GameManager.config.rounds.size()-1):
   GameManager.score=GameManager.current_round().quota
+  GameManager.jelly_left=0 # Fixture win: the Jelly Mould also needs its jelly cleared.
   GameManager.settle_round()
   main.get_node("Shop/Actions/Continue").pressed.emit()
   await frames()

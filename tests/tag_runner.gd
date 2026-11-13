@@ -132,7 +132,7 @@ func run_tests() -> void:
  check(GameManager.round_index==1 and route.target_index==2 and not route.skip_button.visible,"After skipping Small and Big the Boss has no Skip")
  await click(route.back_button)
  await frames()
- check(shop.get_node("Heading").text=="SKIPPED" and not shop.recipe_tab.visible and not shop.get_node("Actions/Reroll").visible,"Shop behind the route is shown as closed")
+ check(shop.get_node("Heading").text=="SKIPPED" and not shop.levels_button.visible and not shop.get_node("Actions/Reroll").visible,"Shop behind the route is shown as closed")
  await capture("tags_closed_shop")
  await click(shop.get_node("Actions/Continue"))
  await click(route.enter_button)

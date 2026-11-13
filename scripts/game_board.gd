@@ -25,7 +25,9 @@ var selection: int = -1
 # Drag-to-swap (mouse and touch): the cell pressed and where the press started.
 var drag_from: int = -1
 var drag_start: Vector2 = Vector2.ZERO
-const DRAG_THRESHOLD: float = 0.4 # Fraction of a cell the pointer must travel to swap.
+var drag_target: int = -1 # Neighbour the drag currently points at (released = swap).
+var preview_pair: Vector2i = Vector2i(-1,-1)
+const DRAG_THRESHOLD: float = 0.4 # Fraction of a cell the pointer must travel to aim at a neighbour.
 var cursor: int = 0
 var final_move: bool = false
 var population: int = 0
@@ -61,6 +63,8 @@ func start_round() -> void:
  if model.legal_moves().is_empty(): model.reshuffle()
  sync_tiles(false)
 func sync_tiles(falling: bool) -> void:
+ # The Jelly Mould round is only won once every jelly tile is cleared.
+ GameManager.jelly_left = model.jelly.size()
  for tween: Tween in movement_tweens:
   if tween and tween.is_valid(): tween.kill()
  movement_tweens.clear()
@@ -82,7 +86,7 @@ func sync_tiles(falling: bool) -> void:
   tile.configure(i,state,GameManager.config,i in model.isotopes,state.color==model.locked_color,model.candy_bonus(state.color),GameManager.jokers.has("roulette") and state.color==GameManager.poison and not state.obstacle())
   tile.jelly = i in model.jelly
   tile.sour = state.color == model.sour_color
-  if tile.jelly: tile.tooltip_text += " | Jelly: clear it to keep full score"
+  if tile.jelly: tile.tooltip_text += " | Jelly: clear every jelly tile to win"
   if tile.sour and not state.obstacle(): tile.tooltip_text += " | SOUR: scores 0 Candys"
   tile.selected = i == selection
   tile.hinted = false
@@ -199,6 +203,7 @@ func use_shaker() -> void:
  GameManager.toast.emit("Shuffled!")
  shuffle_finished.emit()
 func choose(i: int) -> void:
+ clear_preview()
  if not target_consumable.is_empty():
   use_targeted_consumable(i)
   return
@@ -227,26 +232,17 @@ func animate_swap(a: int,b: int) -> void:
 func attempt_swap(a: int,b: int) -> void:
  if busy or paused or GameManager.state != "playing" or not model.adjacent(a,b) or not model.playable(a) or not model.playable(b): return
  busy = true
+ clear_preview()
  selection = -1
  final_move = GameManager.moves == 1
  population = 0
  for cell: CandyState in model.cells:
   if cell.blocker == 0: population += 1
- var wild: bool = model.cells[a].coating == 3 or model.cells[b].coating == 3
- var special_swap: bool = model.is_special_swap(a,b)
  model.chocolate_broken = 0
  SoundBoard.play("swap")
  await animate_swap(a,b)
  model.swap(a,b)
- var groups: Array[Dictionary] = []
- if special_swap: groups = model.special_swap_groups(a,b)
- elif wild: groups = model.wild_groups(a,b)
- else:
-  groups = model.matches()
-  # New specials appear where the player moved a candy.
-  for group: Dictionary in groups:
-   if b in group.cells: group["pivot"] = b
-   elif a in group.cells: group["pivot"] = a
+ var groups: Array[Dictionary] = model.swap_groups(a,b)
  move_made.emit(not groups.is_empty())
  if groups.is_empty():
   model.swap(a,b)
@@ -274,31 +270,27 @@ func attempt_swap(a: int,b: int) -> void:
  busy = false
  resolution_finished.emit()
 func resolve(initial: Array[Dictionary]) -> void:
+ # One move = one hand (v0.34). Every wave feeds the same MoveHand; the HUD counts the hand up
+ # live and the score is awarded once, when the board settles.
+ var hand: MoveHand = MoveHand.new()
  var groups: Array[Dictionary] = initial
  var cascade: int = 0
  while not groups.is_empty() and cascade < GameManager.config.cascade_limit:
-  var removed: Array[int] = []
   var wilds: Array[int] = []
   var spawns: Array[Dictionary] = []
-  for group: Dictionary in groups:
-   var effect: Dictionary = model.expand(group)
-   # Effects may overlap. Award each candy at most once in this cascade wave.
-   var chips: int = int(effect.chips)
-   var fresh_breaks: int = 0
-   for i: int in effect.cells:
-    if i not in removed and i in effect.broken: fresh_breaks += 1
-    if i in removed and model.cells[i] != null: chips -= int(effect.contributions[i])
-    elif i not in removed: removed.append(i)
-   var result: Dictionary = ScoreEngine.calculate(maxi(0,chips),group,effect.isotope,GameManager.jokers,GameManager.streak,group.color==GameManager.poison,final_move,population,cascade,GameManager.recipe_levels)
-   if group.get("direct",false): result={"chips":chips,"mult":1.0,"total":chips}
-   result["fired"] = effect.fired.size()
-   matches_resolved.emit(result,-1 if group.get("direct",false) else group.color)
+  var wave: Dictionary = model.score_wave(groups,cascade,hand,GameManager.recipe_levels,GameManager.poison)
+  var removed: Array[int] = wave.removed
+  for n: int in range(groups.size()):
+   var group: Dictionary = groups[n]
+   var effect: Dictionary = wave.effects[n]
+   var fresh_breaks: int = effect.broken.size()
    if fresh_breaks > 0:
     juice.popup("BREAK +%s" % (fresh_breaks*effect.break_bonus),Vector2(model.xy(effect.origin))*cell_size+Vector2(0,40),UIStyle.MINT)
    var point: Vector2 = Vector2(model.xy(effect.origin))*cell_size+Vector2.ONE*28
-   var recipe_tag: String = (RecipeCatalog.ITEMS[result.recipe].short.to_upper()+" ") if result.has("recipe") else ""
-   juice.popup(recipe_tag+"+%s" % result.total,point,GameManager.config.candies[group.color].tint)
-   juice.burst(point,GameManager.config.candies[group.color].tint)
+   var tint: Color = GameManager.config.candies[group.color].tint if int(group.get("color",-1)) >= 0 else UIStyle.CREAM
+   # Each group shows the Candys it adds to the hand; the hand total lands once at the end.
+   juice.popup("+%s" % int(wave.chips[n]),point,tint)
+   juice.burst(point,tint)
    if effect.wild >= 0: wilds.append(effect.wild)
    if not effect.spawn.is_empty(): spawns.append(effect.spawn)
    if group.get("special_swap",false) or not effect.fired.is_empty():
@@ -317,6 +309,8 @@ func resolve(initial: Array[Dictionary]) -> void:
    elif not effect.fired.is_empty(): SoundBoard.play("special_fire",1.0+0.08*cascade)
    elif group.length >= 4 or not effect.effects.is_empty(): SoundBoard.play("match_big",1.0+0.06*cascade)
    if fresh_breaks > 0: SoundBoard.play("crack",1.0+0.05*cascade)
+  # Live hand: the Candys x Mult boxes climb as each wave lands.
+  GameManager.show_hand(hand_result(hand))
   if GameManager.motion:
    # Cleared candies swell with a bright flash, then pop away.
    var tween: Tween = create_tween().set_parallel()
@@ -346,6 +340,14 @@ func resolve(initial: Array[Dictionary]) -> void:
  if cascade >= GameManager.config.cascade_limit:
   model.stabilize()
   GameManager.toast.emit("Cascade safety limit reached | board settled")
+ if hand.groups == 0: return
+ # The whole move scores once, Balatro-style.
+ var result: Dictionary = hand_result(hand)
+ matches_resolved.emit(result,GameManager.poison if bool(result.get("poisoned",false)) else int(result.get("color",-1)))
+ var label: String = (RecipeCatalog.ITEMS[result.recipe].short.to_upper()+"  ") if String(result.get("recipe","")) != "" else ""
+ juice.popup(label+"+%s" % int(result.total),Vector2(4,3.4)*cell_size,UIStyle.MINT)
+func hand_result(hand: MoveHand) -> Dictionary:
+ return hand.result(GameManager.jokers,GameManager.streak,final_move,population,GameManager.recipe_levels)
 func hint() -> void:
  if busy or paused or not target_consumable.is_empty() or GameManager.state != "playing": return
  var cost: int = GameManager.hint_cost()
@@ -375,6 +377,8 @@ func _unhandled_key_input(event: InputEvent) -> void:
  for tile: SugarTile in tiles:
   tile.hinted = tile.cell_index == cursor
   tile.queue_redraw()
+ if selection >= 0 and model.adjacent(selection,cursor): show_preview(selection,cursor)
+ else: clear_preview()
  get_viewport().set_input_as_handled()
 
 func _gui_input(event: InputEvent) -> void:
@@ -384,20 +388,26 @@ func _gui_input(event: InputEvent) -> void:
    tile.hovered = not busy and model.xy(tile.cell_index) == over
    tile.queue_redraw()
   if drag_from >= 0 and (event.button_mask & MOUSE_BUTTON_MASK_LEFT) != 0: drag_to(event.position)
+  elif drag_from < 0:
+   # Selected a candy? Hovering a neighbour previews that swap (click it to confirm).
+   if selection >= 0 and model.inside(over) and model.adjacent(selection,model.index(over)): show_preview(selection,model.index(over))
+   else: clear_preview()
  if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
   if event.pressed:
    var cell: Vector2i = Vector2i((event.position / cell_size).floor())
    if model.inside(cell):
-    # A press still selects (tap one candy, then a neighbour); dragging swaps directly.
+    # A press still selects (tap one candy, then a neighbour); a drag previews, release swaps.
     choose(model.index(cell))
     var can_drag: bool = not busy and not paused and target_consumable.is_empty() and GameManager.state == "playing" and model.playable(model.index(cell))
     drag_from = model.index(cell) if can_drag else -1
+    drag_target = -1
     drag_start = event.position
-  else: end_drag()
+  else: release_drag()
   accept_event()
 
-# Mouse and touch drags (touch arrives as emulated mouse input): once the pointer has travelled
-# DRAG_THRESHOLD of a cell, swap toward the dominant direction. Before that the candy leans toward it.
+# Mouse and touch drags (touch arrives as emulated mouse input). Past DRAG_THRESHOLD of a cell the
+# candy leans fully toward the neighbour in the dominant direction and the HUD previews that swap.
+# Releasing there confirms it; sliding back under the threshold cancels (v0.34).
 func drag_to(point: Vector2) -> void:
  if busy or paused or drag_from < 0:
   end_drag()
@@ -405,15 +415,22 @@ func drag_to(point: Vector2) -> void:
  var delta: Vector2 = point-drag_start
  var axis: Vector2i = Vector2i(signi(int(delta.x)),0) if absf(delta.x) >= absf(delta.y) else Vector2i(0,signi(int(delta.y)))
  var distance: float = maxf(absf(delta.x),absf(delta.y))
- if distance < cell_size*DRAG_THRESHOLD:
-  if GameManager.motion and drag_from < tiles.size():
-   tiles[drag_from].position = Vector2(model.xy(drag_from))*cell_size+Vector2(axis)*minf(distance,cell_size*DRAG_THRESHOLD)*0.5
+ var target: Vector2i = model.xy(drag_from)+axis
+ var ready: bool = distance >= cell_size*DRAG_THRESHOLD and model.inside(target)
+ if GameManager.motion and drag_from < tiles.size():
+  tiles[drag_from].position = Vector2(model.xy(drag_from))*cell_size+Vector2(axis)*minf(distance,cell_size*DRAG_THRESHOLD)*(0.6 if ready else 0.5)
+ if not ready:
+  drag_target = -1
+  clear_preview()
   return
+ drag_target = model.index(target)
+ show_preview(drag_from,drag_target)
+
+func release_drag() -> void:
  var from: int = drag_from
- var target: Vector2i = model.xy(from)+axis
+ var to: int = drag_target
  end_drag()
- if not model.inside(target): return
- var to: int = model.index(target)
+ if from < 0 or to < 0: return
  if not model.playable(to):
   GameManager.toast.emit("Framed: match it or next to it")
   return
@@ -427,6 +444,41 @@ func end_drag() -> void:
  if drag_from >= 0 and drag_from < tiles.size() and not busy:
   tiles[drag_from].position = Vector2(model.xy(drag_from))*cell_size
  drag_from = -1
+ drag_target = -1
+
+# --- Move preview (v0.34): the exact, guaranteed part of a swap's hand, Balatro-style ---
+func show_preview(a: int, b: int) -> void:
+ if busy or paused or GameManager.state != "playing" or not target_consumable.is_empty():
+  clear_preview()
+  return
+ if preview_pair == Vector2i(a,b): return
+ preview_pair = Vector2i(a,b)
+ var info: Dictionary = preview_info(a,b)
+ for tile: SugarTile in tiles:
+  tile.previewed = tile.cell_index in info.get("cells",[])
+  tile.queue_redraw()
+ GameManager.set_preview(info)
+
+# What swapping a and b would score before any cascade: {"valid","chips","mult","total","recipe","level","cells"}.
+func preview_info(a: int, b: int) -> Dictionary:
+ if not model.adjacent(a,b) or not model.playable(a) or not model.playable(b): return {"valid":false,"cells":[]}
+ var preview: Dictionary = model.preview_swap(a,b,GameManager.recipe_levels,GameManager.poison)
+ if not bool(preview.valid): return {"valid":false,"cells":[]}
+ var people: int = 0
+ for cell: CandyState in model.cells:
+  if cell.blocker == 0: people += 1
+ var hand: MoveHand = preview.hand
+ var result: Dictionary = hand.result(GameManager.jokers,GameManager.streak+1,GameManager.moves == 1,people,GameManager.recipe_levels)
+ return {"valid":true,"chips":float(result.chips),"mult":float(result.mult),"total":int(result.total),"recipe":String(result.get("recipe","")),"level":int(result.get("level",1)),"cells":preview.cells}
+
+func clear_preview() -> void:
+ if preview_pair == Vector2i(-1,-1) and GameManager.preview.is_empty(): return
+ preview_pair = Vector2i(-1,-1)
+ for tile: SugarTile in tiles:
+  if tile.previewed:
+   tile.previewed = false
+   tile.queue_redraw()
+ GameManager.set_preview({})
 func _get_tooltip(at_position: Vector2) -> String:
  var cell: Vector2i = Vector2i((at_position / cell_size).floor())
  if not model.inside(cell) or model.cells.is_empty(): return ""

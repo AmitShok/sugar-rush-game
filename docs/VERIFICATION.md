@@ -294,3 +294,15 @@ Added `JokerRarity` (Common 62 / Uncommon 27 / Rare 9 / Legendary 2 tier weights
 ## Precise title hit areas (v0.33.1, 2026-11-12)
 
 Logo letters were hit-tested on their whole label box, which the 1.7x logo scale stretched about 60 px below each glyph. Letters now use `_has_point` on the visible glyph (m6x11 cap band, 4 px padding) and falling candies on a disc (42% of their tile). TitleRunner adds probes just below a letter, in the word space and on a candy corner (none trigger), plus a hit-box outline capture. Also moved the owned-Joker details rarity pill below the description, which fixes a TouchRunner script error introduced in v0.33. All 28 suites pass (941 checks).
+
+
+## One move = one hand, preview, one-row shop, Jelly Mould, quotas (v0.34, 2026-11-13)
+
+Measured first with `tools/balance_sim.gd` (new `moves=`, per-move peak and Jelly outputs; P1/P3/P5/T5/R5 builds). Old scoring: Paintball + Labyrinth + Addict scored ~2.1M in a 10-move round at recipe level 1 (best single move ~290k) against a 350k final quota, because Paintball repainted on every cascade wave and every cascade group got full Joker multipliers.
+
+- `MoveHand` scores each move once: the best wave-0 group sets the recipe, extra wave-0 groups add +1 Mult, cascades add Candys, special Mult and the capped cascade Mult, then Jokers apply once. The game, the preview and the simulator share `BoardModel.swap_groups / score_wave / preview_swap / snapshot / restore`.
+- Exact preview: HUD Candys x Mult, "RECIPE LVn = N+", mint outlines on cleared candies; mouse hover, touch drag (release to swap, slide back to cancel), keyboard. HandRunner (16 checks): preview leaves board and RNG untouched, a no-cascade move scores exactly its preview, cascaded moves never score less, one award per move, Labyrinth applies once (1260 fixture), HUD/outline/NO MATCH display, drag preview/cancel/confirm.
+- Paintball splatters on wave 0 and up to 3 cascade waves (owner asked to keep its chains). P3 now ~240k (lv1) / ~360k (lv3) at 10 moves.
+- Quotas reshaped Balatro-style (Big 1.5x, Boss 2x of each ante base): 1.5k/2.25k/3k, 6k/9k/12k, 18k/27k/36k, 45k/68k/90k, 110k/165k/220k, 250k/375k/500k. At ante 6 with level-5 recipes the strongest measured build clears ~2x; good builds need editions or levels; weak builds fail around ante 5.
+- Shop: two Jokers + two packs in one row; Levels pop-up replaces the Candies/Recipes tabs.
+- Jelly Mould: 24 tiles, all must be cleared plus the score; half-score rule removed. Sim (12 moves): no Jokers leave ~5, blast builds always clear, Labyrinth/special builds clear 25-40% (bot is greedy; players can aim at the last tiles). BossRunner covers score-met-with-jelly (continues), last jelly + score (wins), out of moves with jelly (loses).

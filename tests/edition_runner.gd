@@ -69,7 +69,7 @@ func run_tests() -> void:
  # Shop: editions on offers, price, buying, overlays, reorder buttons.
  GameManager.jokers.clear_all()
  GameManager.gummies=100
- GameManager.offers.assign([joker("midas"),joker("mobius"),joker("addict"),joker("labyrinth")])
+ GameManager.offers.assign([joker("midas"),joker("addict"),joker("mobius"),joker("labyrinth")])
  GameManager.offer_editions={"midas":"poly","mobius":"foil"}
  GameManager.changed.emit()
  await frames()
@@ -98,7 +98,7 @@ func run_tests() -> void:
  GameManager.offers.assign([joker("midas"),joker("mobius"),joker("labyrinth"),joker("three_scoops")])
  GameManager.offer_editions={"midas":"foil","mobius":"holo","labyrinth":"poly"}
  GameManager.motion=true
- shop.show_page("jokers")
+ shop.close_levels()
  GameManager.changed.emit()
  for i: int in range(30): await get_tree().process_frame
  await capture("editions_live_a")

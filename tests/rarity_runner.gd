@@ -104,7 +104,7 @@ func run_tests() -> void:
  GameManager.score=GameManager.current_round().quota
  GameManager.settle_round()
  GameManager.gummies=20
- GameManager.offers.assign([supplies[0],supplies[3],supplies[4],supplies[5]])
+ GameManager.offers.assign([GameManager.joker_by_id("supply_caramel"),supplies[0] if supplies[0].id!="supply_caramel" else supplies[1]])
  GameManager.offer_editions.clear() # Fixture: plain cards so prices are exact.
  GameManager.free_offer_id = ""
  GameManager.changed.emit()

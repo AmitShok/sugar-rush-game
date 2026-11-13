@@ -27,8 +27,15 @@ func refresh() -> void:
   else: display_score(float(gm.score))
  $Layout/Progress.max_value = gm.current_round().quota
  $Layout/Progress.value = gm.score
- $Layout/Math/Chips.text = str(int(gm.last_chips)) if is_equal_approx(gm.last_chips,roundf(gm.last_chips)) else str(snappedf(gm.last_chips,0.1))
- $Layout/Math/Mult.text = str(int(gm.last_mult)) if is_equal_approx(gm.last_mult,roundf(gm.last_mult)) else str(snappedf(gm.last_mult,0.1))
+ # v0.34: before a move the boxes preview its guaranteed hand (Balatro-style); during a move they
+ # count the live hand up; afterwards they keep the last hand.
+ var previewing: bool = not gm.preview.is_empty()
+ var chips: float = float(gm.preview.get("chips",0.0)) if previewing else float(gm.last_chips)
+ var mult: float = float(gm.preview.get("mult",1.0)) if previewing else float(gm.last_mult)
+ $Layout/Math/Chips.text = number(chips)
+ $Layout/Math/Mult.text = number(mult)
+ $Layout/Equation.text = equation()
+ $Layout/Equation.add_theme_color_override("font_color",UIStyle.MINT if previewing and bool(gm.preview.get("valid",false)) else (UIStyle.PINK if previewing else UIStyle.CREAM))
  $Layout/Moves.text = "%02d   %s LEFT" % [gm.moves,"MOVE" if gm.moves==1 else "MOVES"]
  $Layout/Wallet.text = UIStyle.money(gm.gummies)
  $Layout/Route.hide()
@@ -54,7 +61,7 @@ func boss_rule() -> String:
    if board.model.sour_color >= 0: return "SOUR: "+gm.config.candies[board.model.sour_color].display_name+"\nscores 0 Candys."
    return "Sour Patch: one type scores 0."
   "spoon": return "Tiny Spoon: Mult halved."
-  "jelly": return "Jelly left: %s\nNo jelly cleared = half." % board.model.jelly.size()
+  "jelly": return "JELLY LEFT: %s\nClear it all to win." % board.model.jelly.size()
   "tax": return "Sugar Tax: $1 per move."
   "hurry": return "Rush Hour: 3 fewer moves."
  return ""
@@ -71,3 +78,16 @@ func _process(_delta: float) -> void:
  # Reapply the intended height once that layout pass has completed.
  var height: float = 360.0 if GameManager.state == "shop" else 664.0
  if not is_equal_approx(size.y,height): size.y = height
+func number(value: float) -> String:
+ return str(int(value)) if is_equal_approx(value,roundf(value)) else str(snappedf(value,0.1))
+# The line under Candys x Mult: the previewed hand and its guaranteed score ("+" = cascades can add),
+# or the last hand's name.
+func equation() -> String:
+ var gm: Node = GameManager
+ if not gm.preview.is_empty():
+  if not bool(gm.preview.get("valid",false)): return "NO MATCH  -1 MOVE"
+  var recipe: String = String(gm.preview.get("recipe",""))
+  var name: String = (RecipeCatalog.ITEMS[recipe].short.to_upper()+" LV%s  " % int(gm.preview.get("level",1))) if recipe != "" else ""
+  return name+"= %s+" % UIStyle.short_number(int(gm.preview.get("total",0)))
+ if gm.last_recipe != "": return "%s LV%s" % [RecipeCatalog.ITEMS[gm.last_recipe].short.to_upper(),gm.recipe_level(gm.last_recipe)]
+ return "CANDYS             MULT"

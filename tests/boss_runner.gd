@@ -80,13 +80,18 @@ func run_tests() -> void:
  check(ScoreEngine.calculate(e.chips,g,false,rules,0,false,false,64,0).total==roundi(30*0.5),"Tiny Spoon halves Mult")
  fresh()
  model.setup_boss("jelly")
- check(model.jelly.size()==32 and 0 in model.jelly and 1 not in model.jelly,"Jelly Mould covers a checkerboard half")
- g=line([0,1,2],0)
+ check(model.jelly==BossCatalog.jelly_cells(8,8) and not model.jelly.is_empty(),"Jelly Mould lays out its jelly pattern")
+ var jelly_start: int=-1
+ for i: int in model.jelly:
+  if model.xy(i).x <= 5:
+   jelly_start=i
+   break
+ g=line([jelly_start,jelly_start+1,jelly_start+2],0)
  e=model.expand(g)
- check(g.curse_mult==1.0 and 0 not in model.jelly and 2 not in model.jelly,"Clearing jelly keeps full score and removes it")
- g=line([0,1,2],0)
+ check(g.curse_mult==1.0 and jelly_start not in model.jelly,"A match on jelly clears it")
+ g=line([jelly_start,jelly_start+1,jelly_start+2],0)
  e=model.expand(g)
- check(g.curse_mult==0.5,"A match that clears no jelly scores half")
+ check(g.curse_mult==1.0,"Matches off the jelly keep full score (no more half-score rule)")
  # Live game: rules tied to GameManager.
  main=preload("res://scenes/MainGame.tscn").instantiate()
  add_child(main)
@@ -115,6 +120,31 @@ func run_tests() -> void:
   check(UIStyle.texture("ui_"+kind)!=null,"Route icon exists for "+kind)
   check(board.model.legal_moves().size()>0,"Boss board starts playable: "+kind)
   if kind in ["chocolatier","frost","jelly","sour"]: await capture("boss_"+kind)
+ # The Jelly Mould is only beaten once every jelly tile is gone, whatever the score.
+ force_boss("jelly")
+ GameManager.start_round()
+ await frames()
+ check(GameManager.jelly_left==board.model.jelly.size() and GameManager.jelly_left > 0,"The board reports how much jelly is left")
+ check(main.get_node("Play/UI_Hud/Layout/Curse").text.contains("JELLY LEFT: %s" % GameManager.jelly_left),"HUD counts the jelly left")
+ GameManager.score=GameManager.current_round().quota*3
+ GameManager.moves=5
+ GameManager.finish_move()
+ check(GameManager.state=="playing","Reaching the score with jelly left does not end the round")
+ board.model.jelly.clear()
+ board.sync_tiles(false)
+ GameManager.finish_move()
+ check(GameManager.state=="shop","Clearing the last jelly with the score met wins the round")
+ GameManager.round_index=2
+ force_boss("jelly")
+ GameManager.start_round()
+ await frames()
+ GameManager.score=GameManager.current_round().quota*3
+ GameManager.moves=0
+ GameManager.finish_move()
+ check(GameManager.state=="over","Running out of moves with jelly left loses, even over the score")
+ main.get_node("GameOverScreen").visible=false
+ GameManager.start_run(9100)
+ GameManager.round_index=2
  # Route preview shows the drawn bosses.
  GameManager.boss_cache.clear()
  var drawn: Array[String]=BossCatalog.for_run(GameManager.run_seed)

@@ -5,7 +5,7 @@
 script = ExtResource("1")
 id = "paintball"
 display_name = "Paintball Splatter"
-description = "Match 4+: repaint side neighbors to the match color"
+description = "Match 4+: repaint side neighbors to its color (up to 3 cascades deep)"
 category = "Four"
 price = 15
 rarity = "Legendary"

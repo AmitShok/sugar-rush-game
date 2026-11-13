@@ -46,11 +46,14 @@ func run_tests() -> void:
   check(board.model.matches().is_empty(),"Fixture starts without a match")
   var awards: Array[int]=[]
   var record: Callable=func(result: Dictionary,_color: int) -> void: awards.append(result.total)
+  var cascade_cap: int=GameManager.config.cascade_limit
+  GameManager.config.cascade_limit=1 # One hand from this match only.
   board.matches_resolved.connect(record)
   await get_tree().process_frame
   await click(board.position+Vector2(board.model.xy(26))*56+Vector2(28,28))
   await click(board.position+Vector2(board.model.xy(34))*56+Vector2(28,28))
   while board.busy: await get_tree().process_frame
+  GameManager.config.cascade_limit=cascade_cap
   board.matches_resolved.disconnect(record)
   check(blocked not in board.model.cells and locked not in board.model.cells,"Physical three-match breaks both neighboring blocker and Inspector candy; animation="+str(animated))
   check(not awards.is_empty() and awards[0]==150,"Three-match awards 30 + 30 + 70 candy value and two 10-point bonuses")
@@ -75,10 +78,13 @@ func run_tests() -> void:
     check(board.model.matches().is_empty(),"Direct-match fixture is stable: "+kind+str(length))
     var awards: Array[int]=[]
     var record: Callable=func(result: Dictionary,_color: int) -> void: awards.append(result.total)
+    var cascade_cap: int=GameManager.config.cascade_limit
+    GameManager.config.cascade_limit=1
     board.matches_resolved.connect(record)
     await click(board.position+Vector2(board.model.xy(26))*56+Vector2(28,28))
     await click(board.position+Vector2(board.model.xy(34))*56+Vector2(28,28))
     while board.busy: await get_tree().process_frame
+    GameManager.config.cascade_limit=cascade_cap
     board.matches_resolved.disconnect(record)
     check(trapped not in board.model.cells and GameManager.moves==9,"Physical match %s includes and destroys %s candy, motion=%s" % [length,kind,animated])
     check(not awards.is_empty() and awards[0]>length*10,"Direct locked match scores its breaking bonus")

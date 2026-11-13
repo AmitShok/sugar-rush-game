@@ -200,7 +200,7 @@ func integration() -> void:
  var wallet: int=GameManager.gummies
  GameManager.settle_round()
  check(GameManager.state=="shop" and GameManager.gummies==wallet+GameManager.round_reward()+mini(3,GameManager.moves/3),"Clear pays fixed cash and capped moves bonus, not overflow")
- check(GameManager.offers.size()==4,"Shop offers four unique unequipped Jokers")
+ check(GameManager.offers.size()==2,"Shop offers two unique unequipped Jokers")
  GameManager.gummies=30
  var offer: JokerData=GameManager.offers[0]
  wallet=GameManager.gummies

@@ -6,6 +6,7 @@ var data: CandyState
 var selected: bool = false
 var hinted: bool = false
 var hovered: bool = false
+var previewed: bool = false # Cleared by the swap being previewed (v0.34).
 var isotope: bool = false
 var locked: bool = false
 var roulette: bool = false
@@ -77,6 +78,7 @@ func _draw() -> void:
   if data.blocker > 0: mark("blocker")
   elif locked: mark("lock")
  if selected or hinted: mark("selected" if selected else "hint")
+ if previewed and not selected: draw_texture(UIStyle.texture("ui_hint"),Vector2.ZERO,Color(0.55,1.0,0.75,1.0))
  if roulette: mark("roulette")
  if glint_left > 0.0 and GameManager.motion:
   var phase: float = 1.0-absf(glint_left/GLINT_TIME*2.0-1.0)

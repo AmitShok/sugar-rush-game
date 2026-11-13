@@ -110,10 +110,11 @@ func run_tests() -> void:
  await settle_frames()
  var offer: JokerData=GameManager.offers[0]
  var before_wallet: int=GameManager.gummies
+ var cost: int=GameManager.offer_price(offer)
  var offers: HBoxContainer=main.get_node("Shop/Offers")
  var buy: Button=main.get_node("Shop").offer_buttons[offer.id] as Button
  await click(buy.get_global_rect().get_center())
- check(GameManager.jokers.has(offer.id) and GameManager.gummies==before_wallet-offer.price,"Physical shop Buy hitbox purchases the card under the pointer")
+ check(GameManager.jokers.has(offer.id) and GameManager.gummies==before_wallet-cost,"Physical shop Buy hitbox purchases the card under the pointer")
  await click(main.get_node("Shop/Actions/Continue").get_global_rect().get_center())
  await click(main.get_node("RoundMap").enter_button.get_global_rect().get_center())
  check(GameManager.state=="playing" and GameManager.round_index==1,"Physical Continue hitbox opens the next batch")

@@ -47,7 +47,8 @@ func run_tests() -> void:
  GameManager.score = GameManager.current_round().quota+260
  GameManager.settle_round()
  GameManager.gummies = 40 # Explicit UI fixture, not a round payout.
- GameManager.offers.assign([GameManager.config.jokers[0],GameManager.config.jokers[9],GameManager.config.jokers[12],GameManager.config.jokers[1]])
+ GameManager.offers.assign([GameManager.joker_by_id("midas"),GameManager.joker_by_id("kaleidoscope")])
+ GameManager.offer_editions.clear()
  GameManager.changed.emit()
  shop = main.get_node("Shop")
  await frames()
@@ -65,7 +66,7 @@ func run_tests() -> void:
  var fits: bool = true
  for button: Button in shop.offer_buttons.values():
   fits = fits and button.get_global_rect().end.y <= 710 and button.get_global_rect().end.x <= 1144
- check(fits,"All four prices and Buy buttons are visible without scrolling")
+ check(fits,"Joker and pack prices and buttons are visible without scrolling")
  await click(shop.card_buttons["midas"])
  check(shop.selected.id=="midas" and shop.get_node("Details/Description").text==GameManager.config.jokers[9].description,"Selecting a card shows its exact rule")
  check(shop.get_node("Details/Status").text.contains("$28"),"Purchase preview shows cash remaining")

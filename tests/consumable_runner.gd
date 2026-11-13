@@ -109,10 +109,13 @@ func run_tests() -> void:
  board.sync_tiles(false)
  var awards: Array[Dictionary]=[]
  var capture_award: Callable=func(result: Dictionary,_color: int) -> void: awards.append(result)
+ var cascade_cap: int=GameManager.config.cascade_limit
+ GameManager.config.cascade_limit=1 # Score the hammer hit alone.
  board.matches_resolved.connect(capture_award)
  board.request_consumable("candy_hammer")
  board.choose(18)
  while board.busy: await frames()
+ GameManager.config.cascade_limit=cascade_cap
  board.matches_resolved.disconnect(capture_award)
  check(not awards.is_empty() and awards[0].total==90 and awards[0].mult==1.0,"Hammer scores a gold candy plus its lock bonus without match multipliers")
  check(not GameManager.poison_cleared,"Hammer collateral is not a Roulette match")

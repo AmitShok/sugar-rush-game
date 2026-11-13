@@ -1,220 +1,55 @@
 extends Control
 signal consumables_requested
 signal continue_requested
+# v0.34: one Balatro-style shop row: two Jokers, then two booster packs, each with its own
+# Buy/Open button. Reroll replaces the Jokers; packs stay until opened. Recipe and candy levels
+# (earned from packs) moved off the shop floor into the Levels pop-up.
+const JOKER_SLOTS: int = 2
 var selected: JokerData
 var selected_owned: bool = false
 var offer_buttons: Dictionary = {}
 var card_buttons: Dictionary = {}
-# Shop page: "jokers", "candies" (candy upgrades) or "recipes" (recipe levels).
-var page: String = "jokers"
-var upgrades_open: bool:
- get: return page == "candies"
+var pack_buttons: Array[Button] = []
+var pack_cards: Array[Control] = []
+var levels_panel: PanelContainer
 var upgrade_rows: VBoxContainer
 var candy_rows: Array[HBoxContainer] = []
 var recipe_rows: Dictionary = {}
-var pack_row: HBoxContainer
-var pack_buttons: Array[Button] = []
-var pack_tab: Button
-var joker_tab: Button
-var upgrade_tab: Button
-var recipe_tab: Button
+var levels_button: Button
+var levels_close: Button
 var shaker_buy: Button
+var joker_heading: Label
+var pack_heading: Label
 var move_left: Button
 var move_right: Button
-func make_tab(text: String, x: float) -> Button:
- var button: Button=Button.new()
- button.text=text
- button.position=Vector2(x,44)
- button.size=Vector2(142,40)
- button.add_theme_font_size_override("font_size",24)
- add_child(button)
- return button
-func show_upgrades(open: bool) -> void:
- show_page("candies" if open else "jokers")
-func show_page(value: String) -> void:
- page=value
- refresh()
-func clear_rows() -> void:
- for child: Node in upgrade_rows.get_children():
-  upgrade_rows.remove_child(child)
-  child.queue_free()
- candy_rows.clear()
- recipe_rows.clear()
-func refresh_upgrades() -> void:
- var on_jokers: bool=page=="jokers"
- $Offers.visible=on_jokers
- upgrade_rows.visible=page in ["candies","recipes"]
- pack_row.visible=page=="packs"
- pack_tab.disabled=page=="packs"
- pack_tab.text="Packs (%s)" % GameManager.pack_offers.size() if not GameManager.pack_offers.is_empty() else "Packs"
- $Actions/Reroll.visible=on_jokers
- joker_tab.disabled=page=="jokers"
- upgrade_tab.disabled=page=="candies"
- recipe_tab.disabled=page=="recipes"
- if on_jokers:
-  $Details/Status.position.y=78
-  $Details/Description.add_theme_font_size_override("font_size",24)
-  return
- clear_rows()
- move_left.hide()
- move_right.hide()
- if page=="packs":
-  refresh_packs()
-  return
- if page=="recipes":
-  refresh_recipes()
-  return
- for color: int in range(GameManager.config.candies.size()):
-  var candy: CandyData=GameManager.config.candies[color]
-  var row: HBoxContainer=HBoxContainer.new()
-  row.custom_minimum_size=Vector2(596,40)
-  row.add_theme_constant_override("separation",6)
-  upgrade_rows.add_child(row)
-  var icon: TextureRect=TextureRect.new()
-  icon.texture=candy.texture
-  icon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
-  icon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-  icon.custom_minimum_size=Vector2(36,36)
-  row.add_child(icon)
-  var label: Label=UIStyle.label("%s  Lv %s" % [candy.display_name,GameManager.candy_level(color)],24)
-  label.custom_minimum_size.x=262
-  label.tooltip_text="Level %s | +%s Candys from upgrades" % [GameManager.candy_level(color),GameManager.candy_bonus(color)]
-  label.mouse_filter=Control.MOUSE_FILTER_STOP
-  row.add_child(label)
-  var value: Label=UIStyle.label("%s > %s" % [GameManager.candy_value(color),GameManager.candy_value(color)+GameManager.upgrade_gain(color)],24,UIStyle.MINT)
-  value.custom_minimum_size.x=136
-  row.add_child(value)
-  # Since v0.28 candy upgrades come only from Candy Packs; this page shows values.
-  var source: Label=UIStyle.label("From packs",20,UIStyle.MUTED)
-  source.custom_minimum_size.x=140
-  source.tooltip_text="Next level: +%s Candys each. Find Candy Packs on the Packs tab." % GameManager.upgrade_gain(color)
-  source.mouse_filter=Control.MOUSE_FILTER_STOP
-  row.add_child(source)
-  candy_rows.append(row)
- $Details.hide() # v0.29: rows explain themselves; no always-on explainer
- $Details/Name.text="Candy values | This run only"
- $Details/Description.add_theme_font_size_override("font_size",22)
- $Details/Description.text="Current > next Candys; gold and caramel get it too.\nUpgrade candies with Candy Packs (Packs tab)."
- $Details/Status.text="Each Candy Pack card adds half the type's base value."
- $Details/Status.position.y=80
- $Details/Action.hide()
-func refresh_recipes() -> void:
- for id: String in RecipeCatalog.ORDER:
-  var info: Dictionary=RecipeCatalog.ITEMS[id]
-  var lvl: int=GameManager.recipe_level(id)
-  var row: HBoxContainer=HBoxContainer.new()
-  row.custom_minimum_size=Vector2(596,40)
-  row.add_theme_constant_override("separation",6)
-  upgrade_rows.add_child(row)
-  var label: Label=UIStyle.label("%s  Lv %s" % [info.name,lvl],24)
-  label.custom_minimum_size.x=210
-  label.tooltip_text=info.shape
-  label.mouse_filter=Control.MOUSE_FILTER_STOP
-  row.add_child(label)
-  var value: Label=UIStyle.label("%sx%s > %sx%s" % [RecipeCatalog.candys(id,lvl),RecipeCatalog.mult(id,lvl),RecipeCatalog.candys(id,lvl+1),RecipeCatalog.mult(id,lvl+1)],24,UIStyle.MINT)
-  value.custom_minimum_size.x=226
-  row.add_child(value)
-  var source: Label=UIStyle.label("From packs",20,UIStyle.MUTED)
-  source.custom_minimum_size.x=140
-  source.tooltip_text="%s\nNext level: +%s Candys, +%s Mult. Find Recipe Packs on the Packs tab." % [info.shape,info.level_candys,info.level_mult]
-  source.mouse_filter=Control.MOUSE_FILTER_STOP
-  row.add_child(source)
-  recipe_rows[id]=row
- $Details.hide() # v0.29: rows explain themselves; no always-on explainer
- $Details/Name.text="Recipes | This run only"
- $Details/Description.add_theme_font_size_override("font_size",22)
- $Details/Description.text="Each match type adds its own Candys and Mult.\nRows show Candys x Mult: now > next level."
- $Details/Status.text="Level recipes with Recipe Packs, Cookbook Tags and rare cards."
- $Details/Status.position.y=80
- $Details/Action.hide()
-func refresh_packs() -> void:
- for child: Node in pack_row.get_children():
-  pack_row.remove_child(child)
-  child.queue_free()
- pack_buttons.clear()
- for slot: int in range(2):
-  var column: VBoxContainer=VBoxContainer.new()
-  column.custom_minimum_size=Vector2(180,250)
-  column.add_theme_constant_override("separation",6)
-  pack_row.add_child(column)
-  if slot >= GameManager.pack_offers.size():
-   var gone: Label=UIStyle.label("OPENED",32,UIStyle.MUTED)
-   gone.custom_minimum_size=Vector2(180,250)
-   gone.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
-   gone.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
-   column.add_child(gone)
-   continue
-  var pack: Dictionary=GameManager.pack_offers[slot]
-  var title: Label=UIStyle.label(PackCatalog.kind_name(pack),20,UIStyle.MINT)
-  title.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
-  column.add_child(title)
-  var art: TextureRect=TextureRect.new()
-  art.texture=UIStyle.texture(PackCatalog.ITEMS[pack.kind].art)
-  art.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
-  art.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-  art.custom_minimum_size=Vector2(180,150)
-  CardTilt.attach(art)
-  art.tooltip_text=PackCatalog.ITEMS[pack.kind].blurb
-  art.mouse_filter=Control.MOUSE_FILTER_STOP
-  if pack.jumbo:
-   var jumbo: TextureRect=TextureRect.new()
-   jumbo.texture=UIStyle.texture("pack_jumbo")
-   jumbo.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
-   jumbo.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-   jumbo.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-   jumbo.mouse_filter=Control.MOUSE_FILTER_IGNORE
-   art.add_child(jumbo)
-  column.add_child(art)
-  var price: int=PackCatalog.price(pack)
-  var open: Button=Button.new()
-  open.text="Open FREE" if price==0 else "Open %s" % UIStyle.money(price)
-  open.custom_minimum_size=Vector2(180,42)
-  open.add_theme_font_size_override("font_size",24)
-  open.disabled=not GameManager.can_open_pack(slot)
-  UIStyle.role(open,"buy")
-  open.tooltip_text="%s\nShows %s cards, keep %s." % [PackCatalog.ITEMS[pack.kind].blurb,PackCatalog.size(pack),PackCatalog.picks(pack)]+("" if not open.disabled else "\nNeed %s more cash." % UIStyle.money(price-GameManager.gummies))
-  open.pressed.connect(func() -> void: GameManager.open_pack(slot))
-  column.add_child(open)
-  pack_buttons.append(open)
- $Details.hide() # v0.29: rows explain themselves; no always-on explainer
- $Details/Name.text="Booster packs"
- $Details/Description.add_theme_font_size_override("font_size",22)
- $Details/Description.text="Open a pack and keep the cards you want.\nNew packs each shop; rerolls keep them."
- $Details/Status.text="Joker, Recipe, Candy, Treat and rare Sugar Rush packs."
- $Details/Status.position.y=80
- $Details/Action.hide()
+var levels_open: bool:
+ get: return levels_panel != null and levels_panel.visible
 
 func _ready() -> void:
  shaker_buy=Button.new()
  shaker_buy.name="BuyShaker"
  shaker_buy.position=Vector2(188,0)
- shaker_buy.size=Vector2(590,38)
+ shaker_buy.size=Vector2(290,38)
  shaker_buy.add_theme_font_size_override("font_size",24)
  shaker_buy.icon=UIStyle.texture("sugar_shaker")
  shaker_buy.expand_icon=true
  shaker_buy.add_theme_constant_override("icon_max_width",24)
  shaker_buy.pressed.connect(func() -> void: consumables_requested.emit())
  add_child(shaker_buy)
- joker_tab=make_tab("Jokers",188)
- pack_tab=make_tab("Packs",339)
- recipe_tab=make_tab("Recipes",641)
- upgrade_tab=make_tab("Candies",490)
- joker_tab.pressed.connect(show_upgrades.bind(false))
- upgrade_tab.pressed.connect(show_upgrades.bind(true))
- recipe_tab.pressed.connect(show_page.bind("recipes"))
- pack_tab.pressed.connect(show_page.bind("packs"))
- pack_row=HBoxContainer.new()
- pack_row.position=Vector2(188,92)
- pack_row.add_theme_constant_override("separation",24)
- add_child(pack_row)
- pack_row.hide()
- upgrade_rows=VBoxContainer.new()
- upgrade_rows.position=Vector2(188,92)
- upgrade_rows.add_theme_constant_override("separation",3)
- add_child(upgrade_rows)
- upgrade_rows.hide()
- GameManager.shop_opened.connect(func() -> void: page="jokers")
+ levels_button=Button.new()
+ levels_button.name="LevelsButton"
+ levels_button.text="Levels"
+ levels_button.position=Vector2(488,0)
+ levels_button.size=Vector2(290,38)
+ levels_button.add_theme_font_size_override("font_size",24)
+ levels_button.tooltip_text="Recipe and candy levels for this run"
+ levels_button.pressed.connect(open_levels)
+ add_child(levels_button)
+ joker_heading=section_heading("JOKERS",188)
+ pack_heading=section_heading("BOOSTER PACKS",492)
+ build_levels_panel()
  GameManager.changed.connect(refresh)
+ GameManager.shop_opened.connect(close_levels)
  $Actions/Reroll.pressed.connect(reroll)
  $Actions/Continue.pressed.connect(func() -> void: continue_requested.emit())
  $Details/Action.pressed.connect(detail_action)
@@ -240,18 +75,126 @@ func _ready() -> void:
  UIStyle.role($Actions/Reroll,"buy")
  UIStyle.role($Details/Action,"buy")
  UIStyle.role(shaker_buy,"info")
- for tab: Button in [joker_tab,pack_tab,upgrade_tab,recipe_tab,move_left,move_right]: UIStyle.role(tab,"neutral")
+ UIStyle.role(levels_button,"info")
+ for button: Button in [move_left,move_right]: UIStyle.role(button,"neutral")
  UIStyle.role($Actions/Continue,"go")
+ $Offers.add_theme_constant_override("separation",12)
  $Wallet.hide()
  $Tip.hide()
  $Details.add_theme_stylebox_override("panel",UIStyle.box(Color("172c32"),Color("6c8585"),2))
+
+func section_heading(text: String, x: float) -> Label:
+ var heading: Label=UIStyle.label(text,24,UIStyle.MUTED)
+ heading.position=Vector2(x,50)
+ heading.size=Vector2(292,32)
+ heading.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+ heading.mouse_filter=Control.MOUSE_FILTER_IGNORE
+ add_child(heading)
+ return heading
+
+# --- Levels pop-up (recipes and candy values; both level up from packs) ---
+func build_levels_panel() -> void:
+ levels_panel=PanelContainer.new()
+ levels_panel.name="Levels"
+ levels_panel.visible=false
+ levels_panel.z_index=10
+ # The shop sits at (352,194) on the canvas; centre the pop-up on the 1152 x 720 screen.
+ levels_panel.position=Vector2(-112,-170)
+ levels_panel.size=Vector2(680,0)
+ levels_panel.add_theme_stylebox_override("panel",UIStyle.box(Color("172c32"),Color("6c8585"),2))
+ add_child(levels_panel)
+ var column: VBoxContainer=VBoxContainer.new()
+ column.add_theme_constant_override("separation",4)
+ levels_panel.add_child(column)
+ upgrade_rows=VBoxContainer.new()
+ upgrade_rows.add_theme_constant_override("separation",2)
+ column.add_child(upgrade_rows)
+ levels_close=Button.new()
+ levels_close.text="Back to shop"
+ levels_close.custom_minimum_size=Vector2(0,42)
+ levels_close.add_theme_font_size_override("font_size",24)
+ levels_close.pressed.connect(close_levels)
+ UIStyle.role(levels_close,"neutral")
+ column.add_child(levels_close)
+
+func open_levels() -> void:
+ refresh_levels()
+ levels_panel.reset_size()
+ levels_panel.show()
+ levels_close.grab_focus()
+
+func close_levels() -> void:
+ if levels_panel: levels_panel.hide()
+
+func clear_rows() -> void:
+ for child: Node in upgrade_rows.get_children():
+  upgrade_rows.remove_child(child)
+  child.queue_free()
+ candy_rows.clear()
+ recipe_rows.clear()
+
+func refresh_levels() -> void:
+ clear_rows()
+ var heading: Label=UIStyle.label("RECIPES  (Candys x Mult: now > next)",24,UIStyle.MINT)
+ upgrade_rows.add_child(heading)
+ for id: String in RecipeCatalog.ORDER:
+  var info: Dictionary=RecipeCatalog.ITEMS[id]
+  var lvl: int=GameManager.recipe_level(id)
+  var row: HBoxContainer=HBoxContainer.new()
+  row.custom_minimum_size=Vector2(640,34)
+  row.add_theme_constant_override("separation",6)
+  upgrade_rows.add_child(row)
+  var label: Label=UIStyle.label("%s  Lv %s" % [info.name,lvl],24)
+  label.custom_minimum_size.x=230
+  label.tooltip_text=info.shape
+  label.mouse_filter=Control.MOUSE_FILTER_STOP
+  row.add_child(label)
+  var value: Label=UIStyle.label("%sx%s > %sx%s" % [RecipeCatalog.candys(id,lvl),RecipeCatalog.mult(id,lvl),RecipeCatalog.candys(id,lvl+1),RecipeCatalog.mult(id,lvl+1)],24,UIStyle.MINT)
+  value.custom_minimum_size.x=240
+  row.add_child(value)
+  var source: Label=UIStyle.label("From packs",20,UIStyle.MUTED)
+  source.custom_minimum_size.x=140
+  source.tooltip_text="%s\nNext level: +%s Candys, +%s Mult. Find Recipe Packs in the shop." % [info.shape,info.level_candys,info.level_mult]
+  source.mouse_filter=Control.MOUSE_FILTER_STOP
+  row.add_child(source)
+  recipe_rows[id]=row
+ var candy_heading: Label=UIStyle.label("CANDY VALUES  (Candys each: now > next)",24,UIStyle.MINT)
+ upgrade_rows.add_child(candy_heading)
+ for color: int in range(GameManager.config.candies.size()):
+  var candy: CandyData=GameManager.config.candies[color]
+  var row: HBoxContainer=HBoxContainer.new()
+  row.custom_minimum_size=Vector2(640,34)
+  row.add_theme_constant_override("separation",6)
+  upgrade_rows.add_child(row)
+  var icon: TextureRect=TextureRect.new()
+  icon.texture=candy.texture
+  icon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
+  icon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+  icon.custom_minimum_size=Vector2(32,32)
+  row.add_child(icon)
+  var label: Label=UIStyle.label("%s  Lv %s" % [candy.display_name,GameManager.candy_level(color)],24)
+  label.custom_minimum_size.x=262
+  label.tooltip_text="Level %s | +%s Candys from upgrades" % [GameManager.candy_level(color),GameManager.candy_bonus(color)]
+  label.mouse_filter=Control.MOUSE_FILTER_STOP
+  row.add_child(label)
+  var value: Label=UIStyle.label("%s > %s" % [GameManager.candy_value(color),GameManager.candy_value(color)+GameManager.upgrade_gain(color)],24,UIStyle.MINT)
+  value.custom_minimum_size.x=136
+  row.add_child(value)
+  var source: Label=UIStyle.label("From packs",20,UIStyle.MUTED)
+  source.custom_minimum_size.x=140
+  source.tooltip_text="Next level: +%s Candys each. Find Candy Packs in the shop." % GameManager.upgrade_gain(color)
+  source.mouse_filter=Control.MOUSE_FILTER_STOP
+  row.add_child(source)
+  candy_rows.append(row)
+
+# --- Joker details ---
 func reason(item: JokerData) -> String:
  if GameManager.jokers.has(item.id): return "Already owned"
  if GameManager.jokers.equipped.size() >= GameManager.jokers.capacity: return "No Joker slots left. Select an owned card above to sell it."
  if GameManager.gummies < GameManager.offer_price(item): return "Need %s more" % UIStyle.money(GameManager.offer_price(item)-GameManager.gummies)
  return ("FREE  |  " if GameManager.offer_price(item)==0 else "")+"After: %s" % UIStyle.money(GameManager.gummies-GameManager.offer_price(item))
 func inspect(item: JokerData, owned: bool = false) -> void:
- if page != "jokers": show_page("jokers")
+ close_levels()
  selected = item
  selected_owned = owned
  update_details()
@@ -308,13 +251,15 @@ func reroll() -> void:
  if GameManager.gummies < cost: return
  selected = null
  GameManager.reroll()
- $Receipt.text = "New stock: -%s" % UIStyle.money(cost)
+ $Receipt.text = "New Jokers: -%s" % UIStyle.money(cost)
+
+# --- The shop row ---
 func refresh() -> void:
  if GameManager.state != "shop": return
  # After a skip the shop is closed until the next cleared round.
  var closed: bool = GameManager.shop_closed
- if closed: page = "jokers"
- for control: Control in [shaker_buy,joker_tab,pack_tab,upgrade_tab,recipe_tab]: control.visible = not closed
+ for control: Control in [shaker_buy,levels_button,joker_heading,pack_heading]: control.visible = not closed
+ if closed: close_levels()
  shaker_buy.text="Items  %s / 2" % GameManager.consumables.size()
  shaker_buy.disabled=false
  shaker_buy.tooltip_text="Two random cards per shop refresh. Each offer can be bought once; hold up to two."
@@ -324,61 +269,113 @@ func refresh() -> void:
  if GameManager.last_summary.begins_with("Skipped"): $Receipt.text = GameManager.last_summary
  else: $Receipt.text = "Round reward +%s" % UIStyle.money(GameManager.last_award)+("  (interest %s)" % UIStyle.money(GameManager.last_interest) if GameManager.last_interest>0 else "")
  $Receipt.tooltip_text = GameManager.last_summary
+ $Actions/Reroll.visible = not closed
  $Actions/Reroll.text = "Reroll\n"+("Free x%s" % GameManager.free_rerolls if GameManager.free_rerolls > 0 else UIStyle.money(GameManager.reroll_cost))
  $Actions/Reroll.disabled = GameManager.gummies < GameManager.current_reroll_cost()
- $Actions/Reroll.tooltip_text = "Replace unsold shop cards. Costs %s." % UIStyle.money(GameManager.current_reroll_cost())
+ $Actions/Reroll.tooltip_text = "New Jokers (packs stay). Costs %s." % UIStyle.money(GameManager.current_reroll_cost())
  for child: Node in $Offers.get_children():
   $Offers.remove_child(child)
   child.queue_free()
  offer_buttons.clear()
  card_buttons.clear()
- for slot: int in range(4):
-  var column: VBoxContainer = VBoxContainer.new()
-  column.custom_minimum_size = Vector2(140,244)
-  column.add_theme_constant_override("separation",12)
-  $Offers.add_child(column)
-  if slot >= GameManager.offers.size():
-   var sold: Label = UIStyle.label("CLOSED" if GameManager.shop_closed else "SOLD",32,UIStyle.MUTED)
-   sold.custom_minimum_size = Vector2(140,266)
-   sold.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-   sold.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-   column.add_child(sold)
-   continue
-  var item: JokerData = GameManager.offers[slot]
-  var card: TextureButton = TextureButton.new()
-  card.texture_normal = item.icon
-  CardTilt.attach(card)
-  UIStyle.add_edition_overlay(card,String(GameManager.offer_editions.get(item.id,"")))
-  card.texture_hover = item.icon
-  card.custom_minimum_size = Vector2(140,188)
-  card.ignore_texture_size = true
-  card.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
-  card.tooltip_text = item.display_name
-  card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-  card.pressed.connect(inspect.bind(item,false))
-  card.focus_entered.connect(inspect.bind(item,false))
-  column.add_child(card)
-  card_buttons[item.id] = card
-  var buy: Button = Button.new()
-  buy.text = "FREE" if GameManager.offer_price(item)==0 else "Buy %s" % UIStyle.money(GameManager.offer_price(item))
-  buy.custom_minimum_size = Vector2(140,42)
-  buy.add_theme_font_size_override("font_size",24)
-  buy.disabled = not can_buy(item)
-  UIStyle.role(buy,"buy")
-  buy.tooltip_text = reason(item)
-  buy.pressed.connect(purchase.bind(item))
-  column.add_child(buy)
-  offer_buttons[item.id] = buy
+ pack_buttons.clear()
+ pack_cards.clear()
+ for slot: int in range(JOKER_SLOTS): add_joker_column(slot)
+ for slot: int in range(2): add_pack_column(slot)
  if selected != null and selected not in GameManager.offers and selected not in GameManager.jokers.equipped: selected = null
  update_details()
- refresh_upgrades()
+ if levels_open: refresh_levels()
  if GameManager.shop_closed:
-  $Actions/Reroll.visible = false
   $Details.show()
   $Details/Name.text = "Shop skipped"
   describe("Skipped for a Tag: no shop this time.")
   $Details/Status.text = ""
   $Details/Action.hide()
+
+func empty_column(column: VBoxContainer, text: String) -> void:
+ var label: Label = UIStyle.label(text,32,UIStyle.MUTED)
+ label.custom_minimum_size = Vector2(140,242)
+ label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+ label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+ column.add_child(label)
+
+func new_column() -> VBoxContainer:
+ var column: VBoxContainer = VBoxContainer.new()
+ column.custom_minimum_size = Vector2(140,244)
+ column.add_theme_constant_override("separation",12)
+ $Offers.add_child(column)
+ return column
+
+func add_joker_column(slot: int) -> void:
+ var column: VBoxContainer = new_column()
+ if slot >= GameManager.offers.size():
+  empty_column(column,"CLOSED" if GameManager.shop_closed else "SOLD")
+  return
+ var item: JokerData = GameManager.offers[slot]
+ var card: TextureButton = TextureButton.new()
+ card.texture_normal = item.icon
+ CardTilt.attach(card)
+ UIStyle.add_edition_overlay(card,String(GameManager.offer_editions.get(item.id,"")))
+ card.texture_hover = item.icon
+ card.custom_minimum_size = Vector2(140,188)
+ card.ignore_texture_size = true
+ card.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+ card.tooltip_text = item.display_name
+ card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+ card.pressed.connect(inspect.bind(item,false))
+ card.focus_entered.connect(inspect.bind(item,false))
+ column.add_child(card)
+ card_buttons[item.id] = card
+ var buy: Button = Button.new()
+ buy.text = "FREE" if GameManager.offer_price(item)==0 else "Buy %s" % UIStyle.money(GameManager.offer_price(item))
+ buy.custom_minimum_size = Vector2(140,42)
+ buy.add_theme_font_size_override("font_size",24)
+ buy.disabled = not can_buy(item)
+ UIStyle.role(buy,"buy")
+ buy.tooltip_text = reason(item)
+ buy.pressed.connect(purchase.bind(item))
+ column.add_child(buy)
+ offer_buttons[item.id] = buy
+
+func add_pack_column(slot: int) -> void:
+ var column: VBoxContainer = new_column()
+ if GameManager.shop_closed:
+  empty_column(column,"CLOSED")
+  return
+ if slot >= GameManager.pack_offers.size():
+  empty_column(column,"OPENED")
+  return
+ var pack: Dictionary = GameManager.pack_offers[slot]
+ var art: TextureRect = TextureRect.new()
+ art.texture = UIStyle.texture(PackCatalog.ITEMS[pack.kind].art)
+ art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+ art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+ art.custom_minimum_size = Vector2(140,188)
+ art.tooltip_text = "%s\n%s\nShows %s cards, keep %s." % [PackCatalog.kind_name(pack),PackCatalog.ITEMS[pack.kind].blurb,PackCatalog.size(pack),PackCatalog.picks(pack)]
+ art.mouse_filter = Control.MOUSE_FILTER_STOP
+ CardTilt.attach(art)
+ if pack.jumbo:
+  var jumbo: TextureRect = TextureRect.new()
+  jumbo.texture = UIStyle.texture("pack_jumbo")
+  jumbo.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+  jumbo.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+  jumbo.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+  jumbo.mouse_filter = Control.MOUSE_FILTER_IGNORE
+  art.add_child(jumbo)
+ column.add_child(art)
+ pack_cards.append(art)
+ var price: int = PackCatalog.price(pack)
+ var open: Button = Button.new()
+ open.text = "Open FREE" if price==0 else "Open %s" % UIStyle.money(price)
+ open.custom_minimum_size = Vector2(140,42)
+ open.add_theme_font_size_override("font_size",24)
+ open.disabled = not GameManager.can_open_pack(slot)
+ UIStyle.role(open,"buy")
+ open.tooltip_text = PackCatalog.kind_name(pack)+("" if not open.disabled else "\nNeed %s more cash." % UIStyle.money(price-GameManager.gummies))
+ open.pressed.connect(func() -> void: GameManager.open_pack(slot))
+ column.add_child(open)
+ pack_buttons.append(open)
+
 func move_selected(delta: int) -> void:
  if selected != null and selected_owned and GameManager.move_joker(selected,delta):
   $Receipt.text = "Moved %s %s" % [selected.display_name,"left" if delta < 0 else "right"]

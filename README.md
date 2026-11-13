@@ -265,3 +265,15 @@ Every Joker has a rarity. Each shop or Joker-pack roll first picks a tier, then 
 Legendaries now cost $14-15 and Rares $9-13.
 
 The title screen no longer sits in a panel. The SUGAR RUSH logo waves and shimmers (tap a letter to make it jump and play a note), candies drift down behind everything (tap to pop them; quick pops build a streak), six Joker cards fan out on both sides (hover to tilt, tap to flip to a new Joker rolled with the shop's rarity odds and see its rarity), and the buttons cascade in and swell on hover. The scene leans gently away from the pointer. Reduced motion turns the animation off.
+
+### One move = one hand, move preview, one-row shop and Jelly Mould (v0.34)
+
+**Scoring.** Each move now scores once, like a Balatro hand. Your own match (the first wave) is the hand: its best group sets the recipe, and every extra group in that first wave adds +1 Mult. Cascades feed the same hand: their candies add Candys, fired specials add Mult and each wave adds +0.5 Mult (up to +2). Jokers, editions and boss rules then apply **once** to the final Candys x Mult. The HUD counts the hand up live while the board cascades; the score lands when the board settles.
+
+**Preview.** Before you commit, the HUD shows exactly what your own match will score ("TRIO LV1 = 145+") and outlines the candies it clears. The "+" means cascades can only add to that number, never take away. Mouse: select a candy, hover a neighbour, click to confirm. Touch: drag toward a neighbour to preview, release to swap, slide back to cancel. Keyboard: select, then arrow next to it. An invalid swap previews "NO MATCH -1 MOVE".
+
+**Paintball Splatter** keeps its chain reactions but now splatters on your match and at most 3 cascade waves after it.
+
+**Shop.** One row, Balatro-style: two Jokers and two booster packs, each with its own Buy/Open button. Reroll replaces the Jokers; packs stay until opened. Recipe and candy levels moved to the **Levels** pop-up.
+
+**The Jelly Mould** no longer halves scores. Instead, 24 jelly tiles cover the board (every other tile, skipping the top and bottom rows) and you must clear **all** of them and reach the score to win; reaching the score early does not end the round while jelly remains.

@@ -182,3 +182,11 @@ static func rarity_pill(tier: String) -> PanelContainer:
  text.add_theme_constant_override("shadow_offset_y",2)
  pill.add_child(text)
  return pill
+# 1234567 -> "1,234,567" for scores.
+static func short_number(value: int) -> String:
+ var digits: String = str(absi(value))
+ var out: String = ""
+ while digits.length() > 3:
+  out = ","+digits.substr(digits.length()-3)+out
+  digits = digits.substr(0,digits.length()-3)
+ return ("-" if value < 0 else "")+digits+out

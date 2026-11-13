@@ -18,6 +18,7 @@ var chocolate_broken: int = 0 # chocolate tiles broken since the last move began
 var candy_bonuses: Array[int] = []
 # Mult each special adds to the match that fires it (index = CandyState special kind).
 const SPECIAL_MULT: Array[int] = [0,4,4,6,10]
+const PAINTBALL_WAVES: int = 3
 func candy_bonus(color: int) -> int:
  return candy_bonuses[color] if color >= 0 and color < candy_bonuses.size() else 0
 func setup(run_config: RunConfig, joker_rules: JokerManager, seed_value: int) -> void:
@@ -206,6 +207,9 @@ func expand(group: Dictionary) -> Dictionary:
  var synthetic: bool = group.get("synthetic",false)
  if group.length >= 4 and not synthetic: effects.append_array(rules.modifiers("Four"))
  if group.length >= 5 and not synthetic: effects.append_array(rules.modifiers("Five"))
+ # Paintball splatters on your match and the next PAINTBALL_WAVES cascade waves, so its chains
+ # stay fun but cannot feed themselves forever (v0.34).
+ if int(group.get("cascade",0)) > PAINTBALL_WAVES: effects.erase("paintball")
  # Repainting happens first so attraction and gilding can use the new color.
  var order: Array[String] = ["golden_trio","pop_rock","sweet_tooth","three_scoops","paintball","gravity","sledgehammer","ricochet","necro","midas","nuclear","prism","line","color"]
  for active: String in order:
@@ -333,9 +337,8 @@ func expand(group: Dictionary) -> Dictionary:
   chips += value
   if i in isotopes: isotope = true
  for i: int in survivors: ids.erase(i)
- # Boss Mult rules: Jelly Mould halves matches that clear no jelly; Tiny Spoon halves everything.
+ # Boss Mult rules: Tiny Spoon halves everything. (Jelly Mould instead requires clearing all jelly.)
  var curse_mult: float = 1.0
- if boss == "jelly" and jelly_cleared == 0: curse_mult *= 0.5
  if boss == "spoon": curse_mult *= 0.5
  group["curse_mult"] = curse_mult
  # Isotopes affect later matches, not their own creation.
@@ -489,7 +492,75 @@ func setup_boss(kind: String) -> void:
   "frost":
    for i: int in BossCatalog.FROST_START:
     if i < cells.size(): cells[i].frosting = BossCatalog.FROST_LAYERS
-  "jelly":
-   for i: int in range(cells.size()):
-    if (xy(i).x+xy(i).y)%2 == 0: jelly.append(i)
+  "jelly": jelly.assign(BossCatalog.jelly_cells(width,height))
   "sour": sour_color = rng.randi_range(0,config.candies.size()-1)
+
+# --- Moves as hands (v0.34) ---
+# Groups made by swapping a and b. Call AFTER swap(a,b); specials and wilds are symmetric.
+func swap_groups(a: int, b: int) -> Array[Dictionary]:
+ if is_special_swap(a,b): return special_swap_groups(a,b)
+ if (cells[a] != null and cells[a].coating == 3) or (cells[b] != null and cells[b].coating == 3): return wild_groups(a,b)
+ var groups: Array[Dictionary] = matches()
+ # New specials appear where the player moved a candy.
+ for group: Dictionary in groups:
+  if b in group.cells: group["pivot"] = b
+  elif a in group.cells: group["pivot"] = a
+ return groups
+
+# Everything expand() may change, so a move can be tried and undone exactly.
+func snapshot() -> Dictionary:
+ var copies: Array[CandyState] = []
+ for cell: CandyState in cells:
+  if cell == null:
+   copies.append(null)
+   continue
+  var copy: CandyState = CandyState.new(cell.color)
+  copy.coating = cell.coating
+  copy.blocker = cell.blocker
+  copy.age = cell.age
+  copy.special = cell.special
+  copy.chocolate = cell.chocolate
+  copy.frosting = cell.frosting
+  copies.append(copy)
+ return {"cells":copies,"rng":rng.state,"isotopes":isotopes.duplicate(),"graves":graves.duplicate(),"jelly":jelly.duplicate(),"chocolate_broken":chocolate_broken,"recycled":recycled.size()}
+
+func restore(snap: Dictionary) -> void:
+ cells.assign(snap.cells)
+ rng.state = int(snap.rng)
+ isotopes.assign(snap.isotopes)
+ graves.assign(snap.graves)
+ jelly.assign(snap.jelly)
+ chocolate_broken = int(snap.chocolate_broken)
+ recycled.resize(int(snap.recycled))
+
+# Scores one cascade wave into a hand. Each candy is counted once per wave even when effects overlap.
+# Returns {"removed","effects","chips"} so the board can animate exactly what it scored.
+func score_wave(groups: Array[Dictionary], wave: int, hand: MoveHand, levels: Dictionary, poison: int) -> Dictionary:
+ var removed: Array[int] = []
+ var effects: Array[Dictionary] = []
+ var chips_list: Array[int] = []
+ for group: Dictionary in groups:
+  group["cascade"] = wave # Paintball only fires on wave 0 (your own match).
+  var effect: Dictionary = expand(group)
+  var chips: int = int(effect.chips)
+  for i: int in effect.cells:
+   if i in removed and cells[i] != null: chips -= int(effect.contributions[i])
+   elif i not in removed: removed.append(i)
+  hand.add(group,chips,effect,wave,levels,poison)
+  effects.append(effect)
+  chips_list.append(maxi(0,chips))
+ return {"removed":removed,"effects":effects,"chips":chips_list}
+
+# Exact preview of swapping a and b: the guaranteed part of the hand (your own match, before any
+# cascade). The board is left exactly as it was. "cells" lists every candy the match would clear.
+func preview_swap(a: int, b: int, levels: Dictionary, poison: int) -> Dictionary:
+ if not adjacent(a,b) or not playable(a) or not playable(b): return {"valid":false,"hand":null,"cells":[]}
+ var snap: Dictionary = snapshot()
+ swap(a,b)
+ var groups: Array[Dictionary] = swap_groups(a,b)
+ var hand: MoveHand = MoveHand.new()
+ var cleared: Array[int] = []
+ if not groups.is_empty():
+  cleared = score_wave(groups,0,hand,levels,poison).removed
+ restore(snap)
+ return {"valid":not groups.is_empty(),"hand":hand,"cells":cleared}

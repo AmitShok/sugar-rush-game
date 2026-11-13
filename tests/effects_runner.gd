@@ -49,9 +49,12 @@ func run_checks() -> void:
  var awards: Array[int]=[]
  var capture_award: Callable=func(result: Dictionary,_color: int) -> void: awards.append(result.total)
  board.matches_resolved.connect(capture_award)
+ var cascade_cap: int=GameManager.config.cascade_limit
+ GameManager.config.cascade_limit=1 # Score only this wave: one hand.
  await board.resolve(overlap)
+ GameManager.config.cascade_limit=cascade_cap
  board.matches_resolved.disconnect(capture_award)
- check(awards.size()>=2 and awards[0]==1380 and awards[1]==300,"Overlapping blasts score each candy and its break bonus once (Quad 10 x2, Striped +4 Mult)")
+ check(awards.size()==1 and awards[0]==2590,"Overlapping blasts score each candy once in ONE hand: (220+140+10) Candys x (Quad 2 + Striped 4 + extra group 1) Mult")
  # Animated input paths and actual signal wiring, not only pure resolver calls.
  GameManager.start_run(42)
  GameManager.motion=true

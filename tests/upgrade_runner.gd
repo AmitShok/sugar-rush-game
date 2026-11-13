@@ -42,8 +42,8 @@ func run_tests() -> void:
  shop=main.get_node("Shop")
  GameManager.gummies=40
  GameManager.changed.emit()
- await click(shop.upgrade_tab)
- check(shop.upgrades_open and shop.candy_rows.size()==6 and not shop.get_node("Offers").visible,"Candies tab lists six types separately from Jokers")
+ await click(shop.levels_button)
+ check(shop.levels_open and shop.candy_rows.size()==6,"Levels pop-up lists six candy types")
  var has_buy: bool=false
  for row: HBoxContainer in shop.candy_rows:
   for child: Node in row.get_children(): has_buy=has_buy or child is Button
@@ -58,7 +58,6 @@ func run_tests() -> void:
  GameManager.changed.emit()
  await frames()
  check(shop.candy_rows[0].get_child(1).text.contains("Lv 2") and shop.candy_rows[0].get_child(2).text=="20 > 25","Candies tab shows level and current > next value")
- check(shop.get_node("Details/Description").get_minimum_size().y<=shop.get_node("Details/Status").position.y-shop.get_node("Details/Description").position.y,"Candy explanation fits the detail panel")
  await capture("candy_values")
  # Candy Packs are the source of upgrades.
  GameManager.opened_pack={}
@@ -110,9 +109,9 @@ func run_tests() -> void:
  for dimensions: Vector2i in [Vector2i(800,500),Vector2i(720,960),Vector2i(1600,700)]:
   get_window().size=dimensions
   await frames()
-  await click(shop.joker_tab)
-  await click(shop.upgrade_tab)
-  check(shop.upgrades_open and shop.upgrade_rows.get_global_rect().end.x<=1152 and shop.get_node("Details").get_global_rect().end.y<=720,"Candies tab opens and fits at "+str(dimensions))
+  shop.close_levels()
+  await click(shop.levels_button)
+  check(shop.levels_open and shop.levels_panel.get_global_rect().end.x<=1152 and shop.levels_panel.get_global_rect().end.y<=720,"Levels pop-up opens and fits at "+str(dimensions))
  GameManager.start_run(413)
  check(GameManager.candy_value(0)==10 and GameManager.candy_level(1)==0,"New run resets values and levels")
  print("RESULT: %s upgrade checks, %s failures" % [checks,failures])

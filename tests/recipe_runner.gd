@@ -27,8 +27,8 @@ func run_tests() -> void:
  GameManager.gummies=30
  GameManager.changed.emit()
  await frames()
- await click(shop.recipe_tab)
- check(shop.page=="recipes" and shop.recipe_rows.size()==5 and not shop.get_node("Offers").visible,"Recipes tab lists five recipes separately from Jokers")
+ await click(shop.levels_button)
+ check(shop.levels_open and shop.recipe_rows.size()==5,"Levels pop-up lists five recipes")
  # Since v0.23 recipe levels come from Recipe Packs; the tab only shows levels.
  GameManager.level_recipe("trio")
  GameManager.level_recipe("trio")
@@ -37,15 +37,13 @@ func run_tests() -> void:
  check(GameManager.recipe_level("trio")==3 and GameManager.gummies==30 and GameManager.recipe_level("quad")==1,"Levels stack per recipe only and cost nothing by themselves")
  check(shop.recipe_rows["trio"].get_child(0).text.contains("Lv 3") and shop.recipe_rows["trio"].get_child(1).text=="20x3 > 30x4","Recipe row shows level and next-level values")
  check(shop.recipe_rows["trio"].get_child(2).text=="From packs","Recipe rows point to packs instead of a buy button")
- check(shop.get_node("Details/Description").get_minimum_size().y<=shop.get_node("Details/Status").position.y-shop.get_node("Details/Description").position.y,"Recipe explanation fits the detail panel")
- check(shop.upgrade_rows.get_global_rect().end.x<=1152,"Recipe rows fit the canvas")
+ check(shop.levels_panel.get_global_rect().end.x<=1152 and shop.levels_panel.get_global_rect().end.y<=720 and shop.levels_panel.get_global_rect().position.y>=0,"Levels pop-up fits the canvas")
  await capture("recipes_shop")
  GameManager.level_recipe("poker")
  check(not GameManager.recipe_levels.has("poker"),"Unknown recipes are ignored")
- await click(shop.upgrade_tab)
- check(shop.upgrades_open and shop.candy_rows.size()==6,"Candies tab still lists six candy types")
- await click(shop.joker_tab)
- check(shop.get_node("Offers").visible,"Jokers tab returns to offers")
+ check(shop.candy_rows.size()==6,"Levels pop-up also lists six candy types")
+ await click(shop.levels_close)
+ check(not shop.levels_open and shop.get_node("Offers").visible,"Back to shop closes the pop-up")
  var saver: Node=main.run_save
  saver.checkpoint()
  GameManager.recipe_levels["trio"]=1
