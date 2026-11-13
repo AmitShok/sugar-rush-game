@@ -28,10 +28,21 @@ static func for_run(run_seed: int) -> Array[String]:
  return result
 # Jelly Mould layout (v0.34): every jelly tile must be cleared to win, so the pattern is sized
 # to be clearable within a boss round's moves by a player who aims for it (tools/balance_sim.gd boss=jelly).
-static func jelly_cells(columns: int, rows: int) -> Array[int]:
+# Jelly grows with the ante (v0.35, tuned with tools/run_sim.gd): early bosses stay fair on weak boards.
+const JELLY_BY_ANTE: Array[int] = [12,15,18,20,22,24]
+static func jelly_count(ante: int) -> int:
+ return JELLY_BY_ANTE[clampi(ante,0,JELLY_BY_ANTE.size()-1)]
+# Checkerboard tiles (skipping the hard-to-reach top and bottom rows), centre first, up to count.
+static func jelly_cells(columns: int, rows: int, count: int = 24) -> Array[int]:
  var result: Array[int] = []
- # Checkerboard on every row except the hard-to-reach top and bottom rows: 24 tiles on 8 x 8.
  for y: int in range(1,rows-1):
   for x: int in range(columns):
    if (x+y)%2 == 0: result.append(y*columns+x)
+ var centre: Vector2 = Vector2(columns-1,rows-1)*0.5
+ result.sort_custom(func(a: int,b: int) -> bool:
+  var da: float = Vector2(a%columns,a/columns).distance_squared_to(centre)
+  var db: float = Vector2(b%columns,b/columns).distance_squared_to(centre)
+  return da < db if da != db else a < b)
+ result.resize(mini(count,result.size()))
+ result.sort()
  return result

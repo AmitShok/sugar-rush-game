@@ -80,7 +80,7 @@ func run_tests() -> void:
  check(ScoreEngine.calculate(e.chips,g,false,rules,0,false,false,64,0).total==roundi(30*0.5),"Tiny Spoon halves Mult")
  fresh()
  model.setup_boss("jelly")
- check(model.jelly==BossCatalog.jelly_cells(8,8) and not model.jelly.is_empty(),"Jelly Mould lays out its jelly pattern")
+ check(model.jelly==BossCatalog.jelly_cells(8,8,model.jelly_count) and not model.jelly.is_empty(),"Jelly Mould lays out its jelly pattern")
  var jelly_start: int=-1
  for i: int in model.jelly:
   if model.xy(i).x <= 5:

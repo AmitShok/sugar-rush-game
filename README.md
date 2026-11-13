@@ -268,7 +268,7 @@ The title screen no longer sits in a panel. The SUGAR RUSH logo waves and shimme
 
 ### One move = one hand, move preview, one-row shop and Jelly Mould (v0.34)
 
-**Scoring.** Each move now scores once, like a Balatro hand. Your own match (the first wave) is the hand: its best group sets the recipe, and every extra group in that first wave adds +1 Mult. Cascades feed the same hand: their candies add Candys, fired specials add Mult and each wave adds +0.5 Mult (up to +2). Jokers, editions and boss rules then apply **once** to the final Candys x Mult. The HUD counts the hand up live while the board cascades; the score lands when the board settles.
+**Scoring.** Each move now scores once, like a Balatro hand. Your own match (the first wave) is the hand: its best group sets the recipe, every extra group in that first wave adds +1 Mult, and specials it fires add their Mult. Cascades feed the same hand: their candies add Candys and each wave adds +0.5 Mult (up to +2); specials fired by cascades add their cleared Candys, not Mult (v0.35). Jokers, editions and boss rules then apply **once** to the final Candys x Mult. The HUD counts the hand up live while the board cascades; the score lands when the board settles.
 
 **Preview.** Before you commit, the HUD shows exactly what your own match will score ("TRIO LV1 = 145+") and outlines the candies it clears. The "+" means cascades can only add to that number, never take away. Mouse: select a candy, hover a neighbour, click to confirm. Touch: drag toward a neighbour to preview, release to swap, slide back to cancel. Keyboard: select, then arrow next to it. An invalid swap previews "NO MATCH -1 MOVE".
 
@@ -277,3 +277,18 @@ The title screen no longer sits in a panel. The SUGAR RUSH logo waves and shimme
 **Shop.** One row, Balatro-style: two Jokers and two booster packs, each with its own Buy/Open button. Reroll replaces the Jokers; packs stay until opened. Recipe and candy levels moved to the **Levels** pop-up.
 
 **The Jelly Mould** no longer halves scores. Instead, 24 jelly tiles cover the board (every other tile, skipping the top and bottom rows) and you must clear **all** of them and reach the score to win; reaching the score early does not end the round while jelly remains.
+
+### Full-run tuning (v0.35)
+
+`tools/run_sim.gd` (scene `tools/RunSim.tscn`) plays complete runs with the real GameManager: shop rolls, rarity odds, prices, packs, editions, interest, rewards, bosses and the Jelly objective. The bot plays the best previewed move and shops sensibly, but never skips for Tags or uses items, so its win rate is a floor for a careful player.
+
+```
+Godot --headless --audio-driver Dummy --path . res://tools/RunSim.tscn -- --test runs=20 seed=1000
+```
+
+Tuned from 3 x 60 simulated runs:
+- **Quotas:** 1.2k / 1.8k / 2.4k, 4k / 6k / 8k, 13k / 19k / 26k, 36k / 54k / 72k, 100k / 150k / 200k, 250k / 375k / 500k.
+- **Jelly Mould** lays 12 / 15 / 18 / 20 / 22 / 24 jelly tiles by ante, centre first.
+- **Mult comes from your own match.** Cascade specials add Candys only, which stopped special-chain builds multiplying a growing Candys pile by a growing Mult pile (the worst late move fell from 420x to 27x the quota).
+
+Result: the bot wins about 20% of runs. 95% reach ante 2, 78% ante 4, 63% ante 5, 40% ante 6 and 27% the final boss; most late rounds finish at about 1.2x the quota, and only rare Legendary + Polychrome builds overshoot by 10x or more.

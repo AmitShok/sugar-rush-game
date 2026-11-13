@@ -59,6 +59,7 @@ func start_round() -> void:
  # Persistent obstacles give destruction/revival builds targets in every round.
  for i: int in starting_blockers:
   if i >= 0 and i < model.cells.size(): model.cells[i].blocker = 2
+ model.jelly_count = BossCatalog.jelly_count(GameManager.round_index/3)
  model.setup_boss(GameManager.curse())
  if model.legal_moves().is_empty(): model.reshuffle()
  sync_tiles(false)

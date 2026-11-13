@@ -13,6 +13,7 @@ var locked_color: int = -1
 # Boss state (v0.22).
 var boss: String = "none"
 var jelly: Array[int] = [] # board positions still covered in jelly
+var jelly_count: int = 24 # How many jelly tiles The Jelly Mould lays (BossCatalog.jelly_count by ante).
 var sour_color: int = -1
 var chocolate_broken: int = 0 # chocolate tiles broken since the last move began
 var candy_bonuses: Array[int] = []
@@ -492,7 +493,7 @@ func setup_boss(kind: String) -> void:
   "frost":
    for i: int in BossCatalog.FROST_START:
     if i < cells.size(): cells[i].frosting = BossCatalog.FROST_LAYERS
-  "jelly": jelly.assign(BossCatalog.jelly_cells(width,height))
+  "jelly": jelly.assign(BossCatalog.jelly_cells(width,height,jelly_count))
   "sour": sour_color = rng.randi_range(0,config.candies.size()-1)
 
 # --- Moves as hands (v0.34) ---

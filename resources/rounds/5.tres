@@ -3,7 +3,7 @@
 [resource]
 script = ExtResource("1")
 display_name = "The Heatwave"
-quota = 12000
+quota = 8000
 moves = 12
 curse = "heatwave"
 description = "Candies that sit untouched for 4 moves become sticky blockers."

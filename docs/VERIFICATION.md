@@ -306,3 +306,16 @@ Measured first with `tools/balance_sim.gd` (new `moves=`, per-move peak and Jell
 - Quotas reshaped Balatro-style (Big 1.5x, Boss 2x of each ante base): 1.5k/2.25k/3k, 6k/9k/12k, 18k/27k/36k, 45k/68k/90k, 110k/165k/220k, 250k/375k/500k. At ante 6 with level-5 recipes the strongest measured build clears ~2x; good builds need editions or levels; weak builds fail around ante 5.
 - Shop: two Jokers + two packs in one row; Levels pop-up replaces the Candies/Recipes tabs.
 - Jelly Mould: 24 tiles, all must be cleared plus the score; half-score rule removed. Sim (12 moves): no Jokers leave ~5, blast builds always clear, Labyrinth/special builds clear 25-40% (bot is greedy; players can aim at the last tiles). BossRunner covers score-met-with-jelly (continues), last jelly + score (wins), out of moves with jelly (loses).
+
+
+## Full-run simulator and tuning (v0.35, 2026-11-13)
+
+Built `tools/run_sim.gd` / `tools/RunSim.tscn`: complete runs on the real GameManager economy and a BoardModel set up like GameBoard.start_round (starting blockers, Inspector, bosses, Jelly count). ~13 s per run headless. Bot: best previewed move plus Jelly and Roulette goals; buys by a solo-power value table with edition and Labyrinth/exactly-3 synergy rules; opens Joker/Recipe/Candy/Rush packs; rerolls when it has spare cash; never skips or uses items.
+
+| Batch (60 runs each) | Wins | Reach ante 2 | ante 4 | ante 6 | final boss | late-round overshoot p90 / max |
+|---|---|---|---|---|---|---|
+| v0.34 settings | 4 | 47 | 28 | 10 | 5 | n/a |
+| + smoothed early quotas, Jelly by ante, bot skips junk Jokers | 14 | 57 | 47 | 26 | 18 | 8.9x / 420x |
+| + Mult from your own match only | 12 | 57 | 47 | 24 | 16 | 3.5x / 27x |
+
+The 420x came from cascade specials adding Mult while cascades also added Candys (quadratic growth). The remaining 27x was one Nuclear + Kaleidoscope + Mobius build with two Polychrome editions.
